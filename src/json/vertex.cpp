@@ -1,5 +1,7 @@
 #include "vertex.h"
 
+#include <array>
+
 namespace jsonmodel
 {
 
@@ -17,10 +19,10 @@ namespace jsonmodel
 
   /**
    * @brief overload the equal function
-   * 
-   * @param cVertex 
-   * @return true 
-   * @return false 
+   *
+   * @param cVertex
+   * @return true
+   * @return false
    */
 
   bool vertex::operator==(const vertex &cVertex)
@@ -39,9 +41,9 @@ namespace jsonmodel
 
   /**
    * @brief calculate the slope between two vertices
-   * 
-   * @param pVertex_in 
-   * @return float 
+   *
+   * @param pVertex_in
+   * @return float
    */
 
   float vertex::calculate_slope(vertex pVertex_in)
@@ -56,7 +58,7 @@ namespace jsonmodel
     y1 = pVertex_in.dy;
     z1 = pVertex_in.dz;
     dElevation1 = pVertex_in.dElevation;
-    dDistance=  calculate_distance(pVertex_in); 
+    dDistance=  calculate_distance(pVertex_in);
 
     if (this->dx != x1)
     {
@@ -84,8 +86,8 @@ namespace jsonmodel
   int vertex::update_location()
   {
     int error_code =1;
-    
-    std::array<float, 3> aLocation = calculate_location_based_on_lon_lat_radian(dLongitude_radian, dLatitude_radian, dElevation);
+
+    const auto aLocation = calculate_location_based_on_lon_lat_radian(dLongitude_radian, dLatitude_radian, dElevation);
     dx = aLocation[0];
     dy = aLocation[1];
     dz = aLocation[2];
