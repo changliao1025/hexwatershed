@@ -4,12 +4,12 @@
  * @brief Header file of the stream segment class
  * @version 0.1
  * @date 2019-08-02
- * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020). 
+ * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020).
  * Watershed delineation on a hexagonal mesh grid. Environmental Modelling & Software, 104702.
  * https://www.sciencedirect.com/science/article/pii/S1364815219308278
  * @github page https://github.com/changliao1025/hexwatershed
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 #pragma once
 #include <vector>
@@ -22,19 +22,15 @@ namespace hexwatershed
     class segment
     {
     public:
-        segment();
-
-        ~segment();
-
         int nReach;
-        int iSegment;
+        int iSegment = 0;
 
-        int iSegment_downstream;
-        int iSegment_order;
-        int iFlag_headwater;
-        int iFlag_has_upstream;
-        int iFlag_has_downstream;
-        int nSegment_upstream;
+        int iSegment_downstream = -1;
+        int iSegment_order = -1;
+        int iFlag_headwater = 0;
+        int iFlag_has_upstream = -1;
+        int iFlag_has_downstream = -1;
+        int nSegment_upstream = -1;
 
         float dLength; //the total length of the stream segment
 
@@ -46,7 +42,7 @@ namespace hexwatershed
 
         //function
         //sort
-        bool operator<(const segment &cSegment);
+        bool operator<(const segment &cSegment) const;
 
         int calculate_stream_segment_characteristics();
         int calculate_stream_segment_length();
