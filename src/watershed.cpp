@@ -1,12 +1,12 @@
 /**
  * @file watershed.cpp
  * @author Chang Liao (chang.liao@pnnl.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2019-08-02
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include "watershed.h"
@@ -143,7 +143,7 @@ namespace hexwatershed
 
     std::vector<segment>::iterator iIterator0;
     std::vector<subbasin>::iterator iIterator1;
-    
+
 
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
     {
@@ -167,7 +167,7 @@ namespace hexwatershed
 
     //save watershed characteristics to the file
 
-    
+
 
     std::cout << "The watershed characteristics are calculated successfully!" << std::endl;
 
@@ -184,7 +184,7 @@ namespace hexwatershed
     int error_code = 1;
     int iOption = 2; //sum up subbasin
 
-    float dArea_total = 0.0;    
+    float dArea_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     std::vector<subbasin>::iterator iIterator1;
     if (iOption == 1)
@@ -201,7 +201,7 @@ namespace hexwatershed
 
         dArea_total = dArea_total + (*iIterator1).dArea;
       }
-    }    
+    }
     dArea = dArea_total;
     return error_code;
   }
@@ -221,21 +221,21 @@ namespace hexwatershed
     std::vector<segment>::iterator iIterator1;
     if (iOption == 1)
     {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+      for (const auto &vc : vCell)
       {
 
-        if ((*iIterator).iFlag_stream == 1)
+        if (vc.iFlag_stream == 1)
         {
           //should have calculated dLength_stream_conceptual by now
-          dLength_total = dLength_total + (*iIterator).dLength_stream_conceptual;
+          dLength_total = dLength_total + vc.dLength_stream_conceptual;
         }
       }
     }
     else
     {
-      for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
+      for (const auto &vs : vSegment)
       {
-        dLength_total = dLength_total + (*iIterator1).dLength;
+        dLength_total = dLength_total + vs.dLength;
       }
     }
 
@@ -256,11 +256,9 @@ namespace hexwatershed
     float dLength_stream_conceptual;
 
     //loop through head water
-    std::vector<segment>::iterator iIterator;
-
-    for (iIterator = vSegment.begin(); iIterator != vSegment.end(); iIterator++)
+    for (const auto &vs: vSegment)
     {
-      dLength_stream_conceptual = (*iIterator).dLength;
+      dLength_stream_conceptual = vs.dLength;
       if (dLength_stream_conceptual > dLength_longest)
       {
         dLength_longest = dLength_stream_conceptual;
@@ -304,20 +302,18 @@ namespace hexwatershed
     int error_code = 1;
     int iOption = 1;
     float dSlope_total = 0.0;
-    std::vector<hexagon>::iterator iIterator;
-    std::vector<subbasin>::iterator iIterator1;
     if (iOption == 1)//by cell
     {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+      for (const auto &vc: vCell)
       {
-        dSlope_total = dSlope_total + (*iIterator).dSlope_within; //should mean slope?
+        dSlope_total = dSlope_total + vc.dSlope_within; //should mean slope?
       }
     }
     else//by subbasin
     {
-      for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+      for (const auto &vs: vSubbasin)
       {
-        dSlope_total = dSlope_total + (*iIterator1).dSlope;
+        dSlope_total = dSlope_total + vs.dSlope;
       }
     }
 
@@ -334,11 +330,6 @@ namespace hexwatershed
   int watershed::calculate_topographic_wetness_index()
   {
     int error_code = 1;
-    float a;
-    float b;
-    float c;
-    float d;
-    float dTwi;
     std::vector<hexagon>::iterator iIterator;
     //can use openmp
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
@@ -349,14 +340,14 @@ namespace hexwatershed
       }
       else
       {
-        a = float(((*iIterator).dAccumulation ) );
-        b = (*iIterator).dSlope;
-        c = tan(b);
+        const float a = float(((*iIterator).dAccumulation ) );
+        const float b = (*iIterator).dSlope;
+        const float c = tan(b);
         if (a == 0 || c == 0)
         {
           std::cout << a << b << c << std::endl;
         }
-        dTwi = log2(a / c);
+        const float dTwi = log2(a / c);
         if (isnan(float(dTwi)))
         {
           std::cout << a << b << c << std::endl;

@@ -12,13 +12,6 @@
 
 namespace hexwatershed
 {
-
-  domain::domain(){
-
-  };
-
-  domain::~domain(){};
-
   /**
    *
    * @param sFilename_configuration_in: user provided model configuration file
@@ -75,8 +68,8 @@ namespace hexwatershed
 
   int domain::domain_initialize ()
   {
-    int error_code=1;  
-    
+    int error_code=1;
+
     cCompset.compset_initialize_model();
     //the last outlet need to be set
 

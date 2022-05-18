@@ -21,9 +21,7 @@ namespace hexwatershed
   int compset::compset_stream_burning_without_topology(long lCellID_center_in)
   {
     int error_code = 1;
-    int iFlag_stream_burned;
     int iFlag_stream_burned_neighbor;
-    int iFlag_stream_burning_treated;
     int iFlag_stream_burning_treated_neighbor;
 
     int untreated;
@@ -142,22 +140,14 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
-    int iOption_filling = 1;
-    int iFlag_finished;
 
-    int iFlag_stream_burned;
     int iFlag_stream_burned_neighbor;
 
-    int iFlag_stream_burning_treated;
     int iFlag_stream_burning_treated_neighbor;
 
     int iStream_order_center;
     int iStream_order_neighbor;
-    long lIndex_outlet;
-    long lIndex_lowest;
-    long lCellIndex_active;
     long lCellIndex_neighbor;
-    long lIndex_current;
     long lIndex_center_next;
     long lCellID_current;
     long lCellID_downstream_burned;
@@ -198,7 +188,7 @@ namespace hexwatershed
         dDifference_dummy = dElevation_mean_neighbor - dElevation_mean_center;
         if (dDifference_dummy >= 0)
         {
-          
+
         }
         else
         {
@@ -304,7 +294,6 @@ namespace hexwatershed
     int error_code = 1;
     // int iStream_order_neighbor;
     // int iStream_order_center;
-    long lCellID;
     long lCellIndex_active;
     long lCellID2, lCellID3;
     long lCellIndex2, lCellIndex3;
@@ -316,32 +305,24 @@ namespace hexwatershed
     long lCellID_next;
 
     int iFlag_finished = 0;
-    int iFlag_found;
-    int iFlag_found1;
     float dDifference_dummy;
-    float dElevation_before;
-    float dElevation_after;
-    float dElevation_dummy;
     // std::vector<hexagon>::iterator iIterator2;
     // std::vector<hexagon>::iterator iIterator3;
     lCellIndex_active = compset_find_index_by_cellid(lCellID_active_in);
     while (iFlag_finished != 1)
     {
-      lCellID = vCell_active.at(lCellIndex_active).lCellID;
       lCellID_downstream = vCell_active.at(lCellIndex_active).lCellID_downstream_burned;
       dElevation_upstream = vCell_active.at(lCellIndex_active).dElevation_mean;
       // iStream_order_neighbor = vCell_active.at(lCellIndex_active).iStream_order_burned;
       if (lCellID_downstream != -1)
       {
-        iFlag_found = 0;
         // for (iIterator2 = vCell_active.begin (); iIterator2 != vCell_active.end (); iIterator2++)
-        for (long lIndex2 = 0; lIndex2 < vCell_active.size(); lIndex2++)
+        for (size_t lIndex2 = 0; lIndex2 < vCell_active.size(); lIndex2++)
         {
           lCellIndex2 = vCell_active.at(lIndex2).lCellIndex;
           lCellID2 = vCell_active.at(lCellIndex2).lCellID;
           if (lCellID2 == lCellID_downstream)
           {
-            iFlag_found = 1;
             dElevation_downstream = vCell_active.at(lCellIndex2).dElevation_mean;
             // dElevation_before = dElevation_downstream;
             //  iStream_order_center = (*iIterator2).iStream_order_burned;
@@ -361,15 +342,13 @@ namespace hexwatershed
               lCellID_downstream2 = vCell_active.at(lCellIndex2).lCellID_downstream_burned;
               if (lCellID_downstream2 != -1)
               {
-                iFlag_found1 = 0;
                 // for (iIterator3 = vCell_active.begin (); iIterator3 != vCell_active.end (); iIterator3++)
-                for (long lIndex3 = 0; lIndex3 < vCell_active.size(); lIndex3++)
+                for (size_t lIndex3 = 0; lIndex3 < vCell_active.size(); lIndex3++)
                 {
                   lCellIndex3 = vCell_active.at(lIndex3).lCellIndex;
                   lCellID3 = vCell_active.at(lCellIndex3).lCellID;
                   if (lCellID3 == lCellID_downstream2)
                   {
-                    iFlag_found1 = 1;
                     dDifference_dummy = vCell_active.at(lCellIndex2).dElevation_mean - vCell_active.at(lCellIndex3).dElevation_mean;
                     if (dDifference_dummy < 0.0) // another depression
                     {

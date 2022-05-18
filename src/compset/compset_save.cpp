@@ -21,7 +21,6 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     //update vertex first
     update_cell_elevation();
     update_vertex_elevation();
@@ -106,7 +105,7 @@ namespace hexwatershed
                 pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
                 pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
                 pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-                
+
                 //pCell.dSlope_within = (*iIterator).dSlope_within;
                 pCell.dElevation_mean = (*iIterator).dElevation_mean;
                 pCell.dElevation_raw = (*iIterator).dElevation_raw;
@@ -133,7 +132,7 @@ namespace hexwatershed
             pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
             pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
             pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
- 
+
             pCell.dSlope_within = (*iIterator).dSlope_within;
             pCell.dElevation_raw = (*iIterator).dElevation_raw;
             pCell.dElevation_mean = (*iIterator).dElevation_mean;
@@ -340,16 +339,10 @@ namespace hexwatershed
                                             std::string sLayername_in)
   {
     int error_code = 1;
-    int iValue;
-    int iReach;
     int iFlag_debug = cParameter.iFlag_debug;
     int iFlag_merge_reach = cParameter.iFlag_merge_reach;
-    long lIndex;
 
     long lIndex_downslope;
-    float dx, dy;
-    float dX_start, dY_start;
-    float dX_end, dY_end;
     std::vector<hexagon> vReach_segment;
     std::vector<hexagon>::iterator iIterator;
 
@@ -530,9 +523,6 @@ namespace hexwatershed
       default:
         break;
       }
-    int iValue;
-    float dValue;
-
 
     if (iFlag_debug == 1)
       {
@@ -571,11 +561,10 @@ namespace hexwatershed
     int error_code = 1;
     int iVertex;
     int iFlag_debug = cParameter.iFlag_debug;
-    long lValue;
     long lCount;
     long lCellID, lCellIndex;
     long nVertex, nHexagon, nBoundary;
-    float dr, dx, dy, dz;
+    float dx, dy, dz;
     std::string sDummy;
     std::string sLine;
     std::string sPoint, sCell, sCell_size;

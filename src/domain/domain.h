@@ -49,15 +49,13 @@ namespace hexwatershed
 {
   class domain {
   public:
-    domain ();
     domain (std::string sFilename_configuration_in);
-    ~domain ();
 
     std::string sWorkspace_input;
     std::string sWorkspace_output;
     std::string sWorkspace_output_pyflowline;
     std::string sWorkspace_output_hexwatershed;
-    
+
     std::string sFilename_log;
     std::string sLog;
 
@@ -99,8 +97,8 @@ namespace hexwatershed
     //vtk support
     std::string sFilename_vtk;
     std::string sFilename_vtk_debug;
-    
-  
+
+
 
     //others
     std::string sDate_default;

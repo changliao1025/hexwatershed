@@ -23,7 +23,7 @@ namespace hexwatershed
     int error_code = 1;
     int iFlag_has_upslope = 0;
     int iFlag_all_upslope_done; //assume all are done
-    long lFlag_total = 0;
+    size_t lFlag_total = 0;
     long lCelllIndex_neighbor;
     long lCellID_downslope_neighbor;
     long lCellID_neighbor;
@@ -79,9 +79,9 @@ namespace hexwatershed
                       {
                       }
                   }
-               
+
                 //there are the ones have no upslope at all
-             
+
 
                 if (iFlag_has_upslope == 0)
                   {
@@ -136,7 +136,6 @@ namespace hexwatershed
   int compset::compset_define_stream_grid()
   {
     int error_code = 1;
-    long lCellIndex_self;
 
     //in watershed hydrology, a threshold is usually used to define the network
     //here we use similar method
@@ -149,28 +148,27 @@ namespace hexwatershed
 
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
         if (iFlag_flowline == 1)
         {
           //use outlet id as largest
-          lCellID_outlet =  aBasin.at(0).lCellID_outlet;  
+          lCellID_outlet =  aBasin.at(0).lCellID_outlet;
           lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
           dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
-          //openmp may  not work for std container in earlier C++ 
+          //openmp may  not work for std container in earlier C++
           //#pragma omp parallel for private(lCellIndex_self)
-          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
               if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;  
+                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
                   (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
                 }
               else
                 {
                   (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
-                  //we still need its length for MOSART model.    
+                  //we still need its length for MOSART model.
                   (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual =  (vCell_active.at(lCellIndex_self)).dResolution_effective;
                 }
             }
@@ -179,7 +177,7 @@ namespace hexwatershed
         {
             //find the maximum accumulation
             dAccumulation_max = 0.0;
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+            for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
               if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_max)
               {
@@ -189,26 +187,26 @@ namespace hexwatershed
             }
             dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
 
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+            for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
               if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;  
+                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
                   (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
                 }
               else
                 {
                   (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
-                  //we still need its length for MOSART model.    
+                  //we still need its length for MOSART model.
                   (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual =  (vCell_active.at(lCellIndex_self)).dResolution_effective;
                 }
-            
+
 
             }
 
         }
 
-        
+
       }
     else
       {
@@ -230,9 +228,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFound_outlet;
-    long lCellIndex_self;
     long lCellIndex_current;
-    long lCellIndex_downslope;
     long lCellIndex_outlet;
     long lCellID_downslope;
     long lCellID_outlet;
@@ -241,7 +237,6 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator_self;
 
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
         //find the max accumulation outlet
@@ -263,8 +258,8 @@ namespace hexwatershed
 
         //#pragma omp parallel for private(lCellIndex_self, iFound_outlet, lIndex_downslope, lCellIndex_current)
         //can also use
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-          {            
+        for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          {
             iFound_outlet = 0;
             lCellIndex_current = lCellIndex_self;
             while (iFound_outlet != 1)
@@ -319,7 +314,6 @@ namespace hexwatershed
     long lCellIndex_downstream;
     std::vector<hexagon>::iterator iIterator_self;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
 
@@ -370,7 +364,7 @@ namespace hexwatershed
       }
     else
       {
-        
+
       }
 
     return error_code;
@@ -392,7 +386,6 @@ namespace hexwatershed
     long lCellIndex_current;
     long lCellID_upstream;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
 
@@ -492,7 +485,6 @@ namespace hexwatershed
     std::vector<hexagon> vReach_segment;
 
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
 
@@ -628,12 +620,10 @@ namespace hexwatershed
     int error_code = 1;
     int iFound_outlet;
     int iSubbasin;
-    long lCellIndex_self;
     long lCellIndex_current;
     long lCellID_outlet;
     long lCellIndex_outlet; //local outlet
     long lCellID_downslope;
-    long lCellIndex_downslope;
     long lCellIndex_accumulation;
     std::vector<long> vAccumulation;
     std::vector<long>::iterator iterator_accumulation;
@@ -642,7 +632,6 @@ namespace hexwatershed
     std::vector<long>::iterator iIterator_upstream;
     std::vector<hexagon>::iterator iIterator_current;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
 
@@ -678,13 +667,13 @@ namespace hexwatershed
                 iSubbasin = (vCell_active.at(lCellIndex_outlet)).iSegment;
                 (vCell_active.at(lCellIndex_outlet)).iSubbasin = iSubbasin;
 
-                for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)           
+                for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
                   {
                     iFound_outlet = 0;
-                    lCellIndex_current =  (*iIterator_self).lCellIndex;      
+                    lCellIndex_current =  (*iIterator_self).lCellIndex;
                     while (iFound_outlet != 1)
-                      {                        
-                        lCellID_downslope = vCell_active.at(lCellIndex_current).lCellID_downslope_dominant;                        
+                      {
+                        lCellID_downslope = vCell_active.at(lCellIndex_current).lCellID_downslope_dominant;
                         if (lCellID_outlet == lCellID_downslope)
                           {
                             iFound_outlet = 1;
@@ -711,7 +700,7 @@ namespace hexwatershed
                                 //std::cout << lCellID_downslope << std::endl;
                               }
                             }
-                            
+
                           }
                       }
                   }
@@ -751,16 +740,15 @@ namespace hexwatershed
   }
 
   /**
-   * @brief 
-   * 
-   * @return int 
+   * @brief
+   *
+   * @return int
    */
 
   int compset::compset_calculate_watershed_characteristics()
   {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
         cWatershed.calculate_watershed_characteristics();
@@ -773,9 +761,9 @@ namespace hexwatershed
   }
 
 /**
- * @brief 
- * 
- * @return int 
+ * @brief
+ *
+ * @return int
  */
   int compset::update_cell_elevation()
   {
@@ -789,23 +777,22 @@ namespace hexwatershed
   }
 
   /**
-   * @brief 
-   * 
-   * @return int 
+   * @brief
+   *
+   * @return int
    */
   int compset::update_vertex_elevation()
   {
     int error_code = 1;
-    long lVertexIndex = 0;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<vertex>::iterator iIterator2;
     std::vector<vertex>::iterator iIterator3;
 
     for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); ++iIterator2)
     {
-    
+
       for (iIterator1 = vCell_active.begin(); iIterator1 != vCell_active.end(); ++iIterator1)
-      {          
+      {
          iIterator3 = std::find((*iIterator1).vVertex.begin(), (*iIterator1).vVertex.end(), ( *iIterator2 ));
 
           if (iIterator3 != (*iIterator1).vVertex.end())
@@ -822,8 +809,8 @@ namespace hexwatershed
       }
 
     }
-      
-    
+
+
     return error_code;
   }
 

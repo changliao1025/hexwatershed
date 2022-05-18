@@ -39,7 +39,6 @@ namespace hexwatershed
   int domain::domain_read_configuration_file()
   {
     int error_code = 1;
-    std::size_t iVector_size;
     std::string sLine;  // used to store each sLine
     std::string sKey;   // used to store the sKey
     std::string sValue; // used to store the sValue
@@ -79,41 +78,19 @@ namespace hexwatershed
     {
       sMesh_type = pConfigDoc[sKey.c_str()].GetString();
     }
-    if (sMesh_type == "hexagon")
-    {
+
+    if (sMesh_type == "hexagon") {
       iMesh_type = 1;
-    }
-    else
-    {
-      if (sMesh_type == "square")
-      {
-        iMesh_type = 2;
-      }
-      else
-      {
-        if (sMesh_type == "latlon")
-        {
-          iMesh_type = 3;
-        }
-        else
-        {
-          if (sMesh_type == "mpas")
-          {
-            iMesh_type = 4;
-          }
-          else
-          {
-            if (sMesh_type == "tin")
-            {
-              iMesh_type = 5;
-            }
-            else
-            {
-              std::cout << "Unsupported mesh type" << std::endl;
-            }
-          }
-        }
-      }
+    } else if (sMesh_type == "square") {
+      iMesh_type = 2;
+    } else if (sMesh_type == "latlon") {
+      iMesh_type = 3;
+    } else if (sMesh_type == "mpas") {
+      iMesh_type = 4;
+    } else if (sMesh_type == "tin") {
+      iMesh_type = 5;
+    } else {
+      throw std::runtime_error("Unsupported mesh type!");
     }
 
     cCompset.cParameter.sMesh_type = sMesh_type;
@@ -317,8 +294,6 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iMesh_type = cCompset.cParameter.iMesh_type;
-    int iFlag_flowline = cCompset.cParameter.iFlag_flowline;
-    int iFlag_stream_burning_topology = cCompset.cParameter.iFlag_stream_burning_topology;
     std::vector<hexagon>::iterator iIterator;
     switch (iMesh_type)
     {

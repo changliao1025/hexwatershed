@@ -29,8 +29,6 @@ namespace hexwatershed
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     long iNeighborIndex;
     long lCellID_lowest;
-    long lCellID_highest;
-    long lCellIndex_self;
     long lCellID;
     float dElevation_mean;
     float dElevation_profile0;
@@ -44,7 +42,6 @@ namespace hexwatershed
 
     long lCellIndex_neighbor;
     long lCellIndex_neighbor_lowest;
-    long lCellIndex_neighbor_highest;
     long lCellID_downstream;
 
     std::vector<float> vNeighbor_distance;
@@ -60,13 +57,12 @@ namespace hexwatershed
       if (iFlag_stream_burning_topology == 0)
       {
         // rely on elevation
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
         {
           vNeighbor = (vCell_active.at(lCellIndex_self)).vNeighbor;
           vNeighbor_land = (vCell_active.at(lCellIndex_self)).vNeighbor_land;
           vNeighbor_distance = (vCell_active.at(lCellIndex_self)).vNeighbor_distance;
           lCellID_lowest = -1;
-          lCellID_highest = -1;
           dElevation_mean = (vCell_active.at(lCellIndex_self)).dElevation_mean;
           dSlope_downslope = dSlope_initial;
           dSlope_upslope = dSlope_initial;
@@ -101,7 +97,6 @@ namespace hexwatershed
               {
                 // this maybe a dominant upslope
                 dSlope_upslope = dSlope_new;
-                lCellID_highest = *iIterator_neighbor;
               }
             }
           }
@@ -131,14 +126,13 @@ namespace hexwatershed
       else
       {
         //#pragma omp parallel for private(lCellIndex_self, vNeighbor_land, lCellID_lowest, dElevation_mean, dSlope_initial, dSlope_new, iIterator_neighbor)
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
         {
           vNeighbor = (vCell_active.at(lCellIndex_self)).vNeighbor;
           vNeighbor_distance = (vCell_active.at(lCellIndex_self)).vNeighbor_distance;
           iFlag_stream_burned = vCell_active[lCellIndex_self].iFlag_stream_burned;
           vNeighbor_land = (vCell_active.at(lCellIndex_self)).vNeighbor_land;
           lCellID_lowest = -1;
-          lCellID_highest = -1;
 
           dElevation_mean = (vCell_active.at(lCellIndex_self)).dElevation_mean;
           dElevation_profile0 = (vCell_active.at(lCellIndex_self)).dElevation_profile0;
@@ -211,8 +205,6 @@ namespace hexwatershed
                   {
                     // this maybe a dominant downslope
                     dSlope_upslope = dSlope_new;
-                    lCellID_highest = *iIterator_neighbor;
-                    lCellIndex_neighbor_highest = lCellIndex_self;
                   }
                 }
               }
@@ -249,8 +241,6 @@ namespace hexwatershed
                 {
                   // this maybe a dominant upslope
                   dSlope_upslope = dSlope_new;
-                  lCellID_highest = *iIterator_neighbor;
-                  lCellIndex_neighbor_highest = lCellIndex_self;
                 }
               }
             }
@@ -428,13 +418,12 @@ namespace hexwatershed
     {
       // pure dem based
       //#pragma omp parallel for private(lCellIndex_self, vNeighbor_land, lCellID_lowest, dElevation_mean, dSlope_initial, dSlope_new, iIterator_neighbor)
-      for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+      for (size_t lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
       {
         vNeighbor = (vCell_active.at(lCellIndex_self)).vNeighbor;
         vNeighbor_distance = (vCell_active.at(lCellIndex_self)).vNeighbor_distance;
         vNeighbor_land = (vCell_active.at(lCellIndex_self)).vNeighbor_land;
         lCellID_lowest = -1;
-        lCellID_highest = -1;
         dElevation_mean = (vCell_active.at(lCellIndex_self)).dElevation_mean;
         dSlope_downslope = dSlope_initial;
         dSlope_upslope = dSlope_initial;
@@ -469,7 +458,6 @@ namespace hexwatershed
             {
               // this maybe a dominant downslope
               dSlope_upslope = dSlope_new;
-              lCellID_highest = *iIterator_neighbor;
             }
           }
         }
