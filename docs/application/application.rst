@@ -17,12 +17,11 @@ HexWatershed uses the JavaScript Object Notation (JSON) file format for model co
 
 The input data includes:
 
-* A ESRI shapefile that defines the domain boundary
+.. * A ESRI shapefile that defines the domain boundary
 
 * A ESRI shapefile that defines the original river network
 
 * A raster Geotiff file that contains the digital elevation model (DEM) data
-
 
 
 Note that depending on the configuration, not all the input files are needed, or additional input files are needed.
@@ -31,24 +30,107 @@ Note that depending on the configuration, not all the input files are needed, or
 Data preparation
 ****************
 
+Because the core algorithms within HexWatershed assume that all the data are on the Geographic Coordinate System (GCS), most input and output data use GCS. 
 
-Boundary
-########
+However, since most DEM data use the Projected Coordinate System (PCS), a reprojection is sometimes required. 
 
-The domain boundary file can be defined using a vector-based watershed boundary file.
+Besides, depending on the simulation configuration, different data are needed. Below are some instructions for different scenarios.
+
+To support all the major computer systems, we use the QGIS to operate on most spatial datasets.
+
+Single watershed
+################
+
+.. Boundary
+.. ########
+.. The domain boundary file can be defined using a vector-based watershed boundary file. 
 
 River network
-################
+-------------
+
+The river network file can be defined using a vector-based river flowline file.
+
+Because the real-worlkd river network is often complex, some simplication is recommended. For example, the river network should only include major flowlines.
+
+The shapefile should use the GCS system. If the vector you have is in a different PCS, you can re-project it to the GCS.
+
+Boundary with buffer
+--------------------
+
+This boundary with buffer zone is mainly used to extract the DEM.
+* obtain a vector watershed boundary (PCS system), if the boudnary is in a GCS system, you should convert it to PCS simialr to the flowline.
+* create a buffer zone watershed boundary (PCS system), the buffer increase distance should be linked to your resolution of intestes. For example, if the highest mesh resolution you will use is arounf 5km, then the buffer zone distance should be set to 5km.
+
+DEM
+---
+
+The DEM file can be extracted from a large DEM which contains the study domain.
+
+To do so, the recommended steps are:
+
+* prepare a large DEM with includes the study domain (PCS system)
+
+* overlay the DEM (PCS system) and river network, and edit the boundary (PCS system) near the outlet so that there is less extended DEM near the outlet (GCS or PCS system)
+* extract the large DEM using the edited boundary (PCS system)
+
+
+Continuous domain with multiple watersheds
+##########################################
+
+
+
+River network
+-------------
 
 The river network file can be defined using a vector-based river flowline file.
 
 Because the real-worlkd river network is often complex, some simplication is recommended. For example, the river network should only include major flowlines.
 
 
+
 DEM
-###
+---
 
 The DEM file can be extracted from a large DEM which contains the study domain.
+
+
+Global (Disontinuous domain with multiple watersheds)
+#####################################################
+
+River network
+-------------
+
+Global scale hydrology dataset such as hydroshed may be used.
+A subset of global river network can also be used.
+
+DEM
+---
+
+It is recommended to assign/inject elevation within the mesh similart to MPAS.
+
+
+.. list-table:: Input usage by domain
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - Domain
+     - Single watershed
+     - Multiple continuous watershed
+     - Multiple discontinuous watershed (global)
+   * - Flowline
+     - Yes if iFlag_flowline == 1
+     - Yes if iFlag_flowline == 1
+     - Yes if iFlag_flowline == 1
+   * - Raster DEM
+     - Yes if mesh type is not MPAS
+     - Yes if mesh type is not MPAS
+     - Yes if mesh type is not MPAS
+   * - Boudnary
+     - Yes, it will be used to generate mesh 
+     - Yes, it will be used to generate mesh 
+     - No, so far global mesh is pre-defined
+
+
 
 *******************
 Model configuration
