@@ -104,6 +104,8 @@ namespace hexwatershed
       }
     }
     // land second
+    //it might have modified, so need update
+    dElevation_mean_center = vCell_active.at(lCellIndex_center).dElevation_mean;
     // for (int i = 0; i < vCell_active.at (lCellIndex_center).nNeighbor_land; i++)
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
@@ -246,6 +248,9 @@ namespace hexwatershed
         }
       }
     }
+
+    //it might have modified, so need update
+    dElevation_mean_center = vCell_active.at(lCellIndex_center).dElevation_mean;
 
     // land second
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)

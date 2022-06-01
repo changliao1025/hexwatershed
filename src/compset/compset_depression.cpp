@@ -616,6 +616,8 @@ namespace hexwatershed
   {
     int error_code= 1;
     int iFlag_stream_burning_treated_neighbor;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     long lCellID_lowest;
     long lCellIndex_neighbor;

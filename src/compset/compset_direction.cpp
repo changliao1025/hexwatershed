@@ -26,6 +26,9 @@ namespace hexwatershed
 
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
+  
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     long iNeighborIndex;
     long lCellID_lowest;
@@ -338,7 +341,7 @@ namespace hexwatershed
           else
           {
             // normal land grid neighbor, this cell maybe on the edge, if so, we can set it mannually as beach
-            if ( iMesh_type == 4) // this only apply to hexagon and mpas that does not consider the vertex neighbors
+            if ( iMesh_type == 4) // this only apply to mpas that does not consider the vertex neighbors
             {
               if ((vCell_active.at(lCellIndex_self)).nNeighbor_land == (vCell_active.at(lCellIndex_self)).nVertex)
               {
