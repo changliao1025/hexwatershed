@@ -127,7 +127,7 @@ namespace hexwatershed
             {
               std::cout << "Upslope should be positive!" << std::endl;
             }
-            (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_upslope;
+            (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1 * dSlope_upslope;
           }
         }
       }
@@ -320,7 +320,7 @@ namespace hexwatershed
                   {
                     std::cout << "Upslope should be negative!" << std::endl;
                   }
-                  (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1.0 * dSlope_upslope; // reverse
+                  (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1.0 * dSlope_new; // reverse
 
                   if (iFlag_elevation_profile == 1)
                   {
@@ -495,7 +495,7 @@ namespace hexwatershed
           {
             std::cout << "Upslope should be positive!" << std::endl;
           }
-          (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_upslope;
+          (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1 * dSlope_upslope;
         }
       }
     }
