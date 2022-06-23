@@ -18,7 +18,7 @@ namespace jsonmodel
 	dLatitude_center_degree=-9999.0;
 	dLongitude_center_degree=-9999.0;
 	dArea=-9999.0;
-	dDistance_downslope=-9999.0;
+	dDistance_to_downslope=-9999.0;
 	dDistance_to_subbasin_outlet=-9999.0;
 	dDistance_to_subbasin_outlet=-9999.0;
 	nEdge=0;

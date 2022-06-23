@@ -368,6 +368,15 @@ namespace hexwatershed
     return error_code;
   }
 
+  int watershed::calculate_travel_distance()
+  {
+    int error_code = 1;
+
+    //calculate confluence
+    
+
+    return error_code;
+  }
   /**
        * save the watershed characteristics in the output
        * @return
@@ -448,4 +457,6 @@ namespace hexwatershed
     }
     return error_code;
   }
+
+  
 } // namespace hexwatershed

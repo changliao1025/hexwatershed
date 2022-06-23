@@ -71,7 +71,7 @@ namespace hexwatershed
                     pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
                     pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
                     pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-                    pCell.dDistance_downslope = (*iIterator).dDistance_downslope;
+                    pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
                     pCell.dElevation_mean = (*iIterator).dElevation_mean;
                     pCell.dElevation_raw = (*iIterator).dElevation_raw;
                     pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;

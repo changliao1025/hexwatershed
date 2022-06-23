@@ -34,7 +34,7 @@ namespace jsonmodel
     //float dLatitude_center_radian;
     //float dLongitude_center_radian;
     //float dz;
-    
+
     float dArea;
     float dAccumulation;
     float dSlope_between;
@@ -43,7 +43,7 @@ namespace jsonmodel
     float dLength_flowline;
     float dLength;
 
-    float dDistance_downslope;
+    float dDistance_to_downslope;
     float dDistance_to_subbasin_outlet;
     float dDistance_to_watershed_outlet;
    

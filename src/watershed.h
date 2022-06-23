@@ -54,6 +54,7 @@ namespace hexwatershed
           std::vector <hexagon> vCell;
           std::vector <segment> vSegment;
           std::vector <subbasin> vSubbasin;
+          std::vector <hexagon> vConfluence;
 
           //function
 
@@ -69,6 +70,7 @@ namespace hexwatershed
           int calculate_watershed_drainage_density();
           int calculate_watershed_average_slope();
           int calculate_topographic_wetness_index();
+          int calculate_travel_distance();
           int save_watershed_characteristics(std::string sFilename_in);
           int save_segment_characteristics(std::string sFilename_in);
           int save_subbasin_characteristics(std::string sFilename_in);
