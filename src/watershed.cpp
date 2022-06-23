@@ -163,7 +163,7 @@ namespace hexwatershed
     calculate_watershed_longest_stream_length();
     calculate_watershed_drainage_density();
     calculate_watershed_average_slope();
-    //calculate_topographic_wetness_index();
+    calculate_topographic_wetness_index();
 
     //save watershed characteristics to the file
 
@@ -310,7 +310,7 @@ namespace hexwatershed
     {
       for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
       {
-        dSlope_total = dSlope_total + (*iIterator).dSlope_within; //should mean slope?
+        dSlope_total = dSlope_total + (*iIterator).dSlope_max_downslope; //should mean slope?
       }
     }
     else//by subbasin
@@ -343,12 +343,12 @@ namespace hexwatershed
     //can use openmp
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      if ((*iIterator).iFlag_outlet == 1)
-      {
-        (*iIterator).dTwi = -1;
-      }
-      else
-      {
+      //if ((*iIterator).iFlag_outlet == 1)
+      //{
+      //  (*iIterator).dTwi = -1;
+      //}
+      //else
+      //{
         a = float(((*iIterator).dAccumulation ) );
         b = (*iIterator).dSlope;
         c = tan(b);
@@ -362,7 +362,7 @@ namespace hexwatershed
           std::cout << a << b << c << std::endl;
         }
         (*iIterator).dTwi = dTwi;
-      }
+      //}
     }
 
     return error_code;
@@ -375,7 +375,6 @@ namespace hexwatershed
   int watershed::save_watershed_characteristics(std::string sFilename_in)
   {
     int error_code = 1;
-
     std::string sLine;
 
     std::ofstream ofs;
@@ -400,6 +399,53 @@ namespace hexwatershed
       ofs.close();
     }
 
+    return error_code;
+  }
+
+  int watershed::save_segment_characteristics(std::string sFilename_in)
+  {
+    int error_code = 1;
+    std::string sLine;
+    std::vector<segment>::iterator iIterator1;
+    std::ofstream ofs;
+    ofs.open(sFilename_in.c_str(), ios::out);
+    if (ofs.good())
+    {
+    for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
+      {
+        
+        sLine = "Segment: " + convert_integer_to_string((*iIterator1).iSegment) + "," 
+          + convert_integer_to_string((*iIterator1).iSegment_order)+ "," 
+           + convert_float_to_string((*iIterator1).dLength)+ ","
+           + convert_float_to_string((*iIterator1).dElevation_drop)+ ","
+           + convert_float_to_string((*iIterator1).dSlope_mean)+ ",";         
+        ofs << sLine << std::endl;
+      }
+    }
+    return error_code;
+  }
+
+  int watershed::save_subbasin_characteristics(std::string sFilename_in)
+  {
+    int error_code = 1;
+    std::string sLine;
+    std::vector<subbasin>::iterator iIterator1;
+    std::ofstream ofs;
+    ofs.open(sFilename_in.c_str(), ios::out);
+    if (ofs.good())
+    {
+      for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+      {
+        sLine = "Segment: " + convert_integer_to_string((*iIterator1).iSubbasin) + "," 
+          + convert_long_to_string((*iIterator1).lID_outlet)+ "," 
+          + convert_long_to_string((*iIterator1).nCell)+ "," 
+           + convert_float_to_string((*iIterator1).dArea)+ ","
+           + convert_float_to_string((*iIterator1).dSlope_mean)+ ","
+            + convert_float_to_string((*iIterator1).dArea_2_stream_ratio)+ ","
+           + convert_float_to_string((*iIterator1).dDrainage_density)+ ",";         
+        ofs << sLine << std::endl;
+      }
+    }
     return error_code;
   }
 } // namespace hexwatershed

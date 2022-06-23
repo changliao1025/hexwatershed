@@ -33,7 +33,7 @@ namespace hexwatershed
           //function
           int calculate_subbasin_characteristics(float dLength_stream_conceptual);
           int calculate_subbasin_total_area();
-
+          int calculate_subbasin_slope();
           int calculate_subbasin_drainage_density(float dLength_stream_conceptual);
       };
   } // namespace hexwatershed

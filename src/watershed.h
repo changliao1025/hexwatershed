@@ -63,20 +63,15 @@ namespace hexwatershed
 
           //the watershed characteristics for comparison
           int calculate_watershed_characteristics();
-
           int calculate_watershed_drainage_area();
-
           int calculate_watershed_total_stream_length();
-
           int calculate_watershed_longest_stream_length();
-
           int calculate_watershed_drainage_density();
-
           int calculate_watershed_average_slope();
-
           int calculate_topographic_wetness_index();
-
           int save_watershed_characteristics(std::string sFilename_in);
+          int save_segment_characteristics(std::string sFilename_in);
+          int save_subbasin_characteristics(std::string sFilename_in);
       };
   }
 

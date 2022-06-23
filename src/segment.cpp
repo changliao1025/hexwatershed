@@ -43,6 +43,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     calculate_stream_segment_length();
+    calculate_stream_segment_slope();
     return error_code;
   }
 
@@ -63,6 +64,30 @@ namespace hexwatershed
     }
 
     dLength = dLength_total;
+
+    return error_code;
+  }
+  
+  int segment::calculate_stream_segment_slope()
+  {
+    int error_code = 1;
+    float dElevation_diff;
+    float dElevation_min, dElevation_max;
+
+    if (nReach ==1)
+    {
+      //there is only reach
+      dSlope_mean = vReach_segment[0].dSlope_max_downslope;     
+       dElevation_drop = dSlope_mean * dLength;
+    }
+    else
+    {
+      dElevation_max =  vReach_segment.front().dElevation_mean;
+      dElevation_min = vReach_segment.back().dElevation_mean;      
+      dElevation_diff = dElevation_max - dElevation_min;
+      dElevation_drop = dElevation_diff;
+      dSlope_mean = dLength / dElevation_diff; 
+    }    
 
     return error_code;
   }

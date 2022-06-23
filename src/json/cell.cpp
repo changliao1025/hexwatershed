@@ -18,6 +18,9 @@ namespace jsonmodel
 	dLatitude_center_degree=-9999.0;
 	dLongitude_center_degree=-9999.0;
 	dArea=-9999.0;
+	dDistance_downslope=-9999.0;
+	dDistance_to_subbasin_outlet=-9999.0;
+	dDistance_to_subbasin_outlet=-9999.0;
 	nEdge=0;
 	nVertex=0;
 	nNeighbor=0;
@@ -138,6 +141,7 @@ namespace jsonmodel
 		}
 		const rapidjson::Value& rVertex = obj["aVertex"];
 		assert(rVertex.IsArray());
+
 		for (int i = 0; i < this->nVertex; i++)
 		{
 			vertex pVertex;  
@@ -148,8 +152,7 @@ namespace jsonmodel
 			pVertex.dElevation = this->dElevation_raw;
 			pVertex.update_location();
 			this->vVertex.push_back(pVertex);
-		}        
-
+		}    
 
 		return true;
 	}

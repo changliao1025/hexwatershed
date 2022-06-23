@@ -37,6 +37,8 @@ namespace hexwatershed
         int nSegment_upstream;
 
         float dLength; //the total length of the stream segment
+        float dSlope_mean; //the average slope 
+        float dElevation_drop; //elevation drop between headwater to outlet
 
         std::vector<int> vSegment_upstream;
 
@@ -50,5 +52,6 @@ namespace hexwatershed
 
         int calculate_stream_segment_characteristics();
         int calculate_stream_segment_length();
+        int calculate_stream_segment_slope();
     };
 } // namespace hexwatershed

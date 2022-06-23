@@ -59,7 +59,7 @@ namespace hexwatershed
     dSlope_max_upslope= 0.0;
     dSlope_min_upslope= 0.0;
     dSlope_mean_upslope= 0.0;
-    dSlope_mean_between= 0.0;
+    //dSlope_mean_between= 0.0;
      
     dz = -9999.0;
 

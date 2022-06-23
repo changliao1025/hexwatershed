@@ -290,7 +290,9 @@ namespace hexwatershed
     cCompset.sFilename_json = sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
     // others
 
-    sFilename_watershed_characteristics = sWorkspace_output_hexwatershed + slash + "watershed_characteristics" + sExtension_text;
+    cCompset.sFilename_watershed_characteristics = sWorkspace_output_hexwatershed + slash + "watershed_characteristics" + sExtension_text;
+    cCompset.sFilename_segment_characteristics = sWorkspace_output_hexwatershed + slash + "segment_characteristics" + sExtension_text;
+    cCompset.sFilename_subbasin_characteristics = sWorkspace_output_hexwatershed + slash + "subbasin_characteristics" + sExtension_text;
 
     sFilename_log = sWorkspace_output_hexwatershed + slash + "starlog" + sExtension_text;
     ofs_log.open(sFilename_log.c_str(), ios::out);

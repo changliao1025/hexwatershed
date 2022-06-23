@@ -39,6 +39,8 @@ namespace hexwatershed
     float dElevation_profile0;
     float dElevation_diff;
     float dDistance_neighbor;
+    float dDistance_downslope;
+    float dDistance_initial =0.0;
     float dSlope_initial = 0.0;
     float dSlope_downslope; // should be negative because downslope
     float dSlope_upslope;   // should be positive because upslope
@@ -73,6 +75,7 @@ namespace hexwatershed
           dElevation_mean = (vCell_active.at(lCellIndex_self)).dElevation_mean;
           dSlope_downslope = dSlope_initial;
           dSlope_upslope = dSlope_initial;
+          dDistance_downslope = dDistance_initial;
 
           // iterate through all neighbors
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
@@ -93,6 +96,7 @@ namespace hexwatershed
               {
                 // this maybe a dominant downslope
                 dSlope_downslope = dSlope_new;
+                dDistance_downslope = dDistance_neighbor;
                 lCellID_lowest = *iIterator_neighbor;
               }
             }
@@ -119,6 +123,7 @@ namespace hexwatershed
               std::cout << "Slope should be positive!" << std::endl;
             }
             (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_downslope;
+            (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_downslope;
           }
           else
           {
@@ -128,6 +133,8 @@ namespace hexwatershed
               std::cout << "Upslope should be positive!" << std::endl;
             }
             (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1 * dSlope_upslope;
+            //just use its own length
+            (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = (vCell_active.at(lCellIndex_self)).dLength_edge_mean;
           }
         }
       }
@@ -150,6 +157,7 @@ namespace hexwatershed
 
           dSlope_downslope = dSlope_initial;
           dSlope_upslope = dSlope_initial;
+          dDistance_downslope = dDistance_initial;
 
           iFlag_has_stream = 0;
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
@@ -185,6 +193,7 @@ namespace hexwatershed
                     dSlope_downslope = dSlope_new;
                     lCellID_lowest = *iIterator_neighbor;
                     lCellIndex_neighbor_lowest = lCellIndex_neighbor;
+                    dDistance_downslope = dDistance_neighbor;
                   }
                 }
                 else
@@ -215,6 +224,7 @@ namespace hexwatershed
                     // this maybe a dominant downslope
                     dSlope_upslope = dSlope_new;
                     lCellID_highest = *iIterator_neighbor;
+                    dDistance_downslope = dDistance_neighbor;
                     lCellIndex_neighbor_highest = lCellIndex_self;
                   }
                 }
@@ -241,6 +251,7 @@ namespace hexwatershed
                 {
                   dSlope_downslope = dSlope_new;
                   lCellID_lowest = *iIterator_neighbor;
+                  dDistance_downslope = dDistance_neighbor;
                   lCellIndex_neighbor_lowest = lCellIndex_neighbor;
                 }
               }
@@ -280,7 +291,7 @@ namespace hexwatershed
                   dDistance_neighbor = vNeighbor_distance.at(iNeighborIndex);
                   dSlope_new = dElevation_diff / dDistance_neighbor;
                   (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_new;
-
+                  (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_neighbor;
                   // elevation profile
                   if (iFlag_elevation_profile == 1)
                   {
@@ -321,6 +332,7 @@ namespace hexwatershed
                     std::cout << "Upslope should be negative!" << std::endl;
                   }
                   (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1.0 * dSlope_new; // reverse
+                  (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = (vCell_active.at(lCellIndex_self)).dLength_edge_mean;
 
                   if (iFlag_elevation_profile == 1)
                   {
@@ -356,6 +368,7 @@ namespace hexwatershed
                     std::cout << "Downslope should be positive!" << std::endl;
                   }
                   (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_downslope;
+                  (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_downslope;
 
                   // elevation profile
                   if (iFlag_elevation_profile == 1)
@@ -383,6 +396,7 @@ namespace hexwatershed
                   std::cout << "Upslope should be negative!" << std::endl;
                 }
                 (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1.0 * dSlope_upslope;
+                (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = (vCell_active.at(lCellIndex_self)).dLength_edge_mean;
 
                 if (iFlag_elevation_profile == 1) // beach
                 {
@@ -404,6 +418,7 @@ namespace hexwatershed
                   std::cout << "Downslope should be positive!" << std::endl;
                 }
                 (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_downslope;
+                (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_downslope;
 
                 // elevation profile
                 if (iFlag_elevation_profile == 1)
@@ -441,6 +456,7 @@ namespace hexwatershed
         dElevation_mean = (vCell_active.at(lCellIndex_self)).dElevation_mean;
         dSlope_downslope = dSlope_initial;
         dSlope_upslope = dSlope_initial;
+        dDistance_downslope = dDistance_initial;
         // iterate through all neighbors
         for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
         {
@@ -460,6 +476,7 @@ namespace hexwatershed
             {
               // this maybe a dominant downslope
               dSlope_downslope = dSlope_new;
+              dDistance_downslope = dDistance_neighbor;
               lCellID_lowest = *iIterator_neighbor;
             }
           }
@@ -480,12 +497,14 @@ namespace hexwatershed
         if (lCellID_lowest != -1)
         {
           (vCell_active.at(lCellIndex_self)).lCellID_downslope_dominant = lCellID_lowest;
+          
           // before define stream, we cannot establish upslope relationship
           if (dSlope_downslope < 0.0)
           {
             std::cout << "Slope should be positive!" << std::endl;
           }
           (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_downslope;
+          (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_downslope;
         }
         else
         {
@@ -496,6 +515,7 @@ namespace hexwatershed
             std::cout << "Upslope should be positive!" << std::endl;
           }
           (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = -1 * dSlope_upslope;
+          (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = (vCell_active.at(lCellIndex_self)).dLength_edge_mean;
         }
       }
     }

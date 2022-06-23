@@ -45,6 +45,23 @@ namespace hexwatershed
     return error_code;
   }
 
+int subbasin::calculate_subbasin_slope()
+{
+   int error_code = 1;
+   int iOption = 1;
+   float dSlope_total = 0.0;
+    std::vector<hexagon>::iterator iIterator;
+    if (iOption == 1)//by cell
+    {
+      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+      {
+        dSlope_total = dSlope_total + (*iIterator).dSlope_max_downslope; //should mean slope?
+      }
+    }
+    dSlope = dSlope_total / nCell;
+    dSlope_mean = dSlope;
+   return error_code;
+  }
   int subbasin::calculate_subbasin_drainage_density(float dLength_stream_conceptual)
   {
     int error_code = 1;

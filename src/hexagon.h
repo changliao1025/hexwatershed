@@ -91,7 +91,7 @@ namespace hexwatershed
     float dSlope_min_upslope;
     float dSlope_mean_upslope;
 
-    float dSlope_mean_between;
+    //float dSlope_mean_between;
     float dSlope_elevation_profile0;
 
     float dLength_edge_mean;          //the edge/face length of hexagon (unit:m)
@@ -112,6 +112,11 @@ namespace hexwatershed
     float dTwi;                  //terrain wetness index
     float dLength_stream_conceptual;//conceptual length based on mesh
     float dLength_stream_burned; //the provided flowline length
+
+    float dDistance_to_downslope;
+    float dDistance_to_subbasin_outlet;
+    float dDistance_to_watershed_outlet; 
+    
 
     std::vector<long> vNeighbor;  //list of neighbor local id
     std::vector<float> vNeighbor_distance;  //list of neighbor local id

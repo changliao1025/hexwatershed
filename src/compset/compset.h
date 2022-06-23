@@ -132,6 +132,8 @@ namespace hexwatershed
     std::string sDate;
 
     std::string sFilename_watershed_characteristics;
+    std::string sFilename_segment_characteristics;
+    std::string sFilename_subbasin_characteristics;
 
 
 
@@ -185,21 +187,12 @@ namespace hexwatershed
     int compset_define_watershed_boundary ();
     int compset_define_stream_confluence ();
     int compset_define_stream_segment ();
-
-
     int compset_tag_confluence_upstream (long lID_confluence);
     int compset_define_subbasin ();
     int compset_calculate_watershed_characteristics ();
     int compset_save_watershed_characteristics ();
     int compset_save_variable (eVariable eV_in);
-    int compset_save_polyline_vector (eVariable eV_in,
-                                      std::string sFieldname_in,
-                                      std::string sFilename_in,
-                                      std::string sLayername_in);
-    int compset_save_polygon_vector (eVariable eV_in,
-                                     std::string sFieldname_in,
-                                     std::string sFilename_in,
-                                     std::string sLayer_name_in);
+
     int compset_save_vtk (std::string sFilename_in);
     int compset_save_json(std::string sFilename_in);
     std::vector <hexagon> compset_obtain_boundary (std::vector <hexagon> vCell_in);

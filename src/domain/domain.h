@@ -98,15 +98,12 @@ namespace hexwatershed
 
     //vtk support
     std::string sFilename_vtk;
-    std::string sFilename_vtk_debug;
-    
-  
+    std::string sFilename_vtk_debug;      
 
     //others
     std::string sDate_default;
     std::string sDate;
-
-    std::string sFilename_watershed_characteristics;
+    
     std::string sFilename_mesh;
 
     std::string sExtension_json;
