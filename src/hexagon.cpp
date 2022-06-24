@@ -66,6 +66,11 @@ namespace hexwatershed
     dTwi = 0.0;
     dLength_stream_conceptual = 0.0;
     dLength_stream_burned=0.0;
+
+    dDistance_to_downslope= 0.0;
+    dDistance_to_subbasin_outlet= 0.0;
+    dDistance_to_watershed_outlet= 0.0; 
+    dLength_edge_mean=0.0;
   }
 
   hexagon::~hexagon()

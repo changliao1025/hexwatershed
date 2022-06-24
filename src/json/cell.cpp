@@ -20,7 +20,7 @@ namespace jsonmodel
 	dArea=-9999.0;
 	dDistance_to_downslope=-9999.0;
 	dDistance_to_subbasin_outlet=-9999.0;
-	dDistance_to_subbasin_outlet=-9999.0;
+	dDistance_to_watershed_outlet=-9999.0;
 	nEdge=0;
 	nVertex=0;
 	nNeighbor=0;
@@ -188,7 +188,12 @@ namespace jsonmodel
 		//writer->Double(dSlope_within);
 		writer->String("DrainageArea");
 		writer->Double(dAccumulation);
-		
+		writer->String("dDistance_to_downslope");
+		writer->Double(dDistance_to_downslope);
+		writer->String("dDistance_to_subbasin_outlet");
+		writer->Double(dDistance_to_subbasin_outlet);
+		writer->String("dDistance_to_watershed_outlet");
+		writer->Double(dDistance_to_watershed_outlet);
 		//vertex information		
 		writer->Key("vVertex");
 		writer->StartArray();		

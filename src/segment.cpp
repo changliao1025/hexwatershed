@@ -86,7 +86,7 @@ namespace hexwatershed
       dElevation_min = vReach_segment.back().dElevation_mean;      
       dElevation_diff = dElevation_max - dElevation_min;
       dElevation_drop = dElevation_diff;
-      dSlope_mean = dLength / dElevation_diff; 
+      dSlope_mean =  dElevation_diff / dLength; 
     }    
 
     return error_code;

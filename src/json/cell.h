@@ -21,7 +21,6 @@ namespace jsonmodel
     std::vector<long> aNeighbor;
     std::vector<long> aNeighbor_land;
     std::vector<long> aNeighbor_ocean;
-
     std::vector<float> aNeighbor_distance;  //list of neighbor local id
     std::vector<vertex> vVertex;
     

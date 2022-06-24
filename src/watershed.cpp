@@ -350,7 +350,7 @@ namespace hexwatershed
       //else
       //{
         a = float(((*iIterator).dAccumulation ) );
-        b = (*iIterator).dSlope;
+        b = (*iIterator).dSlope_max_downslope;
         c = tan(b);
         if (a == 0 || c == 0)
         {
@@ -420,16 +420,20 @@ namespace hexwatershed
     ofs.open(sFilename_in.c_str(), ios::out);
     if (ofs.good())
     {
+
+      sLine = "Segment ID, stream order, total length, elevation drop, average slope" ;         
+        ofs << sLine << std::endl;
     for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
       {
         
-        sLine = "Segment: " + convert_integer_to_string((*iIterator1).iSegment) + "," 
+        sLine =  convert_integer_to_string((*iIterator1).iSegment) + "," 
           + convert_integer_to_string((*iIterator1).iSegment_order)+ "," 
            + convert_float_to_string((*iIterator1).dLength)+ ","
            + convert_float_to_string((*iIterator1).dElevation_drop)+ ","
-           + convert_float_to_string((*iIterator1).dSlope_mean)+ ",";         
+           + convert_float_to_string((*iIterator1).dSlope_mean);         
         ofs << sLine << std::endl;
       }
+      ofs.close();
     }
     return error_code;
   }
@@ -443,9 +447,11 @@ namespace hexwatershed
     ofs.open(sFilename_in.c_str(), ios::out);
     if (ofs.good())
     {
+       sLine = "Subbasin ID, Outlet ID, number of cell, total area, average slope, area_to_length, drainage density" ;         
+        ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = "Segment: " + convert_integer_to_string((*iIterator1).iSubbasin) + "," 
+        sLine = convert_integer_to_string((*iIterator1).iSubbasin) + "," 
           + convert_long_to_string((*iIterator1).lID_outlet)+ "," 
           + convert_long_to_string((*iIterator1).nCell)+ "," 
            + convert_float_to_string((*iIterator1).dArea)+ ","
@@ -454,6 +460,7 @@ namespace hexwatershed
            + convert_float_to_string((*iIterator1).dDrainage_density)+ ",";         
         ofs << sLine << std::endl;
       }
+      ofs.close();
     }
     return error_code;
   }

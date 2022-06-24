@@ -31,7 +31,10 @@ namespace hexwatershed
     std::vector<vertex>::iterator iIterator2;
     
     vVertex_active.clear();
+    vCell_active.clear();
     lVertexIndex =0;
+    //vCell_active.reserve(ncell); 
+    
     for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); ++iIterator1)
       {
         hexagon pHexagon;
@@ -39,8 +42,7 @@ namespace hexwatershed
         pHexagon.lCellID = (*iIterator1).lCellID;
         pHexagon.dElevation_mean = (*iIterator1).dElevation_mean;
         pHexagon.dElevation_raw = (*iIterator1).dElevation_raw;
-        pHexagon.dElevation_profile0 = (*iIterator1).dElevation_profile0;
-     
+        pHexagon.dElevation_profile0 = (*iIterator1).dElevation_profile0;     
         pHexagon.dLength_stream_burned = (*iIterator1).dLength_flowline;
         pHexagon.dArea = (*iIterator1).dArea;
         pHexagon.dAccumulation = pHexagon.dArea;
@@ -58,12 +60,10 @@ namespace hexwatershed
         //pHexagon.nNeighbor_ocean = (*iIterator1).nNeighbor_ocean;
         pHexagon.nEdge = (*iIterator1).nEdge;
         pHexagon.nVertex = (*iIterator1).nVertex;
-
+        pHexagon.vVertex.clear();
         for (int i=0; i< pHexagon.nVertex; i++)
         {
-          vertex pVertex = (*iIterator1).vVertex.at(i);
-          //pVertex.dLongitude_degree = (*iIterator1).aLongitude_vertex.at(i);
-          //pVertex.dLatitude_degree = (*iIterator1).aLatitude_vertex.at(i);
+          vertex pVertex = (*iIterator1).vVertex.at(i);        
           pVertex.dElevation = pHexagon.dElevation_mean; //this needs to be updated          
           iIterator2 = std::find(vVertex_active.begin(), vVertex_active.end(), pVertex);
             if (iIterator2 != vVertex_active.end())
@@ -77,7 +77,6 @@ namespace hexwatershed
               lVertexIndex = lVertexIndex + 1;
               vVertex_active.push_back(pVertex);
             }      
-
           pHexagon.vVertex.push_back(pVertex);
 
         }

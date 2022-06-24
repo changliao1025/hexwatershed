@@ -191,7 +191,7 @@ namespace hexwatershed
     int compset_define_subbasin ();
     int compset_calculate_watershed_characteristics ();
     int compset_save_watershed_characteristics ();
-    int compset_save_variable (eVariable eV_in);
+    //int compset_save_variable (eVariable eV_in);
 
     int compset_save_vtk (std::string sFilename_in);
     int compset_save_json(std::string sFilename_in);
