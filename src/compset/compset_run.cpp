@@ -236,6 +236,7 @@ namespace hexwatershed
     long lCellIndex_outlet;
     long lCellID_downslope;
     long lCellID_outlet;
+    float dDistance_to_watershed_outlet;
     std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
@@ -264,7 +265,8 @@ namespace hexwatershed
         //#pragma omp parallel for private(lCellIndex_self, iFound_outlet, lIndex_downslope, lCellIndex_current)
         //can also use
         for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-          {            
+          {      
+            dDistance_to_watershed_outlet =  (vCell_active.at(lCellIndex_self)).dDistance_to_downslope;     
             iFound_outlet = 0;
             lCellIndex_current = lCellIndex_self;
             while (iFound_outlet != 1)
@@ -274,12 +276,15 @@ namespace hexwatershed
                   {
                     iFound_outlet = 1;
                     (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
+                    (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
                     //add this cell to the watershed
                     cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
+
                   }
                 else
                   {
                     lCellIndex_current =  compset_find_index_by_cellid(lCellID_downslope);
+                    dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_downslope;   
                     if (lCellIndex_current >= 0)
                       {
                         iFound_outlet=0;
@@ -322,7 +327,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
-
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
             //we only consider cells within the watershed
@@ -386,7 +390,6 @@ namespace hexwatershed
   {
     int error_code = 1;
     long lCellIndex_outlet ; //this is a local variable for each subbasin
-
     int iFlag_confluence ;
     int iUpstream;
     long lCellIndex_current;
@@ -395,7 +398,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
-
         lCellIndex_outlet =  compset_find_index_by_cellid(cWatershed.lCellID_outlet);
         iFlag_confluence = vCell_active.at(lCellIndex_outlet).iFlag_confluence;
         lCellIndex_current = vCell_active.at(lCellIndex_outlet).lCellIndex;
@@ -404,11 +406,9 @@ namespace hexwatershed
         vCell_active.at(lCellIndex_outlet).iFlag_last_reach = 1;
         iSegment_current = nSegment;
         vCell_active.at(lCellIndex_outlet).iSegment = iSegment_current;
-
         vReach_segment.push_back(vCell_active.at(lCellIndex_outlet));
         if (iFlag_confluence == 1) //the outlet is actually a confluence
           {
-
             cSegment.vReach_segment = vReach_segment;
             cSegment.nReach = 1;
             cSegment.cReach_start = vReach_segment.front();
@@ -607,7 +607,6 @@ namespace hexwatershed
                 cSegment.iSegment_downstream = iSegment_confluence;
                 cWatershed.vSegment.push_back(cSegment);
                 iSegment_current = iSegment_current - 1;
-
                 if (iFlag_first_reach != 1)
                   {
                     compset_tag_confluence_upstream(lCellIndex_upstream);
@@ -645,7 +644,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
-
         //the whole watershed first
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
@@ -671,10 +669,8 @@ namespace hexwatershed
             for (iIterator_upstream = vUpstream.begin(); iIterator_upstream != vUpstream.end(); iIterator_upstream++)
               {
                 //use the watershed method again here
-
                 lCellID_outlet = *iIterator_upstream;
                 lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
-
                 iSubbasin = (vCell_active.at(lCellIndex_outlet)).iSegment;
                 (vCell_active.at(lCellIndex_outlet)).iSubbasin = iSubbasin;
 

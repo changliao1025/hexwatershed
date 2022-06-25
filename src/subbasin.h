@@ -18,7 +18,7 @@ namespace hexwatershed
 
           int iSubbasin; //each subbasin should have the same index with its segment
           long nCell;
-          long lID_outlet; //the index of the subbasin outlet
+          long lCellID_outlet; //the index of the subbasin outlet
           float dArea;
           float dSlope;
           float dSlope_mean;
@@ -27,8 +27,9 @@ namespace hexwatershed
           float dArea_2_stream_ratio; //the drainage density: https://en.wikipedia.org/wiki/Drainage_density
           float dLength_2_area_ratio; //the drainage density: https://en.wikipedia.org/wiki/Drainage_density
           float dDrainage_density;
-
+          hexagon cOutlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
           std::vector <hexagon> vCell;
+          
 
           //function
           int calculate_subbasin_characteristics(float dLength_stream_conceptual);

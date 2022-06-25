@@ -132,6 +132,21 @@ namespace hexwatershed
     return error_code;
   }
 
+  int watershed::watershed_update_attribute()
+  {
+      int error_code = 1;
+
+      for (int iSegment =1; i< nSegment; i ++)
+      {
+          cSegment = vSegment.at(iSegment-1);
+          cOutlet = cSegment.cReach_end;
+          vSubbasin.at(iSegment-1).cCell_outlet = cOutlet;
+          vSubbasin.at(iSegment-1).lCellID_outlet = cOutlet.lCellID;          
+      }
+
+    return error_code;
+  }
+
   /**
    * calculate the watershed characteristics
    * @return
@@ -142,8 +157,7 @@ namespace hexwatershed
     float dLength_stream_conceptual;
 
     std::vector<segment>::iterator iIterator0;
-    std::vector<subbasin>::iterator iIterator1;
-    
+    std::vector<subbasin>::iterator iIterator1;    
 
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
     {
@@ -452,7 +466,7 @@ namespace hexwatershed
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
         sLine = convert_integer_to_string((*iIterator1).iSubbasin) + "," 
-          + convert_long_to_string((*iIterator1).lID_outlet)+ "," 
+          + convert_long_to_string((*iIterator1).lCellID_outlet)+ "," 
           + convert_long_to_string((*iIterator1).nCell)+ "," 
            + convert_float_to_string((*iIterator1).dArea)+ ","
            + convert_float_to_string((*iIterator1).dSlope_mean)+ ","
