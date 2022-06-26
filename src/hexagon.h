@@ -62,6 +62,7 @@ namespace hexwatershed
     int iSegment;       //the stream segment index
     int iSegment_order; //the stream order of segment, there are different type of definition
     int iSubbasin;      //the subbasin index, should be the same with the segment
+    int iWatershed;
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge
     int nNeighbor_land;

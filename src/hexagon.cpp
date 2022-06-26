@@ -40,6 +40,7 @@ namespace hexwatershed
     dAccumulation = 0.0;
     iSubbasin = -1;
     iSegment = -1;
+    iWatershed=-1;
     iSegment_order = -1;
     iSegment_downstream = -1;
     nUpslope = 0;

@@ -33,7 +33,7 @@ namespace hexwatershed
           watershed();
 
           ~watershed();
-
+            int iWatershed; //id
           float dArea;
           float dSlope;
           float dSlope_mean;

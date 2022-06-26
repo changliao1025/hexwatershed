@@ -154,6 +154,8 @@ namespace hexwatershed
       {
         if (iFlag_flowline == 1)
         {
+          if (iFlag_multiple_outlet==0)
+          {
           //use outlet id as largest
           lCellID_outlet =  aBasin.at(0).lCellID_outlet;  
           lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
@@ -174,6 +176,11 @@ namespace hexwatershed
                   (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual =  (vCell_active.at(lCellIndex_self)).dResolution_effective;
                 }
             }
+          }
+          else //multiple outlets
+          {
+
+          }
         }
         else
         {
@@ -245,6 +252,11 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
+
+        if (iFlag_flowline == 1)
+        {
+          if (iFlag_multiple_outlet==0)
+          {
         //find the max accumulation outlet
 
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
@@ -257,6 +269,10 @@ namespace hexwatershed
 
 
         lCellID_outlet = vCell_active.at(lCellIndex_outlet).lCellID;
+
+        //only in simple outlet case
+        watershed cWatershed;
+        cWatershed.iWatershed=1;
         cWatershed.lCellID_outlet = lCellID_outlet;
         //we may check the mesh id as well
 
@@ -278,7 +294,9 @@ namespace hexwatershed
                     (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
                     (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
                     //add this cell to the watershed
-                    cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
+                    //after the update, we will add later
+                    //cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
+                    (vCell_active.at(lCellIndex_self)).iWatershed=1;//single watershed
 
                   }
                 else
@@ -300,7 +318,17 @@ namespace hexwatershed
           }
         //add the outout as well, this is important when there are two upstream at the outlet
         (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;
-        cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
+        //cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
+        vCell_active.at(lCellIndex_outlet).iWatershed=1;
+
+        vWatershed.push_back(cWatershed);
+
+          }
+          else
+          {
+
+          }
+        }
       }
     else
       {

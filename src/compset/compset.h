@@ -144,7 +144,8 @@ namespace hexwatershed
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
 
 
-    watershed cWatershed;
+    //watershed cWatershed;
+    std::vector <watershed> vWatershed;
 
     std::vector<float> vElevation; //vector to store the DEM raster data
 

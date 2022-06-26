@@ -15,6 +15,7 @@ namespace hexwatershed
 {
   watershed::watershed()
   {
+    iWatershed=-1;
   }
 
   watershed::~watershed()

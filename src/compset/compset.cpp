@@ -75,7 +75,7 @@ namespace hexwatershed
             ofs_log << sLog << std::endl;
             ofs_log.flush();
 
-            //starting from here, use the watershed boundary
+            //starting from here, we can only define watershed boundary for given outlet
             iFlag_debug = 0;
             compset_define_watershed_boundary();
             sLog = "Finished defining watershed boundary";
