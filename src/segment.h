@@ -28,6 +28,7 @@ namespace hexwatershed
 
         int nReach;
         int iSegment;
+        int iWatershed; //which watershed it belongs to
 
         int iSegment_downstream;
         int iSegment_order;

@@ -75,6 +75,7 @@ namespace hexwatershed
     int nSegment;            //the total number of stream segment
     int nConfluence;         //the total number of stream confluence
     int iSegment_current;    //the index of stream segment in current time step
+    int iWatershed_current;
 
        
     std::string sWorkspace_input;
@@ -188,7 +189,7 @@ namespace hexwatershed
     int compset_define_watershed_boundary ();
     int compset_define_stream_confluence ();
     int compset_define_stream_segment ();
-    int compset_tag_confluence_upstream (long lCellID_confluence);
+    int compset_tag_confluence_upstream (int iWatershed, long lCellID_confluence);
     int compset_define_subbasin ();
     int compset_calculate_watershed_characteristics ();
     int compset_save_watershed_characteristics ();

@@ -137,12 +137,10 @@ namespace hexwatershed
   {
       int error_code = 1;
 
-      for (int iSegment =1; i< nSegment; i ++)
-      {
-          cSegment = vSegment.at(iSegment-1);
-          cOutlet = cSegment.cReach_end;
-          vSubbasin.at(iSegment-1).cCell_outlet = cOutlet;
-          vSubbasin.at(iSegment-1).lCellID_outlet = cOutlet.lCellID;          
+      for (int iSegment =1; iSegment< nSegment; iSegment ++)
+      {        
+          vSubbasin.at(iSegment-1).cCell_outlet = vSegment.at(iSegment-1).cReach_end;
+          vSubbasin.at(iSegment-1).lCellID_outlet = vSegment.at(iSegment-1).cReach_end.lCellID;          
       }
 
     return error_code;

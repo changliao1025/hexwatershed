@@ -27,7 +27,7 @@ namespace hexwatershed
           float dArea_2_stream_ratio; //the drainage density: https://en.wikipedia.org/wiki/Drainage_density
           float dLength_2_area_ratio; //the drainage density: https://en.wikipedia.org/wiki/Drainage_density
           float dDrainage_density;
-          hexagon cOutlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
+          hexagon cCell_outlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
           std::vector <hexagon> vCell;
           
 
