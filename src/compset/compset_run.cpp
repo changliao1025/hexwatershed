@@ -250,16 +250,7 @@ namespace hexwatershed
       if (iFlag_flowline == 1)
       {
         if (iFlag_multiple_outlet == 0)
-        {
-          // find the max accumulation outlet
-          // for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-          //{
-          //  vAccumulation.push_back((*iIterator_self).dAccumulation);
-          //}
-          // iterator_float = max_element(std::begin(vAccumulation), std::end(vAccumulation)); // c++11
-          // lCellIndex_outlet = std::distance(vAccumulation.begin(), iterator_float);
-          // vAccumulation.clear();
-          // lCellID_outlet = vCell_active.at(lCellIndex_outlet).lCellID;
+        {          
           lCellID_outlet = aBasin.at(0).lCellID_outlet;
           lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
           // only in simple outlet case
