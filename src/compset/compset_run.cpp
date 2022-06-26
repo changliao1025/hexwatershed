@@ -249,6 +249,7 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator_self;
 
     int iFlag_global = cParameter.iFlag_global;
+      int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
@@ -352,9 +353,14 @@ namespace hexwatershed
     long lCellIndex_downstream;
     std::vector<hexagon>::iterator iIterator_self;
     int iFlag_global = cParameter.iFlag_global;
+     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
+ if (iFlag_flowline == 1)
+        {
+          if (iFlag_multiple_outlet==0)
+          {
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
             //we only consider cells within the watershed
@@ -398,7 +404,12 @@ namespace hexwatershed
           }
 
         //sort cannot be used directly here
-        cWatershed.nSegment = nSegment;
+        //cWatershed.nSegment = nSegment;
+
+          vWatershed.at(0).nSegment = nSegment;
+
+          }
+        }
       }
     else
       {
@@ -421,12 +432,19 @@ namespace hexwatershed
     int iFlag_confluence ;
     int iUpstream;
     long lCellIndex_current;
+     long lCellID_current;
     long lCellID_upstream;
     int iFlag_global = cParameter.iFlag_global;
+     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
-        lCellIndex_outlet =  compset_find_index_by_cellid(cWatershed.lCellID_outlet);
+        if (iFlag_flowline == 1)
+        {
+          if (iFlag_multiple_outlet==0)
+          {
+
+        lCellIndex_outlet =  compset_find_index_by_cellid(vWatershed.at(0).lCellID_outlet);
         iFlag_confluence = vCell_active.at(lCellIndex_outlet).iFlag_confluence;
         lCellIndex_current = vCell_active.at(lCellIndex_outlet).lCellIndex;
         segment cSegment;
@@ -445,7 +463,7 @@ namespace hexwatershed
             cSegment.nSegment_upstream = cSegment.cReach_start.nUpstream;
             cSegment.iFlag_has_upstream = 1;
             cSegment.iFlag_has_downstream = 0;
-            cWatershed.vSegment.push_back(cSegment);
+            vWatershed.at(0).vSegment.push_back(cSegment);
           }
         else
           {
@@ -482,17 +500,22 @@ namespace hexwatershed
               {
                 cSegment.iFlag_headwater = 1;
               }
-            cWatershed.vSegment.push_back(cSegment);
+            vWatershed.at(0).vSegment.push_back(cSegment);
           }
 
         //std::cout << iSegment_current << std::endl;
         iSegment_current = iSegment_current - 1;
 
-        compset_tag_confluence_upstream(lCellIndex_current);
+        //compset_tag_confluence_upstream(lCellIndex_current);
+        compset_tag_confluence_upstream(lCellID_confluence);
+        
 
         //in fact the segment is ordered by default already, just reservely
 
-        std::sort(cWatershed.vSegment.begin(), cWatershed.vSegment.end());
+        std::sort(vWatershed.at(0).vSegment.begin(), vWatershed.at(0).vSegment.end());
+          }
+
+        }
       }
 
     return error_code;
@@ -501,10 +524,10 @@ namespace hexwatershed
 
   /**
    * find the confluence recursively from existing confluence point.
-   * @param lCellIndex_confluence
+   * @param lCellID_confluence
    * @return
    */
-  int compset::compset_tag_confluence_upstream(long lCellIndex_confluence)
+  int compset::compset_tag_confluence_upstream(long lCellID_confluence)
   {
     int error_code = 1;
 
@@ -520,10 +543,15 @@ namespace hexwatershed
     std::vector<hexagon> vReach_segment;
 
     int iFlag_global = cParameter.iFlag_global;
+       int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    long lCellIndex_confluence = compset_find_index_by_cellid(lCellID_confluence);
     if (iFlag_global != 1)
       {
-
+if (iFlag_flowline == 1)
+        {
+          if (iFlag_multiple_outlet==0)
+          {
         vUpstream = (vCell_active.at(lCellIndex_confluence)).vUpstream;
         iSegment_confluence = (vCell_active.at(lCellIndex_confluence)).iSegment;
 
@@ -568,10 +596,11 @@ namespace hexwatershed
                 cSegment.iFlag_headwater = 0;
                 cSegment.iSegment_downstream = iSegment_confluence;
                 //add the segment to the watershed object
-                cWatershed.vSegment.push_back(cSegment);
+                vWatershed.at(0).vSegment.push_back(cSegment);
                 //update segment index
                 iSegment_current = iSegment_current - 1;
-                compset_tag_confluence_upstream(lCellIndex_upstream);
+                //compset_tag_confluence_upstream(lCellIndex_upstream);
+                compset_tag_confluence_upstream(lCellID_upstream);
               }
             else
               {
@@ -633,14 +662,17 @@ namespace hexwatershed
                 cSegment.iSegment = iSegment_current;
                 cSegment.iFlag_has_downstream = 1;
                 cSegment.iSegment_downstream = iSegment_confluence;
-                cWatershed.vSegment.push_back(cSegment);
+                vWatershed.at(0).vSegment.push_back(cSegment);
                 iSegment_current = iSegment_current - 1;
                 if (iFlag_first_reach != 1)
                   {
-                    compset_tag_confluence_upstream(lCellIndex_upstream);
+                    //compset_tag_confluence_upstream(lCellIndex_upstream);
+                    compset_tag_confluence_upstream(lCellID_upstream);
                   }
               }
           }
+      }
+        }
       }
 
     return error_code;
@@ -669,9 +701,14 @@ namespace hexwatershed
     std::vector<long>::iterator iIterator_upstream;
     std::vector<hexagon>::iterator iIterator_current;
     int iFlag_global = cParameter.iFlag_global;
+     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
+        if (iFlag_flowline == 1)
+        {
+          if (iFlag_multiple_outlet==0)
+          {
         //the whole watershed first
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
@@ -748,19 +785,19 @@ namespace hexwatershed
           }
 
         //assign watershed subbasin cell
-        cWatershed.vSubbasin.clear();
+        vWatershed.at(0).vSubbasin.clear();
         for (int iSubbasin = 1; iSubbasin <= nSegment; iSubbasin++)
           {
             subbasin cSubbasin;
             cSubbasin.iSubbasin = iSubbasin;
-            cWatershed.vSubbasin.push_back(cSubbasin);
+            vWatershed.at(0).vSubbasin.push_back(cSubbasin);
           }
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
             int iSubbasin = (*iIterator_self).iSubbasin;
             if (iSubbasin >= 1 && iSubbasin <= nSegment)
               {
-                (cWatershed.vSubbasin[iSubbasin - 1]).vCell.push_back(*iIterator_self);
+                (vWatershed.at(0).vSubbasin[iSubbasin - 1]).vCell.push_back(*iIterator_self);
               }
             else
               {
@@ -770,6 +807,8 @@ namespace hexwatershed
                   }
               }
           }
+          }
+        }
       }
     return error_code;
   }
@@ -784,10 +823,11 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
+     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
       {
-        cWatershed.calculate_watershed_characteristics();
+        vWatershed.at(0).calculate_watershed_characteristics();
       }
     else
       {
