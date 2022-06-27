@@ -273,10 +273,7 @@ namespace hexwatershed
               {
                 iFound_outlet = 1;
                 (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
-                (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
-                // add this cell to the watershed
-                // after the update, we will add later
-                // cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
+                (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;                              
                 (vCell_active.at(lCellIndex_self)).iWatershed = 1; // single watershed
               }
               else
@@ -297,8 +294,7 @@ namespace hexwatershed
             }
           }
           // add the outout as well, this is important when there are two upstream at the outlet
-          (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;
-          // cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
+          (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;      
           vCell_active.at(lCellIndex_outlet).iWatershed = 1;
           vWatershed.push_back(cWatershed);
         }
@@ -338,9 +334,7 @@ namespace hexwatershed
                   }
                   else
                   {
-                    iFound_outlet = 1;
-                    // a cell not going in this outlet may be going to a different one
-                    //(vCell_active.at(lCellIndex_self)).iFlag_watershed = 0;
+                    iFound_outlet = 1;// a cell not going in this outlet may be going to a different one          
                   }
                 }
               }
@@ -370,6 +364,8 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iCount = 0;
+    int nSegment=0;
+    int nConfluence=0;
     long lCellID_downstream;
     long lCellIndex_downstream;
     std::vector<hexagon>::iterator iIterator_self;
@@ -385,7 +381,7 @@ namespace hexwatershed
           for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
             // we only consider cells within the watershed
-            if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).iFlag_watershed == 1)
+            if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).iFlag_watershed == 1  && (*iIterator_self).iWatershed == 1)
             {
               lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
               lCellIndex_downstream = compset_find_index_by_cellid(lCellID_downstream);
@@ -394,8 +390,7 @@ namespace hexwatershed
                 (vCell_active.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
               }
               else
-              {
-                // this might be the outlet
+              {           
                 // std::cout << (*iIterator_self).lCellIndex << ", outlet is: " << lCellIndex_downstream << std::endl;
               }
             }
@@ -426,10 +421,14 @@ namespace hexwatershed
           // sort cannot be used directly here
           vWatershed.at(0).nSegment = nSegment;
           vWatershed.at(0).nConfluence = nConfluence;
+          //only one single watershed        
+          nSegment_total = nSegment;
+          nConfluence_total = nConfluence;
         }
         else
         {
-          // todo
+          // todo, all confluences are stored together
+          
         }
       }
     }
@@ -449,6 +448,8 @@ namespace hexwatershed
     int error_code = 1;
     long lCellIndex_outlet; // this is a local variable for each subbasin
     int iFlag_confluence;
+    int nSegment;
+    int nConfluence;
     int iUpstream;
     int iWatershed;
     long lCellIndex_current;
@@ -464,13 +465,14 @@ namespace hexwatershed
         if (iFlag_multiple_outlet == 0)
         {
           iWatershed = 1;
+          nSegment = vWatershed.at(iWatershed - 1).nSegment;
           lCellIndex_outlet = compset_find_index_by_cellid(vWatershed.at(iWatershed - 1).lCellID_outlet);
           iFlag_confluence = vCell_active.at(lCellIndex_outlet).iFlag_confluence;
           lCellIndex_current = vCell_active.at(lCellIndex_outlet).lCellIndex;
           segment cSegment;
           std::vector<hexagon> vReach_segment;
           vCell_active.at(lCellIndex_outlet).iFlag_last_reach = 1;
-          iSegment_current = vWatershed.at(0).nSegment;
+          iSegment_current = nSegment ;
           vCell_active.at(lCellIndex_outlet).iSegment = iSegment_current;
           vReach_segment.push_back(vCell_active.at(lCellIndex_outlet));
           if (iFlag_confluence == 1) // the outlet is actually a confluence
@@ -523,12 +525,12 @@ namespace hexwatershed
             {
               cSegment.iFlag_headwater = 1;
             }
-            vWatershed.at(0).vSegment.push_back(cSegment);
+            vWatershed.at(iWatershed - 1).vSegment.push_back(cSegment);
           }
           iSegment_current = iSegment_current - 1;
           compset_tag_confluence_upstream(iWatershed, lCellID_current);
           // in fact the segment is ordered by default already, just reservely
-          std::sort(vWatershed.at(0).vSegment.begin(), vWatershed.at(iWatershed - 1).vSegment.end());
+          std::sort(vWatershed.at(iWatershed - 1).vSegment.begin(), vWatershed.at(iWatershed - 1).vSegment.end());
         }
         else
         {
@@ -693,6 +695,7 @@ namespace hexwatershed
     int iFound_outlet;
     int iSubbasin;
     int iWatershed;
+    int nSegment;
     long lCellIndex_self;
     long lCellIndex_current;
     long lCellID_outlet;
@@ -702,7 +705,7 @@ namespace hexwatershed
     long lCellIndex_accumulation;
     std::vector<long> vAccumulation;
     std::vector<long>::iterator iterator_accumulation;
-    std::vector<hexagon> vConfluence_copy(vConfluence);
+    std::vector<hexagon> vConfluence_copy; //(vConfluence);
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<long>::iterator iIterator_upstream;
     std::vector<hexagon>::iterator iIterator_current;
@@ -716,6 +719,7 @@ namespace hexwatershed
         if (iFlag_multiple_outlet == 0)
         {
           iWatershed = 1;
+         nSegment = vWatershed.at(iWatershed - 1).nSegment;
           // the whole watershed first
           for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
           {
@@ -725,9 +729,15 @@ namespace hexwatershed
             }
           }
 
+          vConfluence_copy.clear();
+
           for (iIterator_self = vConfluence.begin(); iIterator_self != vConfluence.end(); iIterator_self++)
           {
-            vAccumulation.push_back((*iIterator_self).dAccumulation);
+            if( (*iIterator_self).iWatershed == 1 )
+            {
+              vAccumulation.push_back((*iIterator_self).dAccumulation);
+              vConfluence_copy.push_back((*iIterator_self));
+            }
           }
 
           // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
@@ -735,9 +745,7 @@ namespace hexwatershed
           {
             iterator_accumulation = max_element(std::begin(vAccumulation), std::end(vAccumulation));
             lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
-
             std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
-
             for (iIterator_upstream = vUpstream.begin(); iIterator_upstream != vUpstream.end(); iIterator_upstream++)
             {
               // use the watershed method again here
@@ -745,7 +753,6 @@ namespace hexwatershed
               lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
               iSubbasin = (vCell_active.at(lCellIndex_outlet)).iSegment;
               (vCell_active.at(lCellIndex_outlet)).iSubbasin = iSubbasin;
-
               for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
               {
                 iFound_outlet = 0;

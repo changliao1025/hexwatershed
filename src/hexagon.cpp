@@ -19,7 +19,7 @@ namespace hexwatershed
   {
     iFlag_confluence = 0;
     iFlag_active = 0;
-    iFlag_watershed = 0;
+    iFlag_watershed = 0; //in any pre-defined watershed
     iFlag_first_reach = 0;
     iFlag_last_reach = 0;
     iFlag_headwater = 0;
@@ -40,7 +40,7 @@ namespace hexwatershed
     dAccumulation = 0.0;
     iSubbasin = -1;
     iSegment = -1;
-    iWatershed=-1;
+    iWatershed=-1; //the watershed it belongs to
     iSegment_order = -1;
     iSegment_downstream = -1;
     nUpslope = 0;

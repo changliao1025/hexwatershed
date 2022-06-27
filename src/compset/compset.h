@@ -68,50 +68,36 @@ namespace hexwatershed
   public:
     compset ();
 
-    ~compset ();
+    ~compset ();    
 
-    
-
-    int nSegment;            //the total number of stream segment
-    int nConfluence;         //the total number of stream confluence
+    int nWatershed_total;
+    int nSegment_total;            //the total number of stream segment
+    int nConfluence_total;         //the total number of stream confluence
     int iSegment_current;    //the index of stream segment in current time step
+    int iSubbasin_current;
     int iWatershed_current;
-
        
     std::string sWorkspace_input;
     std::string sWorkspace_output;
     std::string sFilename_configuration;
     std::string sFilename_log;
     std::string sLog;
-
-
-
     std::string sFilename_mesh_info;
-
-
-
     //polygon vector filename
     std::string sFilename_elevation_polygon;
     std::string sFilename_elevation_polygon_debug;
-
     std::string sFilename_slope_between_polygon;
     std::string sFilename_slope_between_polygon_debug;
     std::string sFilename_slope_within_polygon;
     std::string sFilename_slope_within_polygon_debug;
-
     std::string sFilename_flow_accumulation_polygon;
     std::string sFilename_flow_accumulation_polygon_debug;
-
     std::string sFilename_watershed_polygon;
     std::string sFilename_stream_confluence_polygon;
-
     std::string sFilename_stream_grid_polygon;
     std::string sFilename_stream_grid_polygon_debug;
-
     std::string sFilename_subbasin_polygon;
-
     std::string sFilename_stream_segment_polygon;
-
     std::string sFilename_wetness_index_polygon;
 
     //polyline
@@ -131,45 +117,30 @@ namespace hexwatershed
     //others
     std::string sDate_default;
     std::string sDate;
-
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
     std::string sFilename_subbasin_characteristics;
-
-
-
     std::ofstream ofs_log; // used for IO starlog file
 
     //std::map <std::string, std::string> mParameter; //for input data and parameters
     std::vector <hexagon> vCell;                    //all the cells based on shapefile
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
-
-
     //watershed cWatershed;
     std::vector <watershed> vWatershed;
-
     std::vector<float> vElevation; //vector to store the DEM raster data
-
     std::vector <flowline> vFlowline;
-
     // this may be merged with global id
     std::vector <hexagon> vConfluence;   //the vector to store all the stream confluences
     std::vector <vertex> vVertex_active; //for vtk support, it store all the vertex in 3D
 
-
     std::string sFilename_netcdf_output; //if model use netcdf, we can put all results into one single netcdf file,
     // except the txt based results.
-
     std::string sFilename_hexagon_netcdf;
-
     parameter cParameter;
     std::vector<cell> aCell;
     std::vector<basin> aBasin;
-
     std::vector<hexagon> vContinent_boundary;
-
     //std::vector<instance> vInstance;
-
 
     int compset_initialize_model ();
     int compset_setup_model ();
