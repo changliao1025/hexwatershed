@@ -94,8 +94,11 @@ namespace hexwatershed
             ofs_log << sLog << std::endl;
             ofs_log.flush();
             std::cout << sLog << std::endl;
-            cWatershed.watershed_build_stream_topology();
-            cWatershed.watershed_define_stream_order();
+
+            //cWatershed.watershed_build_stream_topology();
+            //cWatershed.watershed_define_stream_order();
+            compset_build_stream_topology();
+            compset_define_stream_order();
 
             sLog = "Finished defining stream order";
             ofs_log << sLog << std::endl;
@@ -106,7 +109,8 @@ namespace hexwatershed
             sLog = "Finished defining subbasin";
             ofs_log << sLog << std::endl;
             ofs_log.flush();
-            cWatershed.watershed_update_attribute();
+
+            //cWatershed.watershed_update_attribute();
 
             compset_calculate_watershed_characteristics();
             sLog = "Finished watershed characteristics";

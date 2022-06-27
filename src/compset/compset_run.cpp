@@ -685,6 +685,49 @@ namespace hexwatershed
     return error_code;
   }
 
+  
+  int compset::compset_build_stream_topology()
+  {
+    int error_code=1;
+    int iWatershed;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_flowline = cParameter.iFlag_flowline;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    if (iFlag_global != 1)
+    {
+      if (iFlag_flowline == 1)
+      {
+        if (iFlag_multiple_outlet == 0)
+        {
+          iWatershed=1;
+          vWatershed.at(iWatershed-1).watershed_build_stream_topology();
+        }
+      }
+
+    }
+    return error_code;
+  }
+  int compset::compset_define_stream_order()
+  {
+    int error_code=1;
+    int iWatershed;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_flowline = cParameter.iFlag_flowline;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    if (iFlag_global != 1)
+    {
+      if (iFlag_flowline == 1)
+      {
+        if (iFlag_multiple_outlet == 0)
+        {
+          iWatershed=1;
+          vWatershed.at(iWatershed-1).watershed_define_stream_order();
+        }
+      }
+
+    }
+    return error_code;
+  }
   /**
    * define subbasin boundary, it requires cell topology, so the vCell_active is used
    * @return
