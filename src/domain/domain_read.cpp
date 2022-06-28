@@ -257,6 +257,7 @@ namespace hexwatershed
 
     sFilename_mesh_info = sWorkspace_output_pyflowline + slash + sMesh_type + "_mesh_info.json";
        
+    cCompset.sWorkspace_output_hexwatershed = sWorkspace_output_hexwatershed;
 
     // vtk
     cCompset.sFilename_vtk = sWorkspace_output_hexwatershed + slash + "hexwatershed.vtk";
