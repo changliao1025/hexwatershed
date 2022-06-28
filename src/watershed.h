@@ -76,5 +76,8 @@ namespace hexwatershed
     int save_watershed_characteristics(std::string sFilename_in);
     int save_segment_characteristics(std::string sFilename_in);
     int save_subbasin_characteristics(std::string sFilename_in);
+
+
+    long compset_find_index_by_cellid(long lCellID);
   };
 }

@@ -346,10 +346,10 @@ namespace hexwatershed
             if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).iWatershed == iWatershed)
             {
               lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
-              lCellIndex_downstream = compset_find_index_by_cellid(lCellID_downstream);
+              lCellIndex_downstream =  vWatershed[iWatershed - 1].compset_find_index_by_cellid(lCellID_downstream);
               if (lCellIndex_downstream != -1)
               {
-                (vCell_active.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
+                ( vWatershed[iWatershed - 1].vCell.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
               }
               else
               {
@@ -421,16 +421,16 @@ namespace hexwatershed
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
           nSegment = vWatershed.at(iWatershed - 1).nSegment;
-          lCellIndex_outlet = compset_find_index_by_cellid(vWatershed.at(iWatershed - 1).lCellID_outlet);
-          iFlag_confluence = vCell_active.at(lCellIndex_outlet).iFlag_confluence;
-          lCellIndex_current = vCell_active.at(lCellIndex_outlet).lCellIndex;
+          lCellIndex_outlet = vWatershed.at(iWatershed - 1).compset_find_index_by_cellid(vWatershed.at(iWatershed - 1).lCellID_outlet);
+          iFlag_confluence =  vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_outlet).iFlag_confluence;
+          lCellIndex_current =  vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_outlet).lCellIndex;
           vWatershed.at(iWatershed - 1).vSegment.clear();
           segment cSegment;
           std::vector<hexagon> vReach_segment;
-          vCell_active.at(lCellIndex_outlet).iFlag_last_reach = 1;
+          vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_outlet).iFlag_last_reach = 1;
           iSegment_current = nSegment;
-          vCell_active.at(lCellIndex_outlet).iSegment = iSegment_current;
-          vReach_segment.push_back(vCell_active.at(lCellIndex_outlet));
+          vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_outlet).iSegment = iSegment_current;
+          vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_outlet));
           if (iFlag_confluence == 1) // the outlet is actually a confluence
           {
             cSegment.vReach_segment = vReach_segment;
@@ -448,20 +448,20 @@ namespace hexwatershed
           {
             while (iFlag_confluence != 1)
             {
-              iUpstream = vCell_active.at(lCellIndex_current).nUpstream;
+              iUpstream = vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current).nUpstream;
               if (iUpstream == 1) //
               {
-                lCellID_upstream = (vCell_active.at(lCellIndex_current)).vUpstream[0];
-                lCellIndex_current = compset_find_index_by_cellid(lCellID_upstream);
-                vCell_active.at(lCellIndex_current).iSegment = iSegment_current;
-                vReach_segment.push_back(vCell_active.at(lCellIndex_current));
+                lCellID_upstream = (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current)).vUpstream[0];
+                lCellIndex_current =  vWatershed.at(iWatershed - 1).compset_find_index_by_cellid(lCellID_upstream);
+                vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current).iSegment = iSegment_current;
+                vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current));
               }
               else
               { // headwater
-                vCell_active.at(lCellIndex_current).iSegment = iSegment_current;
-                vCell_active.at(lCellIndex_current).iFlag_first_reach = 1;
-                lCellID_current = vCell_active.at(lCellIndex_current).lCellID;
-                vReach_segment.push_back(vCell_active.at(lCellIndex_current));
+                vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current).iSegment = iSegment_current;
+                vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current).iFlag_first_reach = 1;
+                lCellID_current = vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current).lCellID;
+                vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_current));
                 iFlag_confluence = 1;
               }
             }
@@ -516,23 +516,23 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
-    long lCellIndex_confluence = compset_find_index_by_cellid(lCellID_confluence);
+    long lCellIndex_confluence = vWatershed.at(iWatershed - 1).compset_find_index_by_cellid(lCellID_confluence);
 
     // if may not be necessary to use these flags in this algorithm because it will only search for the segment
-    vUpstream = (vCell_active.at(lCellIndex_confluence)).vUpstream;
-    iSegment_confluence = (vCell_active.at(lCellIndex_confluence)).iSegment;
+    vUpstream = ( vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_confluence)).vUpstream;
+    iSegment_confluence = ( vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_confluence)).iSegment;
     for (iterator_upstream = vUpstream.begin();
          iterator_upstream != vUpstream.end();
          iterator_upstream++)
     {
       lCellID_upstream = *iterator_upstream;
-      lCellIndex_upstream = compset_find_index_by_cellid(lCellID_upstream);
+      lCellIndex_upstream =  vWatershed.at(iWatershed - 1).compset_find_index_by_cellid(lCellID_upstream);
       iFlag_first_reach = 0;
       // remember that it is possible a segment only has one reach
-      iFlag_confluence = vCell_active.at(lCellIndex_upstream).iFlag_confluence;
-      vCell_active.at(lCellIndex_upstream).iFlag_last_reach = 1;
+      iFlag_confluence =  vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream).iFlag_confluence;
+      vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream).iFlag_last_reach = 1;
       // use last reach to find next stream segment
-      vCell_active.at(lCellIndex_upstream).iSegment_downstream = vCell_active.at(lCellIndex_confluence).iSegment;
+      vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream).iSegment_downstream = vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_confluence).iSegment;
       vReach_segment.clear();
 
       // if the immediate upstream is also confluence: 1-1, we can quickly setup then move on
@@ -540,14 +540,14 @@ namespace hexwatershed
       if (iFlag_confluence == 1)
       {
         // continuous confluence, in this case, we need to set only one reach and move on
-        nUpstream = (vCell_active.at(lCellIndex_upstream)).nUpstream;
+        nUpstream = (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).nUpstream;
         // we need to set 4 importnat attributes
-        vCell_active.at(lCellIndex_upstream).iSegment = iSegment_current;
-        (vCell_active.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+        vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream).iSegment = iSegment_current;
+        (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
         //(vCell_active.at(lCellIndex_upstream)).iFlag_last_reach = 1;
-        (vCell_active.at(lCellIndex_upstream)).iFlag_headwater = 0;
+        (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
 
-        vReach_segment.push_back(vCell_active.at(lCellIndex_upstream));
+        vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream));
         // it has only one reach
         cSegment.vReach_segment = vReach_segment;
         cSegment.nReach = vReach_segment.size();
@@ -571,29 +571,29 @@ namespace hexwatershed
         while (iFlag_confluence != 1) // 1-0-1
         {
           // it has only one upstream
-          nUpstream = (vCell_active.at(lCellIndex_upstream)).nUpstream;
-          (vCell_active.at(lCellIndex_upstream)).iSegment = iSegment_current;
+          nUpstream = (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).nUpstream;
+          (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iSegment = iSegment_current;
           if (nUpstream == 0)
           {
             // this is the headwater, 1-0-2
             iFlag_first_reach = 1;
-            (vCell_active.at(lCellIndex_upstream)).iFlag_first_reach = 1;
-            (vCell_active.at(lCellIndex_upstream)).iFlag_headwater = 1;
-            vReach_segment.push_back(vCell_active.at(lCellIndex_upstream));
+            (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+            (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_headwater = 1;
+            vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream));
             break;
           }
           else
           {
             // 1-0-0
-            (vCell_active.at(lCellIndex_upstream)).iFlag_last_reach = 0;
-            (vCell_active.at(lCellIndex_upstream)).iFlag_first_reach = 0;
-            (vCell_active.at(lCellIndex_upstream)).iFlag_headwater = 0;
-            vReach_segment.push_back(vCell_active.at(lCellIndex_upstream));
+            (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_last_reach = 0;
+            (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_first_reach = 0;
+            (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
+            vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream));
             // we are on the stream segment and there is only one upstream
             // move to upstream
-            lCellID_upstream = (vCell_active.at(lCellIndex_upstream)).vUpstream[0];
-            lCellIndex_upstream = compset_find_index_by_cellid(lCellID_upstream);
-            iFlag_confluence = vCell_active.at(lCellIndex_upstream).iFlag_confluence;
+            lCellID_upstream = (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).vUpstream[0];
+            lCellIndex_upstream = vWatershed.at(iWatershed - 1).compset_find_index_by_cellid(lCellID_upstream);
+            iFlag_confluence = vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream).iFlag_confluence;
             // should not add now
           }
         }
@@ -607,11 +607,11 @@ namespace hexwatershed
         else
         {
           // this is a new confluence, so we need to push it back
-          (vCell_active.at(lCellIndex_upstream)).iSegment = iSegment_current;
-          (vCell_active.at(lCellIndex_upstream)).iFlag_last_reach = 0;
-          (vCell_active.at(lCellIndex_upstream)).iFlag_first_reach = 1;
-          (vCell_active.at(lCellIndex_upstream)).iFlag_headwater = 0;
-          vReach_segment.push_back(vCell_active.at(lCellIndex_upstream));
+          (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iSegment = iSegment_current;
+          (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_last_reach = 0;
+          (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+          (vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
+          vReach_segment.push_back(vWatershed.at(iWatershed - 1).vCell.at(lCellIndex_upstream));
 
           cSegment.iFlag_has_upstream = 1;
           cSegment.iFlag_headwater = 0;

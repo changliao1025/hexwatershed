@@ -478,5 +478,18 @@ namespace hexwatershed
     return error_code;
   }
 
-  
+  long compset::compset_find_index_by_cellid(long lCellID_in)
+  {
+    long lCellIndex=-1;
+    std::vector<hexagon>::iterator iIterator;
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+      {
+        if ((*iIterator).lCellID == lCellID_in)
+          {
+            lCellIndex = (*iIterator).lCellIndex;
+            break;
+          }
+      }
+
+    return lCellIndex;
 } // namespace hexwatershed
