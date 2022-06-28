@@ -35,6 +35,8 @@ namespace hexwatershed
     ~watershed();
 
     int iWatershed; // id
+
+    int iSegment_current;
     float dArea;
     float dSlope;
     float dSlope_mean;
@@ -60,9 +62,14 @@ namespace hexwatershed
 
     // function
 
+    int watershed_define_stream_confluence();
+    int watershed_define_stream_segment();
+    int watershed_tag_confluence_upstream( long lCellID_confluence);
+
     int watershed_build_stream_topology();
     int watershed_define_stream_order();
     int watershed_update_attribute();
+
     // the watershed characteristics for comparison
     int calculate_watershed_characteristics();
     int calculate_watershed_drainage_area();

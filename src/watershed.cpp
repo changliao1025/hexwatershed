@@ -22,6 +22,292 @@ namespace hexwatershed
   {
   }
 
+  int watershed::watershed_define_stream_confluence()
+  {
+int error_code = 1;
+    int iCount = 0;
+     nSegment = 0;
+     nConfluence = 0;
+    int iWatershed;
+    long lCellID_downstream;
+    long lCellIndex_downstream;
+    std::vector<hexagon>::iterator iIterator_self;
+
+   
+          iCount = 0;
+     
+          for (iIterator_self =  vCell.begin(); iIterator_self !=  vCell.end(); iIterator_self++)
+          {
+            // we only consider cells within the watershed
+            if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).iWatershed == iWatershed)
+            {
+              lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
+              lCellIndex_downstream =  watershed_find_index_by_cellid(lCellID_downstream);
+              if (lCellIndex_downstream != -1)
+              {
+                (  vCell.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
+              }
+              else
+              {
+                // std::cout << (*iIterator_self).lCellIndex << ", outlet is: " << lCellIndex_downstream << std::endl;
+              }
+            }
+          }
+          // sum up the size the upstream
+          for (iIterator_self =  vCell.begin(); iIterator_self !=  vCell.end(); iIterator_self++)
+          {
+            (*iIterator_self).nUpstream = ((*iIterator_self).vUpstream).size();
+          }
+          // calculate total segment
+           vConfluence.clear();
+          for (iIterator_self =  vCell.begin(); iIterator_self !=  vCell.end(); iIterator_self++)
+          {
+            if ((*iIterator_self).nUpstream > 1 && (*iIterator_self).iWatershed == iWatershed && (*iIterator_self).iFlag_stream == 1)
+            {
+              iCount = iCount + 1;
+              (*iIterator_self).iFlag_confluence = 1;
+               vConfluence.push_back((*iIterator_self));
+            }
+          }
+          nConfluence = iCount;
+          nSegment = 1;
+          for (iIterator_self =  vConfluence.begin(); iIterator_self !=  vConfluence.end(); iIterator_self++)
+          {
+            nSegment = nSegment + (*iIterator_self).vUpstream.size();
+          }
+          // sort cannot be used directly here
+         
+
+          nSegment_total = nSegment_total + nSegment;
+
+    
+   
+
+    return error_code;
+  }
+   int watershed::watershed_define_stream_segment()
+  {
+    int error_code = 1;
+    long lCellIndex_outlet; // this is a local variable for each subbasin
+    int iFlag_confluence;
+    //int nSegment;
+    //int nConfluence;
+    int iUpstream;
+    int iWatershed;
+    long lCellIndex_current;
+    long lCellID_current;
+    long lCellID_upstream;
+ 
+   
+          //nSegment = nSegment;
+          lCellIndex_outlet = watershed_find_index_by_cellid( lCellID_outlet);
+          iFlag_confluence =  vCell.at(lCellIndex_outlet).iFlag_confluence;
+          lCellIndex_current =  vCell.at(lCellIndex_outlet).lCellIndex;
+          vSegment.clear();
+          segment cSegment;
+          std::vector<hexagon> vReach_segment;
+          vCell.at(lCellIndex_outlet).iFlag_last_reach = 1;
+          iSegment_current = nSegment;
+          vCell.at(lCellIndex_outlet).iSegment = iSegment_current;
+          vReach_segment.push_back( vCell.at(lCellIndex_outlet));
+          if (iFlag_confluence == 1) // the outlet is actually a confluence
+          {
+            cSegment.vReach_segment = vReach_segment;
+            cSegment.nReach = 1;
+            cSegment.cReach_start = vReach_segment.front();
+            cSegment.cReach_end = vReach_segment.back();
+            cSegment.iSegment = nSegment;
+            cSegment.nSegment_upstream = cSegment.cReach_start.nUpstream;
+            cSegment.iFlag_has_upstream = 1;
+            cSegment.iFlag_has_downstream = 0;
+            cSegment.iWatershed = iWatershed;
+            vSegment.push_back(cSegment);
+          }
+          else
+          {
+            while (iFlag_confluence != 1)
+            {
+              iUpstream = vCell.at(lCellIndex_current).nUpstream;
+              if (iUpstream == 1) //
+              {
+                lCellID_upstream = ( vCell.at(lCellIndex_current)).vUpstream[0];
+                lCellIndex_current =  watershed_find_index_by_cellid(lCellID_upstream);
+                vCell.at(lCellIndex_current).iSegment = iSegment_current;
+                vReach_segment.push_back( vCell.at(lCellIndex_current));
+              }
+              else
+              { // headwater
+                vCell.at(lCellIndex_current).iSegment = iSegment_current;
+                vCell.at(lCellIndex_current).iFlag_first_reach = 1;
+                lCellID_current = vCell.at(lCellIndex_current).lCellID;
+                vReach_segment.push_back( vCell.at(lCellIndex_current));
+                iFlag_confluence = 1;
+              }
+            }
+
+            // this is the last reach of a segment
+            std::reverse(vReach_segment.begin(), vReach_segment.end());
+            cSegment.vReach_segment = vReach_segment;
+            cSegment.nReach = vReach_segment.size();
+            cSegment.cReach_start = vReach_segment.front();
+            cSegment.cReach_end = vReach_segment.back();
+            cSegment.iSegment = nSegment;
+            cSegment.nSegment_upstream = cSegment.cReach_start.nUpstream;
+            cSegment.iFlag_has_upstream = 1;
+            cSegment.iWatershed = iWatershed;
+            cSegment.iFlag_has_downstream = 0;
+            if (cSegment.cReach_start.iFlag_headwater == 1)
+            {
+              cSegment.iFlag_headwater = 1;
+            }
+            vSegment.push_back(cSegment);
+          }
+          iSegment_current = iSegment_current - 1;
+          watershed_tag_confluence_upstream( lCellID_current);
+          // in fact the segment is ordered by default already, just reservely
+          std::sort( vSegment.begin(), vSegment.end());
+    
+
+    return error_code;
+  }
+ int watershed::watershed_tag_confluence_upstream( long lCellID_confluence)
+  {
+     int error_code = 1;
+    int nUpstream;
+    int iFlag_first_reach;
+    int iFlag_confluence;
+    int iSegment_confluence;
+    long lCellID_upstream;
+    long lCellIndex_upstream;
+    segment cSegment; // be careful with the scope
+    std::vector<long> vUpstream;
+    std::vector<long>::iterator iterator_upstream;
+    std::vector<hexagon> vReach_segment;
+
+
+    long lCellIndex_confluence = watershed_find_index_by_cellid(lCellID_confluence);
+
+    // if may not be necessary to use these flags in this algorithm because it will only search for the segment
+    vUpstream =vCell.at(lCellIndex_confluence).vUpstream;
+    iSegment_confluence = vCell.at(lCellIndex_confluence).iSegment;
+    for (iterator_upstream = vUpstream.begin();
+         iterator_upstream != vUpstream.end();
+         iterator_upstream++)
+    {
+      lCellID_upstream = *iterator_upstream;
+      lCellIndex_upstream = watershed_find_index_by_cellid(lCellID_upstream);
+      iFlag_first_reach = 0;
+      // remember that it is possible a segment only has one reach
+      iFlag_confluence =   vCell.at(lCellIndex_upstream).iFlag_confluence;
+       vCell.at(lCellIndex_upstream).iFlag_last_reach = 1;
+      // use last reach to find next stream segment
+       vCell.at(lCellIndex_upstream).iSegment_downstream =  vCell.at(lCellIndex_confluence).iSegment;
+      vReach_segment.clear();
+
+      // if the immediate upstream is also confluence: 1-1, we can quickly setup then move on
+      // to the confluence
+      if (iFlag_confluence == 1)
+      {
+        // continuous confluence, in this case, we need to set only one reach and move on
+        nUpstream = ( vCell.at(lCellIndex_upstream)).nUpstream;
+        // we need to set 4 importnat attributes
+         vCell.at(lCellIndex_upstream).iSegment = iSegment_current;
+        ( vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+        //(vCell_active.at(lCellIndex_upstream)).iFlag_last_reach = 1;
+        ( vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
+
+        vReach_segment.push_back( vCell.at(lCellIndex_upstream));
+        // it has only one reach
+        cSegment.vReach_segment = vReach_segment;
+        cSegment.nReach = vReach_segment.size();
+        cSegment.cReach_start = vReach_segment.front();
+        cSegment.cReach_end = vReach_segment.back();
+        cSegment.iSegment = iSegment_current;
+        cSegment.iFlag_has_downstream = 1;
+        cSegment.iFlag_has_upstream = 1;
+        cSegment.iFlag_headwater = 0;
+        cSegment.iWatershed = iWatershed;
+        cSegment.iSegment_downstream = iSegment_confluence;
+        // add the segment to the watershed object
+         vSegment.push_back(cSegment);
+        // update segment index
+        iSegment_current = iSegment_current - 1;
+        watershed_tag_confluence_upstream( lCellID_upstream);
+      }
+      else
+      {
+        // if there is at least one reach that is not a confluence: 1-0-1 or 1-0-2
+        while (iFlag_confluence != 1) // 1-0-1
+        {
+          // it has only one upstream
+          nUpstream = ( vCell.at(lCellIndex_upstream)).nUpstream;
+          ( vCell.at(lCellIndex_upstream)).iSegment = iSegment_current;
+          if (nUpstream == 0)
+          {
+            // this is the headwater, 1-0-2
+            iFlag_first_reach = 1;
+            ( vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+            ( vCell.at(lCellIndex_upstream)).iFlag_headwater = 1;
+            vReach_segment.push_back( vCell.at(lCellIndex_upstream));
+            break;
+          }
+          else
+          {
+            // 1-0-0
+            ( vCell.at(lCellIndex_upstream)).iFlag_last_reach = 0;
+            ( vCell.at(lCellIndex_upstream)).iFlag_first_reach = 0;
+            ( vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
+            vReach_segment.push_back( vCell.at(lCellIndex_upstream));
+            // we are on the stream segment and there is only one upstream
+            // move to upstream
+            lCellID_upstream = ( vCell.at(lCellIndex_upstream)).vUpstream[0];
+            lCellIndex_upstream =  watershed_find_index_by_cellid(lCellID_upstream);
+            iFlag_confluence =  vCell.at(lCellIndex_upstream).iFlag_confluence;
+            // should not add now
+          }
+        }
+        // either we reach the headwater or we find the next confluence
+        if (iFlag_first_reach == 1)
+        {
+          // it is already been pushed back
+          cSegment.iFlag_has_upstream = 0;
+          cSegment.iFlag_headwater = 1;
+        }
+        else
+        {
+          // this is a new confluence, so we need to push it back
+          ( vCell.at(lCellIndex_upstream)).iSegment = iSegment_current;
+          ( vCell.at(lCellIndex_upstream)).iFlag_last_reach = 0;
+          ( vCell.at(lCellIndex_upstream)).iFlag_first_reach = 1;
+          ( vCell.at(lCellIndex_upstream)).iFlag_headwater = 0;
+          vReach_segment.push_back( vCell.at(lCellIndex_upstream));
+
+          cSegment.iFlag_has_upstream = 1;
+          cSegment.iFlag_headwater = 0;
+        }
+
+        std::reverse(vReach_segment.begin(), vReach_segment.end());
+        cSegment.vReach_segment = vReach_segment;
+        cSegment.nReach = vReach_segment.size();
+        cSegment.cReach_start = vReach_segment.front();
+        cSegment.cReach_end = vReach_segment.back();
+        cSegment.iSegment = iSegment_current;
+        cSegment.iFlag_has_downstream = 1;
+        cSegment.iWatershed = iWatershed;
+        cSegment.iSegment_downstream = iSegment_confluence;
+         vSegment.push_back(cSegment);
+        iSegment_current = iSegment_current - 1;
+        if (iFlag_first_reach != 1)
+        {
+          watershed_tag_confluence_upstream(iWatershed, lCellID_upstream);
+        }
+      }
+    }
+
+    return error_code;
+  }
+  
+
   /**
    * build the stream topology based on stream segment information
    * @return
@@ -478,7 +764,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  long compset::compset_find_index_by_cellid(long lCellID_in)
+  long compset::watershed_find_index_by_cellid(long lCellID_in)
   {
     long lCellIndex=-1;
     std::vector<hexagon>::iterator iIterator;
