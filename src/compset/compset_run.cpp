@@ -240,6 +240,8 @@ namespace hexwatershed
     long lCellID_downslope;
     long lCellID_outlet;
     float dDistance_to_watershed_outlet;
+    std::string sWatershed;
+    std::string sWorkspace_output_watershed;
     std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
@@ -255,6 +257,11 @@ namespace hexwatershed
           lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
           lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
           watershed cWatershed;
+          sWatershed = convert_integer_to_string(iWatershed, 2);
+          cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
+          cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
+          cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.json";
+          cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.json";
           cWatershed.vCell.clear();
           cWatershed.iWatershed = iWatershed;
           cWatershed.lCellID_outlet = lCellID_outlet;

@@ -75,7 +75,7 @@ namespace hexwatershed
                     pCell.dElevation_mean = (*iIterator).dElevation_mean;
                     pCell.dElevation_raw = (*iIterator).dElevation_raw;
                     pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-                    pCell.dArea =  (*iIterator).dArea;
+                    pCell.dArea = (*iIterator).dArea;
                     pCell.lCellID = (*iIterator).lCellID;
                     pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; //flag for burned stream
 
@@ -154,10 +154,14 @@ namespace hexwatershed
   int compset::compset_save_watershed_characteristics()
   {
     int error_code = 1;
-
-    error_code = cWatershed.save_watershed_characteristics(sFilename_watershed_characteristics);
-    error_code = cWatershed.save_segment_characteristics(sFilename_segment_characteristics);
-    error_code = cWatershed.save_subbasin_characteristics(sFilename_subbasin_characteristics);
+    int iWatershed;
+    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+        {
+          vWatershed.at(iWatershed - 1).save_watershed_characteristics();
+        }
+    //error_code = cWatershed.save_watershed_characteristics(sFilename_watershed_characteristics);
+    //error_code = cWatershed.save_segment_characteristics(sFilename_segment_characteristics);
+    //error_code = cWatershed.save_subbasin_characteristics(sFilename_subbasin_characteristics);
 
     return error_code;
   }

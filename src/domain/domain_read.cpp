@@ -256,31 +256,7 @@ namespace hexwatershed
     }
 
     sFilename_mesh_info = sWorkspace_output_pyflowline + slash + sMesh_type + "_mesh_info.json";
-    // sFilename_flowline_info = sWorkspace_output + slash + sMesh_type + "_flowline_info.json"  ;
-    // polygon
-    sFilename_elevation_polygon = sWorkspace_output_hexwatershed + slash + "elevation_polygon.json";
-    sFilename_elevation_polygon_debug = sWorkspace_output_hexwatershed + slash + "elevation_polygon_debug.json";
-
-    sFilename_slope_between_polygon = sWorkspace_output_hexwatershed + slash + "slope_between_polygon.json";
-
-    sFilename_slope_within_polygon = sWorkspace_output_hexwatershed + slash + "slope_within_polygon.json";
-
-    sFilename_flow_accumulation_polygon = sWorkspace_output_hexwatershed + slash + "flow_accumulation_polygon.json";
-    sFilename_flow_accumulation_polygon_debug = sWorkspace_output_hexwatershed + slash + "flow_accumulation_polygon_debug.json";
-    sFilename_stream_grid_polygon_debug = sWorkspace_output_hexwatershed + slash + "stream_grid_polygon_debug.json";
-
-    sFilename_watershed_polygon = sWorkspace_output_hexwatershed + slash + "watershed_polygon.json";
-    sFilename_stream_confluence_polygon = sWorkspace_output_hexwatershed + slash + "stream_confluence_polygon.json";
-    sFilename_stream_segment_polygon = sWorkspace_output_hexwatershed + slash + "stream_segment_polygon.json";
-    sFilename_subbasin_polygon = sWorkspace_output_hexwatershed + slash + "subbasin_polygon.json";
-    sFilename_wetness_index_polygon = sWorkspace_output_hexwatershed + slash + "wetness_index_polygon.json";
-    // polyline
-    sFilename_flow_direction_polyline = sWorkspace_output_hexwatershed + slash + "flow_direction.json";
-
-    sFilename_flow_direction_polyline_debug = sWorkspace_output_hexwatershed + slash + "flow_direction_debug.json";
-    sFilename_stream_order_polyline = sWorkspace_output_hexwatershed + slash + "stream_order.json";
-    sFilename_stream_segment_polyline = sWorkspace_output_hexwatershed + slash + "stream_segment_polyline.json";
-    sFilename_stream_segment_merge_polyline = sWorkspace_output_hexwatershed + slash + "stream_segment_merge_polyline.json";
+       
 
     // vtk
     cCompset.sFilename_vtk = sWorkspace_output_hexwatershed + slash + "hexwatershed.vtk";
@@ -290,9 +266,7 @@ namespace hexwatershed
     cCompset.sFilename_json = sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
     // others
 
-    cCompset.sFilename_watershed_characteristics = sWorkspace_output_hexwatershed + slash + "watershed_characteristics" + sExtension_text;
-    cCompset.sFilename_segment_characteristics = sWorkspace_output_hexwatershed + slash + "segment_characteristics" + sExtension_text;
-    cCompset.sFilename_subbasin_characteristics = sWorkspace_output_hexwatershed + slash + "subbasin_characteristics" + sExtension_text;
+    
 
     sFilename_log = sWorkspace_output_hexwatershed + slash + "starlog" + sExtension_text;
     ofs_log.open(sFilename_log.c_str(), ios::out);

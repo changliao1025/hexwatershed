@@ -55,6 +55,13 @@ namespace hexwatershed
     float dLongest_length_stream;    // the length of longest stream segment
     float dLength_stream_conceptual; // total stream length
 
+
+  std::string sWorkspace_output_watershed;
+    std::string sFilename_watershed_characteristics;
+    std::string sFilename_segment_characteristics;
+    std::string sFilename_subbasin_characteristics;
+
+
     std::vector<hexagon> vCell;
     std::vector<segment> vSegment;
     std::vector<subbasin> vSubbasin;
@@ -81,9 +88,9 @@ namespace hexwatershed
     int calculate_topographic_wetness_index();
     int calculate_travel_distance();
 
-    int save_watershed_characteristics(std::string sFilename_in);
-    int save_segment_characteristics(std::string sFilename_in);
-    int save_subbasin_characteristics(std::string sFilename_in);
+    int save_watershed_characteristics();
+    int save_segment_characteristics();
+    int save_subbasin_characteristics();
 
 
     long watershed_find_index_by_cellid(long lCellID);

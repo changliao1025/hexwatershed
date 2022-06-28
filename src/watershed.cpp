@@ -289,7 +289,7 @@ namespace hexwatershed
         iSegment_current = iSegment_current - 1;
         if (iFlag_first_reach != 1)
         {
-          watershed_tag_confluence_upstream(iWatershed, lCellID_upstream);
+          watershed_tag_confluence_upstream(lCellID_upstream);
         }
       }
     }
@@ -776,13 +776,13 @@ namespace hexwatershed
    * save the watershed characteristics in the output
    * @return
    */
-  int watershed::save_watershed_characteristics(std::string sFilename_in)
+  int watershed::save_watershed_characteristics()
   {
     int error_code = 1;
     std::string sLine;
 
     std::ofstream ofs;
-    ofs.open(sFilename_in.c_str(), ios::out);
+    ofs.open(sFilename_watershed_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
       sLine = "Watershed drainage area: " + convert_float_to_string(dArea);
@@ -806,13 +806,13 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::save_segment_characteristics(std::string sFilename_in)
+  int watershed::save_segment_characteristics()
   {
     int error_code = 1;
     std::string sLine;
     std::vector<segment>::iterator iIterator1;
     std::ofstream ofs;
-    ofs.open(sFilename_in.c_str(), ios::out);
+    ofs.open(sFilename_segment_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
 
@@ -829,13 +829,13 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::save_subbasin_characteristics(std::string sFilename_in)
+  int watershed::save_subbasin_characteristics()
   {
     int error_code = 1;
     std::string sLine;
     std::vector<subbasin>::iterator iIterator1;
     std::ofstream ofs;
-    ofs.open(sFilename_in.c_str(), ios::out);
+    ofs.open(sFilename_subbasin_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
       sLine = "Subbasin ID, Outlet ID, number of cell, total area, average slope, area_to_length, drainage density";
@@ -864,4 +864,5 @@ namespace hexwatershed
     }
 
     return lCellIndex;
-  } // namespace hexwatershed
+  }
+} // namespace hexwatershed
