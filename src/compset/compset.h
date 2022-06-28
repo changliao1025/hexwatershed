@@ -130,7 +130,7 @@ namespace hexwatershed
     std::vector<float> vElevation; //vector to store the DEM raster data
     std::vector <flowline> vFlowline;
     // this may be merged with global id
-    std::vector <hexagon> vConfluence;   //the vector to store all the stream confluences
+    //std::vector <hexagon> vConfluence;   //the vector to store all the stream confluences
     std::vector <vertex> vVertex_active; //for vtk support, it store all the vertex in 3D
 
     std::string sFilename_netcdf_output; //if model use netcdf, we can put all results into one single netcdf file,
