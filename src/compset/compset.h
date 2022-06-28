@@ -73,9 +73,9 @@ namespace hexwatershed
     int nWatershed_total;
     int nSegment_total;            //the total number of stream segment
     int nConfluence_total;         //the total number of stream confluence
-    int iSegment_current;    //the index of stream segment in current time step
-    int iSubbasin_current;
-    int iWatershed_current;
+    //int iSegment_current;    //the index of stream segment in current time step
+    //int iSubbasin_current;
+    //int iWatershed_current;
        
     std::string sWorkspace_input;
     std::string sWorkspace_output;

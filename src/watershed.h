@@ -68,6 +68,7 @@ namespace hexwatershed
 
     int watershed_build_stream_topology();
     int watershed_define_stream_order();
+    int watershed_define_subbasin();
     int watershed_update_attribute();
 
     // the watershed characteristics for comparison
@@ -85,6 +86,6 @@ namespace hexwatershed
     int save_subbasin_characteristics(std::string sFilename_in);
 
 
-    long compset_find_index_by_cellid(long lCellID);
+    long watershed_find_index_by_cellid(long lCellID);
   };
 }

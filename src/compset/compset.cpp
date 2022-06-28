@@ -96,8 +96,12 @@ namespace hexwatershed
             std::cout << sLog << std::endl;
             
             compset_build_stream_topology();
-            compset_define_stream_order();
+            sLog = "Finished defining stream topology";
+            ofs_log << sLog << std::endl;
+            ofs_log.flush();
+            std::cout << sLog << std::endl;
 
+            compset_define_stream_order();     
             sLog = "Finished defining stream order";
             ofs_log << sLog << std::endl;
             ofs_log.flush();
@@ -116,7 +120,7 @@ namespace hexwatershed
             std::flush(std::cout);
 
             //now all the watersheds are processed, we can transfer back to main object
-            compset_update_attribute();
+            //compset_update_attribute();
           }
         else
           {

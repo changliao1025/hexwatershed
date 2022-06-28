@@ -319,13 +319,7 @@ namespace hexwatershed
   int compset::compset_define_stream_confluence()
   {
     int error_code = 1;
-    int iCount = 0;
-    int nSegment = 0;
-    int nConfluence = 0;
     int iWatershed;
-    long lCellID_downstream;
-    long lCellIndex_downstream;
-
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -355,15 +349,7 @@ namespace hexwatershed
   int compset::compset_define_stream_segment()
   {
     int error_code = 1;
-    long lCellIndex_outlet; // this is a local variable for each subbasin
-    int iFlag_confluence;
-    int nSegment;
-    int nConfluence;
-    int iUpstream;
     int iWatershed;
-    long lCellIndex_current;
-    long lCellID_current;
-    long lCellID_upstream;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -373,7 +359,7 @@ namespace hexwatershed
       {
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
-           vWatershed.at(iWatershed - 1).watershed_define_stream_segment();
+          vWatershed.at(iWatershed - 1).watershed_define_stream_segment();
         }
       }
     }
@@ -394,7 +380,6 @@ namespace hexwatershed
       {
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
-      
           vWatershed.at(iWatershed - 1).watershed_build_stream_topology();
         }
       }
@@ -414,7 +399,6 @@ namespace hexwatershed
       {
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
-   
           vWatershed.at(iWatershed - 1).watershed_define_stream_order();
         }
       }
@@ -428,23 +412,8 @@ namespace hexwatershed
   int compset::compset_define_subbasin()
   {
     int error_code = 1;
-    int iFound_outlet;
-    int iSubbasin;
     int iWatershed;
-    int nSegment;
-    long lCellIndex_self;
-    long lCellIndex_current;
-    long lCellID_outlet;
-    long lCellIndex_outlet; // local outlet
-    long lCellID_downslope;
-    long lCellIndex_downslope;
-    long lCellIndex_accumulation;
-    std::vector<long> vAccumulation;
-    std::vector<long>::iterator iterator_accumulation;
-    std::vector<hexagon> vConfluence_copy; //(vConfluence);
-    std::vector<hexagon>::iterator iIterator_self;
-    std::vector<long>::iterator iIterator_upstream;
-    std::vector<hexagon>::iterator iIterator_current;
+
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -452,110 +421,9 @@ namespace hexwatershed
     {
       if (iFlag_flowline == 1)
       {
-        if (iFlag_multiple_outlet == 0)
+        for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
-          iWatershed = 1;
-          nSegment = vWatershed.at(iWatershed - 1).nSegment;
-          // the whole watershed first
-          for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-          {
-            if ((*iIterator_self).iWatershed == 1) // not using flag anymore
-            {
-              (*iIterator_self).iSubbasin = nSegment;
-            }
-          }
-
-          vConfluence_copy.clear();
-
-          for (iIterator_self = vConfluence.begin(); iIterator_self != vConfluence.end(); iIterator_self++)
-          {
-            if ((*iIterator_self).iWatershed == 1)
-            {
-              vAccumulation.push_back((*iIterator_self).dAccumulation);
-              vConfluence_copy.push_back((*iIterator_self));
-            }
-          }
-
-          // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
-          while (vConfluence_copy.size() != 0)
-          {
-            iterator_accumulation = max_element(std::begin(vAccumulation), std::end(vAccumulation));
-            lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
-            std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
-            for (iIterator_upstream = vUpstream.begin(); iIterator_upstream != vUpstream.end(); iIterator_upstream++)
-            {
-              // use the watershed method again here
-              lCellID_outlet = *iIterator_upstream;
-              lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
-              iSubbasin = (vCell_active.at(lCellIndex_outlet)).iSegment;
-              (vCell_active.at(lCellIndex_outlet)).iSubbasin = iSubbasin;
-              for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-              {
-                iFound_outlet = 0;
-                lCellIndex_current = (*iIterator_self).lCellIndex;
-                while (iFound_outlet != 1)
-                {
-                  lCellID_downslope = vCell_active.at(lCellIndex_current).lCellID_downslope_dominant;
-                  if (lCellID_outlet == lCellID_downslope)
-                  {
-                    iFound_outlet = 1;
-                    (*iIterator_self).iSubbasin = iSubbasin;
-                  }
-                  else
-                  {
-                    lCellIndex_current = compset_find_index_by_cellid(lCellID_downslope);
-                    if (lCellIndex_current == -1)
-                    {
-                      // this one does not belong in this watershed
-                      iFound_outlet = 1;
-                    }
-                    else
-                    {
-                      lCellID_downslope = vCell_active.at(lCellIndex_current).lCellID_downslope_dominant;
-                      if (lCellID_downslope == -1)
-                      {
-                        // this is the outlet
-                        iFound_outlet = 1;
-                      }
-                      else
-                      {
-                        // std::cout << lCellID_downslope << std::endl;
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            // remove the confluence now
-            vAccumulation.erase(iterator_accumulation);
-            vConfluence_copy.erase(vConfluence_copy.begin() + lCellIndex_accumulation);
-            // repeat
-          }
-
-          // assign watershed subbasin cell, maybe later?
-          vWatershed.at(iWatershed - 1).vSubbasin.clear();
-          for (int iSubbasin = 1; iSubbasin <= vWatershed.at(iWatershed - 1).nSegment; iSubbasin++)
-          {
-            subbasin cSubbasin;
-            cSubbasin.iSubbasin = iSubbasin;
-            vWatershed.at(iWatershed - 1).vSubbasin.push_back(cSubbasin);
-          }
-          for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-          {
-            int iSubbasin = (*iIterator_self).iSubbasin;
-            if (iSubbasin >= 1 && iSubbasin <= vWatershed.at(iWatershed - 1).nSegment)
-            {
-              (vWatershed.at(iWatershed - 1).vSubbasin[iSubbasin - 1]).vCell.push_back(*iIterator_self);
-            }
-            else
-            {
-              if (iSubbasin != -1)
-              {
-                std::cout << "Something is wrong" << std::endl;
-              }
-            }
-          }
+          vWatershed.at(iWatershed - 1).watershed_define_subbasin();
         }
       }
     }
@@ -571,15 +439,19 @@ namespace hexwatershed
   int compset::compset_calculate_watershed_characteristics()
   {
     int error_code = 1;
+    int iWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      vWatershed.at(0).calculate_watershed_characteristics();
-    }
-    else
-    {
+      if (iFlag_flowline == 1)
+      {
+        for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+        {
+          vWatershed.at(iWatershed - 1).calculate_watershed_characteristics();
+        }
+      }
     }
     return error_code;
   }
