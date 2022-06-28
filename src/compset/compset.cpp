@@ -120,7 +120,7 @@ namespace hexwatershed
             std::flush(std::cout);
 
             //now all the watersheds are processed, we can transfer back to main object
-            //compset_update_attribute();
+            compset_update_attributes();
           }
         else
           {

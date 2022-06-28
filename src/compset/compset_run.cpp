@@ -463,6 +463,38 @@ namespace hexwatershed
     return error_code;
   }
 
+  int compset::compset_update_attributes()
+  {
+    int error_code = 1;
+    int iWatershed;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_flowline = cParameter.iFlag_flowline;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    long lCellID1;
+    long lCellID2;
+    long lCellIndex;
+    std::vector<hexagon>::iterator iIterator1;
+    std::vector<hexagon>::iterator iIterator2;
+    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+    {
+      watershed cWatershed = vWatershed.at(iWatershed - 1);
+      for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
+      {
+        lCellID1 = (*iIterator1).lCellID;
+        for (iIterator2 = vCell_active.begin(); iIterator2 != vCell_active.end(); iIterator2++)
+        {
+          lCellID2 = (*iIterator2).lCellID;
+          if (lCellID1 == lCellID2)
+          {
+            lCellIndex = compset_find_index_by_cellid(lCellID2);
+            vCell_active.at(lCellIndex).dDistance_to_watershed_outlet = (*iIterator1).dDistance_to_watershed_outlet;
+          }
+        }
+      }
+    }
+
+    return error_code;
+  }
   /**
    * @brief
    *
