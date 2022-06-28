@@ -232,6 +232,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFound_outlet;
+    int iWatershed;
     long lCellIndex_self;
     long lCellIndex_current;
     long lCellIndex_downslope;
@@ -249,62 +250,13 @@ namespace hexwatershed
     {
       if (iFlag_flowline == 1)
       {
-        if (iFlag_multiple_outlet == 0)
-        {          
-          lCellID_outlet = aBasin.at(0).lCellID_outlet;
-          lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
-          // only in simple outlet case
-          watershed cWatershed;
-          cWatershed.iWatershed = 1;
-          cWatershed.lCellID_outlet = lCellID_outlet;
-          // we may check the mesh id as well
-          vCell_active.at(lCellIndex_outlet).iFlag_outlet = 1;
-          //#pragma omp parallel for private(lCellIndex_self, iFound_outlet, lIndex_downslope, lCellIndex_current)
-          // can also use
-          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-          {
-            dDistance_to_watershed_outlet = (vCell_active.at(lCellIndex_self)).dDistance_to_downslope;
-            iFound_outlet = 0;
-            lCellIndex_current = lCellIndex_self;
-            while (iFound_outlet != 1)
-            {
-              lCellID_downslope = (vCell_active.at(lCellIndex_current)).lCellID_downslope_dominant;
-              if (lCellID_outlet == lCellID_downslope)
-              {
-                iFound_outlet = 1;
-                (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
-                (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;                              
-                (vCell_active.at(lCellIndex_self)).iWatershed = 1; // single watershed
-              }
-              else
-              {
-                lCellIndex_current = compset_find_index_by_cellid(lCellID_downslope);
-                dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_downslope;
-                if (lCellIndex_current >= 0)
-                {
-                  iFound_outlet = 0;
-                }
-                else
-                {
-                  // this one is going out, but it is not the one belong in this watershed
-                  iFound_outlet = 1;
-                  (vCell_active.at(lCellIndex_self)).iFlag_watershed = 0;
-                }
-              }
-            }
-          }
-          // add the outout as well, this is important when there are two upstream at the outlet
-          (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;      
-          vCell_active.at(lCellIndex_outlet).iWatershed = 1;
-          vWatershed.push_back(cWatershed);
-        }
-        else // todo
-        {
+        
           for (int iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
           {
             lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
             lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
             watershed cWatershed;
+             cWatershed.vCell.clear();
             cWatershed.iWatershed = iWatershed;
             cWatershed.lCellID_outlet = lCellID_outlet;
             // we may check the mesh id as well
@@ -323,6 +275,7 @@ namespace hexwatershed
                   (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
                   (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
                   (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed; // single watershed
+                  cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
                 }
                 else
                 {
@@ -341,11 +294,12 @@ namespace hexwatershed
             }
             (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;
             vCell_active.at(lCellIndex_outlet).iWatershed = iWatershed;
+             cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
             vWatershed.push_back(cWatershed);
           }
           // how about other auto-defined watershed?
           // todo
-        }
+        
       }
     }
     else
@@ -366,6 +320,7 @@ namespace hexwatershed
     int iCount = 0;
     int nSegment=0;
     int nConfluence=0;
+    int iWatershed;
     long lCellID_downstream;
     long lCellIndex_downstream;
     std::vector<hexagon>::iterator iIterator_self;
