@@ -554,7 +554,7 @@ namespace hexwatershed
       (*iIterator1).calculate_subbasin_characteristics(dLength_stream_conceptual);
     }
 
-    // should we write the result directly here?
+    calculate_travel_distance();
 
     calculate_watershed_drainage_area();
     calculate_watershed_total_stream_length();
@@ -767,8 +767,20 @@ namespace hexwatershed
   int watershed::calculate_travel_distance()
   {
     int error_code = 1;
+    int iSegment;
+    int iSubbasin;
+    // calculate confluence travel
+    std::vector<hexagon>::iterator iIterator;
 
-    // calculate confluence
+    std::vector<subbasin>::iterator iIterator1;
+    for (iIterator = vConfluence.begin(); iIterator != vConfluence.end(); iIterator++)
+    {
+      iSubbasin = (*iIterator).iSubbasin;
+    }
+    for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+    {
+      (*iIterator1).calculate_travel_distance();
+    }
 
     return error_code;
   }

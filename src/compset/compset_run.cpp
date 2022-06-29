@@ -257,7 +257,7 @@ namespace hexwatershed
           lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
           lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
           watershed cWatershed;
-          sWatershed = convert_integer_to_string(iWatershed, 2);
+          sWatershed = convert_integer_to_string(iWatershed, 4);
           cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
           cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
           cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.json";
