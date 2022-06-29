@@ -57,7 +57,7 @@ namespace hexwatershed
           {
             lCellID_neighbor = (*iIterator_self).vNeighbor_land.at(i);
 
-            lCelllIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+            lCelllIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
 
             lCellID_downslope_neighbor = (vCell_active.at(lCelllIndex_neighbor)).lCellID_downslope_dominant;
 
@@ -94,7 +94,7 @@ namespace hexwatershed
               for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
               {
                 lCellID_neighbor = (*iIterator_self).vNeighbor_land.at(i);
-                lCelllIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+                lCelllIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
                 lCellID_downslope_neighbor = (vCell_active.at(lCelllIndex_neighbor)).lCellID_downslope_dominant;
 
                 if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
@@ -151,7 +151,7 @@ namespace hexwatershed
         {
           // use outlet id as largest
           lCellID_outlet = aBasin.at(0).lCellID_outlet;
-          lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+          lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
           dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
           // openmp may  not work for std container in earlier C++
           //#pragma omp parallel for private(lCellIndex_self)
@@ -176,7 +176,7 @@ namespace hexwatershed
           for (int iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
           {
             lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
-            lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+            lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
             dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
             if (dAccumulation_threshold > dAccumulation_min)
             {
@@ -255,7 +255,7 @@ namespace hexwatershed
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
           lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
-          lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+          lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
           watershed cWatershed;
           sWatershed = convert_integer_to_string(iWatershed, 4);
           cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
@@ -285,7 +285,7 @@ namespace hexwatershed
               }
               else
               {
-                lCellIndex_current = compset_find_index_by_cellid(lCellID_downslope);
+                lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
                 dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_downslope;
                 if (lCellIndex_current >= 0)
                 {
@@ -339,6 +339,8 @@ namespace hexwatershed
         for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
         {
           vWatershed.at(iWatershed - 1).watershed_define_stream_confluence();
+          nConfluence_total=nConfluence_total+vWatershed.at(iWatershed - 1).nConfluence;
+          nSegment_total=nSegment_total+vWatershed.at(iWatershed - 1).nSegment;
         }
       }
     }
@@ -486,7 +488,7 @@ namespace hexwatershed
           lCellID2 = (*iIterator2).lCellID;
           if (lCellID1 == lCellID2)
           {
-            lCellIndex = compset_find_index_by_cellid(lCellID2);
+            lCellIndex = compset_find_index_by_cell_id(lCellID2);
             vCell_active.at(lCellIndex).dDistance_to_watershed_outlet = (*iIterator1).dDistance_to_watershed_outlet;
           }
         }

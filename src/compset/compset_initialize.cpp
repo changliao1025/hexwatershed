@@ -181,7 +181,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  long compset::compset_find_index_by_cellid(long lCellID_in)
+  long compset::compset_find_index_by_cell_id(long lCellID_in)
   {
     long lCellIndex=-1;
 

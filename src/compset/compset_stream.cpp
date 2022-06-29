@@ -37,7 +37,7 @@ namespace hexwatershed
     std::vector<long>::iterator iIterator_neighbor;
     std::vector<long> vNeighbor_land;
 
-    long lCellIndex_center = compset_find_index_by_cellid(lCellID_center_in);
+    long lCellIndex_center = compset_find_index_by_cell_id(lCellID_center_in);
 
     vCell_active.at(lCellIndex_center).iFlag_stream_burning_treated = 1;
     vNeighbor_land = vCell_active.at(lCellIndex_center).vNeighbor_land;
@@ -48,7 +48,7 @@ namespace hexwatershed
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellID_neighbor = (*iIterator_neighbor);
-      lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+      lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
       iFlag_stream_burning_treated_neighbor = vCell_active.at(lCellIndex_neighbor).iFlag_stream_burning_treated;
       iFlag_stream_burned_neighbor = vCell_active.at(lCellIndex_neighbor).iFlag_stream_burned;
 
@@ -78,7 +78,7 @@ namespace hexwatershed
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellID_neighbor = (*iIterator_neighbor);
-      lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+      lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
       iFlag_stream_burned_neighbor = vCell_active.at(lCellIndex_neighbor).iFlag_stream_burned;
       if (iFlag_stream_burned_neighbor == 1)
       {
@@ -87,7 +87,7 @@ namespace hexwatershed
         for (int j = 0; j < vCell_active.at(lCellIndex_neighbor).nNeighbor_land; j++)
         {
           lCellID_neighbor2 = vCell_active.at(lCellIndex_neighbor).vNeighbor_land[j];
-          lCellIndex_neighbor2 = compset_find_index_by_cellid(lCellID_neighbor2);
+          lCellIndex_neighbor2 = compset_find_index_by_cell_id(lCellID_neighbor2);
 
           if (vCell_active.at(lCellIndex_neighbor2).iFlag_stream_burned == 1)
           {
@@ -110,7 +110,7 @@ namespace hexwatershed
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellID_neighbor = (*iIterator_neighbor);
-      lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+      lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
       if (iFlag_stream_burned_neighbor != 1)
@@ -175,7 +175,7 @@ namespace hexwatershed
 
     std::vector<long>::iterator iIterator_neighbor;
 
-    long lCellIndex_center = compset_find_index_by_cellid(lCellID_center_in);
+    long lCellIndex_center = compset_find_index_by_cell_id(lCellID_center_in);
 
     vCell_active.at(lCellIndex_center).iFlag_stream_burning_treated = 1;
     vNeighbor_land = vCell_active.at(lCellIndex_center).vNeighbor_land;
@@ -190,7 +190,7 @@ namespace hexwatershed
 
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = compset_find_index_by_cellid(*iIterator_neighbor);
+      lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
       lCellID_downstream_burned = vCell_active.at(lCellIndex_neighbor).lCellID_downstream_burned;
       if (lCellID_downstream_burned == lCellID_current)
       {
@@ -256,7 +256,7 @@ namespace hexwatershed
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellID_neighbor = (*iIterator_neighbor);
-      lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+      lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
 
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
@@ -329,7 +329,7 @@ namespace hexwatershed
     float dElevation_dummy;
     // std::vector<hexagon>::iterator iIterator2;
     // std::vector<hexagon>::iterator iIterator3;
-    lCellIndex_active = compset_find_index_by_cellid(lCellID_active_in);
+    lCellIndex_active = compset_find_index_by_cell_id(lCellID_active_in);
     while (iFlag_finished != 1)
     {
       lCellID = vCell_active.at(lCellIndex_active).lCellID;

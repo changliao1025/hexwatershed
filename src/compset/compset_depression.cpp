@@ -333,7 +333,7 @@ namespace hexwatershed
                       {
                         lCellID_outlet = aBasin.at(i).lCellID_outlet;
 
-                        lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+                        lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                         dElevation_mean_center =  vCell_active.at(lCellIndex_active).dElevation_mean;
                         //rasterization based stream burning
                         //this will make sure the outlet is the lowest point in the begining
@@ -350,7 +350,7 @@ namespace hexwatershed
                         //topology based stream burning
                         lCellID_outlet = aBasin.at(i).lCellID_outlet;
 
-                        lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+                        lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                         dElevation_mean_center =  vCell_active.at(lCellIndex_active).dElevation_mean;
 
                         //burn stream first, set flag as well
@@ -440,7 +440,7 @@ namespace hexwatershed
                   {
                     lCellID_outlet = aBasin.at(i).lCellID_outlet;
 
-                    lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+                    lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                     dElevation_mean_center =  vCell_active.at(lCellIndex_active).dElevation_mean;
                     //rasterization based stream burning
                     //this will make sure the outlet is the lowest point in the begining
@@ -457,7 +457,7 @@ namespace hexwatershed
                     //topology based stream burning
                     lCellID_outlet = aBasin.at(i).lCellID_outlet;
 
-                    lCellIndex_outlet = compset_find_index_by_cellid(lCellID_outlet);
+                    lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                     dElevation_mean_center =  vCell_active.at(lCellIndex_active).dElevation_mean;
 
                     //burn stream first, set flag as well
@@ -553,14 +553,14 @@ namespace hexwatershed
     //std::vector<hexagon>::iterator iIterator_self;
     std::vector<long> vNeighbor_land;
     long lCellIndex_neighbor;
-    long lCellIndex = compset_find_index_by_cellid(lCellID_in);
+    long lCellIndex = compset_find_index_by_cell_id(lCellID_in);
     long lCellID_neighbor;
     std::vector<long>::iterator iIterator;
     vNeighbor_land = vCell_active.at(lCellIndex).vNeighbor_land;
     for (iIterator = vNeighbor_land.begin (); iIterator != vNeighbor_land.end (); iIterator++)
       {
         lCellID_neighbor = *iIterator;
-        lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+        lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
         iNeighbor = vCell_active.at(lCellIndex_neighbor).nNeighbor_land;
         iVertex = vCell_active.at(lCellIndex_neighbor).nVertex;
         iFlag_depression_filling_treated = vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated ;
@@ -595,7 +595,7 @@ namespace hexwatershed
     std::vector<long>::iterator iIterator;
     std::vector<hexagon>::iterator iIterator1;
 
-    lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_in);
+    lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_in);
     vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated = 1;
     vContinent_boundary.push_back(vCell_active.at(lCellIndex_neighbor));
 
@@ -645,7 +645,7 @@ namespace hexwatershed
         for (int i = 0; i < (vCell_active.at (lCellIndex_active)).nNeighbor_land; i++)
           {
             lCellID_neighbor = (vCell_active.at (lCellIndex_active)).vNeighbor_land[i];
-            lCellIndex_neighbor = compset_find_index_by_cellid(lCellID_neighbor);
+            lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
             iFlag_depression_filling_treated_neighbor = vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated;
             iFlag_stream_burning_treated_neighbor = vCell_active.at(lCellIndex_neighbor).iFlag_stream_burning_treated;
             dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
