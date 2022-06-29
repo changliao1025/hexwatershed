@@ -17,12 +17,14 @@ namespace hexwatershed
   {
     iFlag_headwater = 0;
     iSegment = 0;
+    iSegmentIndex=-1;
     iSegment_order = -1;
     iSegment_downstream = -1;
 
     iFlag_has_upstream = -1;
     iFlag_has_downstream = -1;
     nSegment_upstream = -1;
+    dDistance_to_watershed_outlet=0.0;
   }
 
   segment::~segment()
@@ -89,6 +91,11 @@ namespace hexwatershed
       dSlope_mean =  dElevation_diff / dLength; 
     }    
 
+    return error_code;
+  }
+  int segment::calculate_travel_distance()
+  {
+    int error_code = 1;
     return error_code;
   }
 } // namespace hexwatershed

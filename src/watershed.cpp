@@ -41,7 +41,7 @@ namespace hexwatershed
       if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).iWatershed == iWatershed)
       {
         lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
-        lCellIndex_downstream = watershed_find_index_by_cellid(lCellID_downstream);
+        lCellIndex_downstream = watershed_find_index_by_cell_id(lCellID_downstream);
         if (lCellIndex_downstream != -1)
         {
           (vCell.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
@@ -83,8 +83,7 @@ namespace hexwatershed
     int error_code = 1;
     long lCellIndex_outlet; // this is a local variable for each subbasin
     int iFlag_confluence;
-    // int nSegment;
-    // int nConfluence;
+
     int iUpstream;
     int iWatershed;
     long lCellIndex_current;
@@ -92,7 +91,7 @@ namespace hexwatershed
     long lCellID_upstream;
 
     // nSegment = nSegment;
-    lCellIndex_outlet = watershed_find_index_by_cellid(lCellID_outlet);
+    lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
     iFlag_confluence = vCell.at(lCellIndex_outlet).iFlag_confluence;
     lCellIndex_current = vCell.at(lCellIndex_outlet).lCellIndex;
     vSegment.clear();
@@ -109,6 +108,7 @@ namespace hexwatershed
       cSegment.cReach_start = vReach_segment.front();
       cSegment.cReach_end = vReach_segment.back();
       cSegment.iSegment = nSegment;
+      cSegment.iSegmentIndex = nSegment - cSegment.iSegment;
       cSegment.nSegment_upstream = cSegment.cReach_start.nUpstream;
       cSegment.iFlag_has_upstream = 1;
       cSegment.iFlag_has_downstream = 0;
@@ -123,7 +123,7 @@ namespace hexwatershed
         if (iUpstream == 1) //
         {
           lCellID_upstream = (vCell.at(lCellIndex_current)).vUpstream[0];
-          lCellIndex_current = watershed_find_index_by_cellid(lCellID_upstream);
+          lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
           vCell.at(lCellIndex_current).iSegment = iSegment_current;
           vReach_segment.push_back(vCell.at(lCellIndex_current));
         }
@@ -144,6 +144,7 @@ namespace hexwatershed
       cSegment.cReach_start = vReach_segment.front();
       cSegment.cReach_end = vReach_segment.back();
       cSegment.iSegment = nSegment;
+      cSegment.iSegmentIndex = nSegment - cSegment.iSegment;
       cSegment.nSegment_upstream = cSegment.cReach_start.nUpstream;
       cSegment.iFlag_has_upstream = 1;
       cSegment.iWatershed = iWatershed;
@@ -175,7 +176,7 @@ namespace hexwatershed
     std::vector<long>::iterator iterator_upstream;
     std::vector<hexagon> vReach_segment;
 
-    long lCellIndex_confluence = watershed_find_index_by_cellid(lCellID_confluence);
+    long lCellIndex_confluence = watershed_find_index_by_cell_id(lCellID_confluence);
 
     // if may not be necessary to use these flags in this algorithm because it will only search for the segment
     vUpstream = vCell.at(lCellIndex_confluence).vUpstream;
@@ -185,7 +186,7 @@ namespace hexwatershed
          iterator_upstream++)
     {
       lCellID_upstream = *iterator_upstream;
-      lCellIndex_upstream = watershed_find_index_by_cellid(lCellID_upstream);
+      lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
       iFlag_first_reach = 0;
       // remember that it is possible a segment only has one reach
       iFlag_confluence = vCell.at(lCellIndex_upstream).iFlag_confluence;
@@ -213,6 +214,7 @@ namespace hexwatershed
         cSegment.cReach_start = vReach_segment.front();
         cSegment.cReach_end = vReach_segment.back();
         cSegment.iSegment = iSegment_current;
+        cSegment.iSegmentIndex = nSegment - cSegment.iSegment;
         cSegment.iFlag_has_downstream = 1;
         cSegment.iFlag_has_upstream = 1;
         cSegment.iFlag_headwater = 0;
@@ -220,6 +222,7 @@ namespace hexwatershed
         cSegment.iSegment_downstream = iSegment_confluence;
         // add the segment to the watershed object
         vSegment.push_back(cSegment);
+
         // update segment index
         iSegment_current = iSegment_current - 1;
         watershed_tag_confluence_upstream(lCellID_upstream);
@@ -251,7 +254,7 @@ namespace hexwatershed
             // we are on the stream segment and there is only one upstream
             // move to upstream
             lCellID_upstream = (vCell.at(lCellIndex_upstream)).vUpstream[0];
-            lCellIndex_upstream = watershed_find_index_by_cellid(lCellID_upstream);
+            lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
             iFlag_confluence = vCell.at(lCellIndex_upstream).iFlag_confluence;
             // should not add now
           }
@@ -282,6 +285,7 @@ namespace hexwatershed
         cSegment.cReach_start = vReach_segment.front();
         cSegment.cReach_end = vReach_segment.back();
         cSegment.iSegment = iSegment_current;
+        cSegment.iSegmentIndex = nSegment - cSegment.iSegment;
         cSegment.iFlag_has_downstream = 1;
         cSegment.iWatershed = iWatershed;
         cSegment.iSegment_downstream = iSegment_confluence;
@@ -445,7 +449,7 @@ namespace hexwatershed
       {
         // use the watershed method again here
         lCellID_outlet = *iIterator_upstream;
-        lCellIndex_outlet = watershed_find_index_by_cellid(lCellID_outlet);
+        lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
         iSubbasin = (vCell.at(lCellIndex_outlet)).iSegment;
         (vCell.at(lCellIndex_outlet)).iSubbasin = iSubbasin;
         for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
@@ -462,7 +466,7 @@ namespace hexwatershed
             }
             else
             {
-              lCellIndex_current = watershed_find_index_by_cellid(lCellID_downslope);
+              lCellIndex_current = watershed_find_index_by_cell_id(lCellID_downslope);
               if (lCellIndex_current == -1)
               {
                 // this one does not belong in this watershed
@@ -538,14 +542,29 @@ namespace hexwatershed
   int watershed::calculate_watershed_characteristics()
   {
     int error_code = 1;
+    int iSegment_downstream;
+    int iSegmentIndex;
+    float dLength;
+    float dDistance_to_watershed_outlet;
     float dLength_stream_conceptual;
 
     std::vector<segment>::iterator iIterator0;
+    std::vector<segment>::iterator iIterator2;
     std::vector<subbasin>::iterator iIterator1;
 
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
     {
       (*iIterator0).calculate_stream_segment_characteristics();
+      dDistance_to_watershed_outlet = 0.0;
+      iSegment_downstream = (*iIterator0).iSegment_downstream;
+      while (iSegment_downstream != nSegment)
+      {
+        iSegmentIndex = watershed_find_index_by_segment_id(iSegment_downstream);
+        dLength = vSegment.at(iSegmentIndex).dLength;
+        dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + dLength;
+      }
+
+      (*iIterator0).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
     }
 
     for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
@@ -862,7 +881,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  long watershed::watershed_find_index_by_cellid(long lCellID_in)
+  long watershed::watershed_find_index_by_cell_id(long lCellID_in)
   {
     long lCellIndex = -1;
     std::vector<hexagon>::iterator iIterator;
@@ -876,5 +895,36 @@ namespace hexwatershed
     }
 
     return lCellIndex;
+  }
+
+  int watershed::watershed_find_index_by_segment_id(int iSegment_in)
+  {
+    int iSegmentIndex = -1;
+    std::vector<segment>::iterator iIterator;
+    for (iIterator = vSegment.begin(); iIterator != vSegment.end(); iIterator++)
+    {
+      if ((*iIterator).iSegment == iSegment_in)
+      {
+        iSegmentIndex = (*iIterator).iSegmentIndex;
+        break;
+      }
+    }
+
+    return iSegmentIndex;
+  }
+  int watershed::watershed_find_index_by_subbasin_id(int iSegment_in)
+  {
+    int iSegmentIndex = -1;
+    std::vector<subbasin>::iterator iIterator;
+    for (iIterator = vSubbasin.begin(); iIterator != vSubbasin.end(); iIterator++)
+    {
+      if ((*iIterator).iSubbasin == iSegment_in)
+      {
+        iSegmentIndex = (*iIterator).iSubbasinIndex;
+        break;
+      }
+    }
+
+    return iSegmentIndex;
   }
 } // namespace hexwatershed

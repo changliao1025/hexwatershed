@@ -17,6 +17,7 @@ namespace hexwatershed
           ~subbasin();
 
           int iSubbasin; //each subbasin should have the same index with its segment
+          int iSubbasinIndex;
           long nCell;
           long lCellID_outlet; //the index of the subbasin outlet
           float dArea;

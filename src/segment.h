@@ -28,6 +28,7 @@ namespace hexwatershed
 
         int nReach;
         int iSegment;
+        int iSegmentIndex;
         int iWatershed; //which watershed it belongs to
 
         int iSegment_downstream;
@@ -40,6 +41,7 @@ namespace hexwatershed
         float dLength; //the total length of the stream segment
         float dSlope_mean; //the average slope 
         float dElevation_drop; //elevation drop between headwater to outlet
+        float dDistance_to_watershed_outlet;
 
         std::vector<int> vSegment_upstream;
 
@@ -54,5 +56,6 @@ namespace hexwatershed
         int calculate_stream_segment_characteristics();
         int calculate_stream_segment_length();
         int calculate_stream_segment_slope();
+        int calculate_travel_distance();
     };
 } // namespace hexwatershed
