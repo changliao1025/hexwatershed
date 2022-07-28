@@ -23,7 +23,7 @@ namespace hexwatershed
 
     //get informaiton from the domain pass variable
     long lVertexIndex = 0;
-    long lLocalID=0;
+    long lCellIndex=0;
     long lCellIndex_outlet;
     long ncell = this->aCell.size();
   
@@ -38,7 +38,7 @@ namespace hexwatershed
     for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); ++iIterator1)
       {
         hexagon pHexagon;
-        pHexagon.lCellIndex = lLocalID;
+        pHexagon.lCellIndex = lCellIndex;
         pHexagon.lCellID = (*iIterator1).lCellID;
         pHexagon.dElevation_mean = (*iIterator1).dElevation_mean;
         pHexagon.dElevation_raw = (*iIterator1).dElevation_raw;
@@ -99,7 +99,7 @@ namespace hexwatershed
 
 
         vCell_active.push_back(pHexagon);
-        lLocalID = lLocalID +1 ;
+        lCellIndex = lCellIndex +1 ;
       }
 
     std::cout << "Finished initialization!" << std::endl;

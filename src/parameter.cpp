@@ -22,6 +22,7 @@ namespace hexwatershed
     iFlag_elevation_profile = 0;
     dAccumulation_threshold = 0.01;
     dBreach_threshold = 5.0; //unit in meter
+    nOutlet = 1;
   }
 
   parameter::~parameter()

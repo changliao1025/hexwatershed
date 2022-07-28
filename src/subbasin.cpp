@@ -103,17 +103,17 @@ namespace hexwatershed
   }
   long subbasin::subbasin_find_index_by_cellid(long lCellID_in)
   {
-    long lCellIndex = -1;
+    long lCellIndex_subbasin = -1;
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       if ((*iIterator).lCellID == lCellID_in)
       {
-        lCellIndex = (*iIterator).lCellIndex;
+        lCellIndex_subbasin = (*iIterator).lCellIndex_subbasin;
         break;
       }
     }
 
-    return lCellIndex;
+    return lCellIndex_subbasin;
   }
 } // namespace hexwatershed

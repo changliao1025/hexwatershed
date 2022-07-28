@@ -37,6 +37,10 @@ namespace hexwatershed
     iFlag_outlet = -1;
     lCellID_downslope_dominant = -1;
 
+     lCellIndex=-1;     
+     lCellIndex_watershed=-1;     
+     lCellIndex_subbasin=-1;     
+
     dAccumulation = 0.0;
     iSubbasin = -1;
     iSegment = -1;

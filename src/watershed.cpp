@@ -420,6 +420,7 @@ namespace hexwatershed
     long lCellIndex_current;
     long lCellID_outlet;
     long lCellIndex_outlet; // local outlet
+    long lCellIndex_subbasin;
     long lCellID_downslope;
     long lCellIndex_downslope;
     long lCellIndex_accumulation;
@@ -502,20 +503,28 @@ namespace hexwatershed
     {
       subbasin cSubbasin;
       cSubbasin.iSubbasin = iSubbasin;
+      cSubbasin.iSubbasinIndex = nSegment - cSubbasin.iSubbasin;
       vSubbasin.push_back(cSubbasin);
     }
-    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+
+    for (int iSubbasin = 1; iSubbasin <= nSegment; iSubbasin++)
     {
-      int iSubbasin = (*iIterator_self).iSubbasin;
-      if (iSubbasin >= 1 && iSubbasin <= nSegment)
+      lCellIndex_subbasin = 0;
+      for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
       {
-        (vSubbasin[iSubbasin - 1]).vCell.push_back(*iIterator_self);
-      }
-      else
-      {
-        if (iSubbasin != -1)
+        int iSubbasin_dummy = (*iIterator_self).iSubbasin;
+        if (iSubbasin_dummy == iSubbasin)
         {
-          std::cout << "Something is wrong" << std::endl;
+          (*iIterator_self).lCellIndex_subbasin = lCellIndex_subbasin;
+          (vSubbasin[iSubbasin - 1]).vCell.push_back(*iIterator_self);
+          lCellIndex_subbasin = lCellIndex_subbasin + 1;
+        }
+        else
+        {
+          if (iSubbasin != -1)
+          {
+            std::cout << "Something is wrong" << std::endl;
+          }
         }
       }
     }
@@ -883,18 +892,18 @@ namespace hexwatershed
 
   long watershed::watershed_find_index_by_cell_id(long lCellID_in)
   {
-    long lCellIndex = -1;
+    long lCellIndex_watershed = -1;
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       if ((*iIterator).lCellID == lCellID_in)
       {
-        lCellIndex = (*iIterator).lCellIndex;
+        lCellIndex_watershed = (*iIterator).lCellIndex_watershed;
         break;
       }
     }
 
-    return lCellIndex;
+    return lCellIndex_watershed;
   }
 
   int watershed::watershed_find_index_by_segment_id(int iSegment_in)
