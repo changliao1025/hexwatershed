@@ -111,6 +111,7 @@ namespace hexwatershed
             sLog = "Finished defining subbasin";
             ofs_log << sLog << std::endl;
             ofs_log.flush();            
+            std::cout << sLog << std::endl;
 
             compset_calculate_watershed_characteristics();
             sLog = "Finished watershed characteristics";

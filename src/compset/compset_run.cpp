@@ -157,6 +157,7 @@ namespace hexwatershed
           //#pragma omp parallel for private(lCellIndex_self)
           for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
+
             if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
             {
               (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
@@ -164,9 +165,18 @@ namespace hexwatershed
             }
             else
             {
-              (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
-              // we still need its length for MOSART model.
-              (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+              // should we set burnt in stream here? i think so
+              if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+              {
+                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
+                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+              }
+              else
+              {
+                (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                // we still need its length for MOSART model.
+                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+              }
             }
           }
         }
@@ -244,7 +254,7 @@ namespace hexwatershed
     float dDistance_to_watershed_outlet;
     std::string sWatershed;
     std::string sWorkspace_output_watershed;
-    std::vector<float> vAccumulation;
+    //std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
     int iFlag_global = cParameter.iFlag_global;
@@ -267,7 +277,7 @@ namespace hexwatershed
           cWatershed.vCell.clear();
           cWatershed.iWatershed = iWatershed;
           cWatershed.lCellID_outlet = lCellID_outlet;
-          lCellIndex_watershed=0;
+          lCellIndex_watershed = 0;
           // we may check the mesh id as well
           vCell_active.at(lCellIndex_outlet).iFlag_outlet = 1;
           for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
@@ -285,9 +295,9 @@ namespace hexwatershed
                 (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
                 (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed; // single watershed
 
-                (vCell_active.at(lCellIndex_self)).lCellIndex_watershed= lCellIndex_watershed;
+                (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
                 cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
-                lCellIndex_watershed= lCellIndex_watershed+1;
+                lCellIndex_watershed = lCellIndex_watershed + 1;
               }
               else
               {
@@ -306,13 +316,13 @@ namespace hexwatershed
                 }
                 else
                 {
-                  iFound_outlet = 1; //this cell is going out of domain and it does not belong to any user-defined watersheds.
+                  iFound_outlet = 1; // this cell is going out of domain and it does not belong to any user-defined watersheds.
                 }
               }
             }
           }
           (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;
-          vCell_active.at(lCellIndex_outlet).iWatershed = iWatershed;      
+          vCell_active.at(lCellIndex_outlet).iWatershed = iWatershed;
 
           vCell_active.at(lCellIndex_outlet).lCellIndex_watershed = lCellIndex_watershed;
           cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
