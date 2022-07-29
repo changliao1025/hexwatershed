@@ -576,6 +576,12 @@ namespace hexwatershed
               break;
             }
           }
+          if (iFlag_found == 0)
+          {
+            (*iIterator_self).iSegment = -1;
+            // this cell is not on any stream segment
+            iFlag_found = 1;
+          }
         }
 
         iFlag_found = 0;
