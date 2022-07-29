@@ -164,10 +164,19 @@ namespace jsonmodel
 		writer->StartObject();
 		writer->String("lCellID");
 		writer->Int64(lCellID);		
+
 		writer->String("lCellID_downstream_burned");
-		writer->Int64(lCellID_downstream_burned);		
+		writer->Int64(lCellID_downstream_burned);	
+
 		writer->String("lCellID_downslope");
 		writer->Int64(lCellID_downslope);	
+
+		writer->String("iSegment");
+		writer->Int64(iStream_segment);		
+
+		writer->String("iSubbasin");
+		writer->Int64(iSubbasin);			
+	
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);
 		writer->String("dLatitude_center_degree");

@@ -19,6 +19,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     calculate_subbasin_total_area();
+    calculate_subbasin_slope();
     calculate_subbasin_drainage_density(dLength_stream_conceptual);
     return error_code;
   }

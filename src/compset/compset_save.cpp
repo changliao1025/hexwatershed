@@ -53,14 +53,20 @@ namespace hexwatershed
   int compset::compset_save_json(std::string sFilename_in)
   {
     int error_code = 1;
+    int iWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
 
     jsonmodel::mesh cMesh;
+
+    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+    {
+      vWatershed.at(iWatershed - 1).watershed_save_json();      
+    }
+
     if (iFlag_global != 1)
     {
-
       if (iFlag_multiple_outlet != 1)
       {
         for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
@@ -73,11 +79,15 @@ namespace hexwatershed
             pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
             pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
             pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
+            pCell.dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_subbasin_outlet;
+            pCell.dDistance_to_watershed_outlet = (*iIterator).dDistance_to_watershed_outlet;
             pCell.dElevation_mean = (*iIterator).dElevation_mean;
             pCell.dElevation_raw = (*iIterator).dElevation_raw;
             pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
             pCell.dArea = (*iIterator).dArea;
             pCell.lCellID = (*iIterator).lCellID;
+            pCell.iStream_segment = (*iIterator).iSegment;
+            pCell.iSubbasin = (*iIterator).iSubbasin;
             pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
 
             pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;

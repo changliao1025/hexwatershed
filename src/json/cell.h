@@ -53,6 +53,8 @@ namespace jsonmodel
     int nVertex;
     int iStream_segment_burned;
     int iStream_order_burned;
+    int iStream_segment;
+    int iSubbasin;
     long lCellID;
     long lCellID_downstream_burned;
     long lCellID_downslope;

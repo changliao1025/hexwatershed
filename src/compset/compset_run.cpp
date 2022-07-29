@@ -276,6 +276,7 @@ namespace hexwatershed
           {
             make_directory(cWatershed.sWorkspace_output_watershed);
           }
+          cWatershed.sFilename_watershed_json = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
           cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
           cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
           cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
@@ -527,8 +528,6 @@ namespace hexwatershed
         }
       }
     }
-
-
 
     return error_code;
   }
