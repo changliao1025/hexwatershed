@@ -78,8 +78,7 @@ namespace hexwatershed
   int subbasin::calculate_travel_distance()
   {
     int error_code = 1;
-    long lCellID_current;
-     
+    long lCellID_current;     
     long lCellIndex;
     float dDistance_to_subbasin_outlet;
     std::vector<hexagon>::iterator iIterator;

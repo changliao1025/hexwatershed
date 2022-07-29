@@ -595,6 +595,8 @@ namespace hexwatershed
               if (lCellID2 == lCellID)
               {
                 (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
+                (*iIterator_self).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
+
                 iFlag_found = 1;
                 break;
               }
@@ -661,6 +663,7 @@ namespace hexwatershed
     }
     watershed_update_attribute();
     calculate_travel_distance();
+
     calculate_watershed_drainage_area();
     calculate_watershed_total_stream_length();
     calculate_watershed_longest_stream_length();

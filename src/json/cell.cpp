@@ -172,10 +172,10 @@ namespace jsonmodel
 		writer->Int64(lCellID_downslope);	
 
 		writer->String("iSegment");
-		writer->Int64(iStream_segment);		
+		writer->Int(iStream_segment);		
 
 		writer->String("iSubbasin");
-		writer->Int64(iSubbasin);			
+		writer->Int(iSubbasin);			
 	
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);
