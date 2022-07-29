@@ -145,9 +145,9 @@ namespace hexwatershed
     int compset_calculate_watershed_characteristics ();
 
     int compset_save_watershed_characteristics ();
-    //int compset_save_variable (eVariable eV_in);
+  
 
-    int compset_update_attributes();
+    int compset_transfer_watershed_to_domain();
 
     int compset_save_vtk (std::string sFilename_in);
     int compset_save_json(std::string sFilename_in);
@@ -159,8 +159,8 @@ namespace hexwatershed
     int find_land_ocean_interface_neighbors(long lCellID_in);
 
     int priority_flood_depression_filling(std::vector <hexagon> vCell_in);
-    int update_cell_elevation();
-    int update_vertex_elevation();
+    int compset_update_cell_elevation();
+    int compset_update_vertex_elevation();
 
     int compset_check_digital_elevation_model_depression (std::vector <hexagon> vCell_in);
 

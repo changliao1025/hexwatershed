@@ -5,7 +5,11 @@
 #pragma once
 #include <iostream>
 #include "hexagon.h"
-
+#include "./json/JSONBase.h"
+#include "./json/mesh.h"
+#include "./json/cell.h"
+#include "./json/basin.h"
+#include "./json/multibasin.h"
 using namespace std;
 namespace hexwatershed
   {

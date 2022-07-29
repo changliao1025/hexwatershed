@@ -121,7 +121,9 @@ namespace hexwatershed
             std::flush(std::cout);
 
             //now all the watersheds are processed, we can transfer back to main object
-            compset_update_attributes();
+            compset_transfer_watershed_to_domain();            
+            compset_update_cell_elevation();
+            compset_update_vertex_elevation();
           }
         else
           {

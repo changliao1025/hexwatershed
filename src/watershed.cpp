@@ -538,11 +538,46 @@ namespace hexwatershed
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
-
+    long lCellID;
+    long lCellID2;
+    std::vector<hexagon>::iterator iIterator_self;
+    std::vector<hexagon>::iterator iIterator1;
+    std::vector<hexagon>::iterator iIterator2;
     for (int iSegment = 1; iSegment <= nSegment; iSegment++)
     {
       vSubbasin.at(iSegment - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
       vSubbasin.at(iSegment - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
+    }
+
+    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+    {
+      lCellID = (*iIterator_self).lCellID;
+      if ((*iIterator_self).iWatershed == iWatershed) // not using flag anymore
+      {
+        for (int iSegment = 1; iSegment <= nSegment; iSegment++)
+        {
+          for (iIterator1 = vSegment.at(iSegment - 1).vReach_segment.begin(); iIterator1 != vSegment.at(iSegment - 1).vReach_segment.end(); iIterator2++)
+          {
+            lCellID2 = (*iIterator1).lCellID;
+            if (lCellID2 == lCellID)
+            {
+              (*iIterator_self).iSegment = (*iIterator1).iSegment;
+            }
+          }
+        }
+
+        for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
+        {
+          for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
+          {
+            lCellID2 = (*iIterator2).lCellID;
+            if (lCellID2 == lCellID)
+            {
+              (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
+            }
+          }
+        }
+      }
     }
 
     return error_code;
@@ -815,7 +850,7 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
 
     std::vector<subbasin>::iterator iIterator1;
-  
+
     for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
     {
       (*iIterator1).calculate_travel_distance();
@@ -831,7 +866,6 @@ namespace hexwatershed
   {
     int error_code = 1;
     std::string sLine;
-
     std::ofstream ofs;
     ofs.open(sFilename_watershed_characteristics.c_str(), ios::out);
     if (ofs.good())

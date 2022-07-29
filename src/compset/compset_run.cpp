@@ -254,7 +254,7 @@ namespace hexwatershed
     float dDistance_to_watershed_outlet;
     std::string sWatershed;
     std::string sWorkspace_output_watershed;
-    //std::vector<float> vAccumulation;
+    // std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
     int iFlag_global = cParameter.iFlag_global;
@@ -271,9 +271,14 @@ namespace hexwatershed
           watershed cWatershed;
           sWatershed = convert_integer_to_string(iWatershed, 4);
           cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
-          cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
-          cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.json";
-          cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.json";
+          // make output
+          if (path_test(cWatershed.sWorkspace_output_watershed) == 0)
+          {
+            make_directory(cWatershed.sWorkspace_output_watershed);
+          }
+          cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
+          cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
+          cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
           cWatershed.vCell.clear();
           cWatershed.iWatershed = iWatershed;
           cWatershed.lCellID_outlet = lCellID_outlet;
@@ -490,7 +495,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int compset::compset_update_attributes()
+  int compset::compset_transfer_watershed_to_domain()
   {
     int error_code = 1;
     int iWatershed;
@@ -514,11 +519,16 @@ namespace hexwatershed
           if (lCellID1 == lCellID2)
           {
             lCellIndex = compset_find_index_by_cell_id(lCellID2);
+            vCell_active.at(lCellIndex).iSubbasin = (*iIterator1).iSubbasin;
+            vCell_active.at(lCellIndex).iSegment = (*iIterator1).iSegment;
+            vCell_active.at(lCellIndex).dDistance_to_subbasin_outlet = (*iIterator1).dDistance_to_subbasin_outlet;
             vCell_active.at(lCellIndex).dDistance_to_watershed_outlet = (*iIterator1).dDistance_to_watershed_outlet;
           }
         }
       }
     }
+
+
 
     return error_code;
   }
@@ -527,7 +537,7 @@ namespace hexwatershed
    *
    * @return int
    */
-  int compset::update_cell_elevation()
+  int compset::compset_update_cell_elevation()
   {
     int error_code = 1;
     std::vector<hexagon>::iterator iIterator1;
@@ -543,7 +553,7 @@ namespace hexwatershed
    *
    * @return int
    */
-  int compset::update_vertex_elevation()
+  int compset::compset_update_vertex_elevation()
   {
     int error_code = 1;
     long lVertexIndex = 0;
