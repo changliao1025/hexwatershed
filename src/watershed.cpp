@@ -538,6 +538,7 @@ namespace hexwatershed
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
+    int iFlag_found;
     long lCellID;
     long lCellID2;
     std::vector<hexagon>::iterator iIterator_self;
@@ -552,28 +553,49 @@ namespace hexwatershed
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
       lCellID = (*iIterator_self).lCellID;
+
       if ((*iIterator_self).iWatershed == iWatershed) // not using flag anymore
       {
-        for (int iSegment = 1; iSegment <= nSegment; iSegment++)
+        iFlag_found = 0;
+        while (iFlag_found == 0)
         {
-          for (iIterator1 = vSegment.at(iSegment - 1).vReach_segment.begin(); iIterator1 != vSegment.at(iSegment - 1).vReach_segment.end(); iIterator2++)
+          for (int iSegment = 1; iSegment <= nSegment; iSegment++)
           {
-            lCellID2 = (*iIterator1).lCellID;
-            if (lCellID2 == lCellID)
+            for (iIterator1 = vSegment.at(iSegment - 1).vReach_segment.begin(); iIterator1 != vSegment.at(iSegment - 1).vReach_segment.end(); iIterator1++)
             {
-              (*iIterator_self).iSegment = (*iIterator1).iSegment;
+              lCellID2 = (*iIterator1).lCellID;
+              if (lCellID2 == lCellID)
+              {
+                (*iIterator_self).iSegment = (*iIterator1).iSegment;
+                iFlag_found = 1;
+                break;
+              }
+            }
+            if (iFlag_found == 1)
+            {
+              break;
             }
           }
         }
 
-        for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
+        iFlag_found = 0;
+        while (iFlag_found == 0)
         {
-          for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
+          for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
           {
-            lCellID2 = (*iIterator2).lCellID;
-            if (lCellID2 == lCellID)
+            for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
             {
-              (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
+              lCellID2 = (*iIterator2).lCellID;
+              if (lCellID2 == lCellID)
+              {
+                (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
+                iFlag_found = 1;
+                break;
+              }
+            }
+            if (iFlag_found == 1)
+            {
+              break;
             }
           }
         }
