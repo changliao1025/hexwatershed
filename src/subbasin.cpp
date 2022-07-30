@@ -84,7 +84,7 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      dDistance_to_subbasin_outlet = 0.0;
+      dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_downslope;
     
       lCellID_current = (*iIterator).lCellID;
       while (lCellID_current != lCellID_outlet)

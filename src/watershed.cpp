@@ -544,11 +544,6 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
-    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
-    {
-      vSubbasin.at(iSegment - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
-      vSubbasin.at(iSegment - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
-    }
 
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
@@ -596,6 +591,7 @@ namespace hexwatershed
               {
                 (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
                 (*iIterator_self).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
+                (*iIterator_self).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
 
                 iFlag_found = 1;
                 break;
@@ -637,7 +633,7 @@ namespace hexwatershed
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
     {
       iSegment_downstream = (*iIterator0).iSegment_downstream;
-      dDistance_to_watershed_outlet = 0.0;
+      dDistance_to_watershed_outlet = 0.0; //(*iIterator0).dLength;
       if ((*iIterator0).iSegment == nSegment)
       {
         // this is the last segment
@@ -656,14 +652,16 @@ namespace hexwatershed
       }
     }
 
-    for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
     {
-      dLength_stream_conceptual = vSegment.at((*iIterator1).iSubbasin - 1).dLength;
-      (*iIterator1).calculate_subbasin_characteristics(dLength_stream_conceptual);
+      vSubbasin.at(iSegment - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
+      vSubbasin.at(iSegment - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
+      dLength_stream_conceptual = vSegment.at(iSegment - 1).dLength;
+      vSubbasin.at(iSegment - 1).calculate_subbasin_characteristics(dLength_stream_conceptual);
     }
-    watershed_update_attribute();
-    calculate_travel_distance();
 
+    calculate_travel_distance();
+    watershed_update_attribute();
     calculate_watershed_drainage_area();
     calculate_watershed_total_stream_length();
     calculate_watershed_longest_stream_length();
@@ -877,6 +875,7 @@ namespace hexwatershed
     int error_code = 1;
     int iSegment;
     int iSubbasin;
+    float dDistane_to_watershed_outlet;
     // calculate confluence travel
     std::vector<hexagon>::iterator iIterator;
 
@@ -885,6 +884,16 @@ namespace hexwatershed
     for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
     {
       (*iIterator1).calculate_travel_distance();
+    }
+
+    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
+    {
+      dDistane_to_watershed_outlet = vSegment.at(iSegment - 1).dDistance_to_watershed_outlet;
+
+      for (iIterator = vSubbasin.at(iSegment - 1).vCell.begin(); iIterator != vSubbasin.at(iSegment - 1).vCell.end(); iIterator++)
+      {
+        (*iIterator).dDistance_to_watershed_outlet = (*iIterator).dDistance_to_subbasin_outlet + dDistane_to_watershed_outlet;
+      }
     }
 
     return error_code;
