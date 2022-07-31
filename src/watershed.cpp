@@ -996,6 +996,8 @@ namespace hexwatershed
         pCell.dElevation_mean = (*iIterator).dElevation_mean;
         pCell.dElevation_raw = (*iIterator).dElevation_raw;
         pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+        pCell.dLength = (*iIterator).dLength_stream_conceptual;
+        pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
         pCell.dArea = (*iIterator).dArea;
         pCell.lCellID = (*iIterator).lCellID;
         pCell.iStream_segment = (*iIterator).iSegment;

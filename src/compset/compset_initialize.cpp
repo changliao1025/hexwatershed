@@ -97,7 +97,6 @@ namespace hexwatershed
           pHexagon.dLength_stream_burned  = pHexagon.dLength_stream_conceptual;
         }
 
-
         vCell_active.push_back(pHexagon);
         lCellIndex = lCellIndex +1 ;
       }

@@ -62,7 +62,7 @@ namespace hexwatershed
 
     for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
     {
-      vWatershed.at(iWatershed - 1).watershed_save_json();      
+      vWatershed.at(iWatershed - 1).watershed_save_json();
     }
 
     if (iFlag_global != 1)
@@ -84,6 +84,8 @@ namespace hexwatershed
             pCell.dElevation_mean = (*iIterator).dElevation_mean;
             pCell.dElevation_raw = (*iIterator).dElevation_raw;
             pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+            pCell.dLength = (*iIterator).dLength_stream_conceptual;
+            pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
             pCell.dArea = (*iIterator).dArea;
             pCell.lCellID = (*iIterator).lCellID;
             pCell.iStream_segment = (*iIterator).iSegment;
@@ -167,11 +169,10 @@ namespace hexwatershed
     int iWatershed;
     for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
     {
-      vWatershed.at(iWatershed - 1).save_watershed_characteristics();  
+      vWatershed.at(iWatershed - 1).save_watershed_characteristics();
       vWatershed.at(iWatershed - 1).save_segment_characteristics();
       vWatershed.at(iWatershed - 1).save_subbasin_characteristics();
     }
-    
 
     return error_code;
   }
