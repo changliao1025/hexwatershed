@@ -808,6 +808,8 @@ namespace hexwatershed
     float dSlope_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     std::vector<subbasin>::iterator iIterator1;
+
+    nCell = vCell.size();
     if (iOption == 1) // by cell
     {
       for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
@@ -967,7 +969,9 @@ namespace hexwatershed
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_integer_to_string((*iIterator1).iSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
+        sLine = convert_integer_to_string((*iIterator1).iSubbasin) + "," 
+        + convert_long_to_string((*iIterator1).lCellID_outlet) + "," 
+        + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
         ofs << sLine << std::endl;
       }
       ofs.close();

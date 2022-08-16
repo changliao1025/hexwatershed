@@ -61,7 +61,7 @@ namespace hexwatershed
     float dLength_stream_conceptual; // total stream length
 
 
-  std::string sWorkspace_output_watershed;
+    std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
     std::string sFilename_subbasin_characteristics;
