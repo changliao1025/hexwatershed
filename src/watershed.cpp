@@ -92,6 +92,7 @@ namespace hexwatershed
     lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
     iFlag_confluence = vCell.at(lCellIndex_outlet).iFlag_confluence;
     lCellIndex_current = vCell.at(lCellIndex_outlet).lCellIndex_watershed;
+    lCellID_current = vCell.at(lCellIndex_outlet).lCellID;
     vSegment.clear();
     segment cSegment;
     std::vector<hexagon> vReach_segment;
@@ -414,6 +415,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFound_outlet;
+    int iFlag_checked;
     int iSubbasin;
     long lCellIndex_self;
     long lCellIndex_current;
@@ -433,6 +435,7 @@ namespace hexwatershed
     // the whole watershed first
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
+      (*iIterator_self).iFlag_checked = 0;
       if ((*iIterator_self).iWatershed == iWatershed) // not using flag anymore
       {
         (*iIterator_self).iSubbasin = nSegment;
@@ -444,10 +447,11 @@ namespace hexwatershed
       vAccumulation.push_back((*iIterator_self).dAccumulation);
     }
 
+    
     // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
     while (vConfluence_copy.size() != 0)
     {
-      iterator_accumulation = max_element(std::begin(vAccumulation), std::end(vAccumulation));
+      iterator_accumulation = min_element(std::begin(vAccumulation), std::end(vAccumulation));
       lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
       std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
       for (iIterator_upstream = vUpstream.begin(); iIterator_upstream != vUpstream.end(); iIterator_upstream++)
@@ -461,6 +465,11 @@ namespace hexwatershed
         {
           iFound_outlet = 0;
           lCellIndex_current = (*iIterator_self).lCellIndex_watershed;
+          iFlag_checked  = (*iIterator_self).iFlag_checked;
+          if (iFlag_checked==1)
+          {
+            continue;
+          }
           while (iFound_outlet != 1)
           {
             lCellID_downslope = vCell.at(lCellIndex_current).lCellID_downslope_dominant;
@@ -468,6 +477,7 @@ namespace hexwatershed
             {
               iFound_outlet = 1;
               (*iIterator_self).iSubbasin = iSubbasin;
+               (*iIterator_self).iFlag_checked=1;
             }
             else
             {
@@ -484,6 +494,7 @@ namespace hexwatershed
                 {
                   // this is the outlet
                   iFound_outlet = 1;
+                  //(*iIterator_self).iFlag_checked=1;
                 }
                 else
                 {
@@ -956,6 +967,8 @@ namespace hexwatershed
     return error_code;
   }
 
+ 
+
   int watershed::save_subbasin_characteristics()
   {
     int error_code = 1;
@@ -1018,6 +1031,48 @@ namespace hexwatershed
     cMesh.SerializeToFile(sFilename_watershed_json.c_str());
     return error_code;
   }
+  
+   int watershed::watershed_save_stream_segment_json()
+  {
+    int error_code = 1;
+    std::vector<segment>::iterator iIterator1;
+    std::vector<hexagon>::iterator iIterator;
+
+    jsonmodel::mesh cMesh;
+    for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
+    {
+    for (iIterator = (*iIterator1).vCell.begin(); iIterator != (*iIterator1).vCell.end(); iIterator++)
+      {      
+        cell pCell;
+        pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+        pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+        pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+        pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
+        pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
+        pCell.dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_subbasin_outlet;
+        pCell.dDistance_to_watershed_outlet = (*iIterator).dDistance_to_watershed_outlet;
+        pCell.dElevation_mean = (*iIterator).dElevation_mean;
+        pCell.dElevation_raw = (*iIterator).dElevation_raw;
+        pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+        pCell.dLength = (*iIterator).dLength_stream_conceptual;
+        pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
+        pCell.dArea = (*iIterator).dArea;
+        pCell.lCellID = (*iIterator).lCellID;
+        pCell.iStream_segment = (*iIterator).iSegment;
+        pCell.iSubbasin = (*iIterator).iSubbasin;
+        pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
+        pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+        pCell.dAccumulation = (*iIterator).dAccumulation;
+        pCell.vVertex = (*iIterator).vVertex;
+        pCell.nVertex = pCell.vVertex.size();
+        cMesh.aCell.push_back(pCell);
+      
+      }
+    }
+    cMesh.SerializeToFile(sFilename_watershed_stream_segment_json.c_str());
+    return error_code;
+  }
+
   long watershed::watershed_find_index_by_cell_id(long lCellID_in)
   {
     long lCellIndex_watershed = -1;

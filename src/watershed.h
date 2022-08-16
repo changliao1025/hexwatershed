@@ -41,6 +41,8 @@ namespace hexwatershed
 
     int iWatershed; // id
 
+    
+
     int iSegment_current;
     float dArea;
     float dSlope;
@@ -67,6 +69,7 @@ namespace hexwatershed
     std::string sFilename_subbasin_characteristics;
 
     std::string sFilename_watershed_json;
+    std::string sFilename_watershed_stream_segment_json;
 
 
     std::vector<hexagon> vCell;
@@ -98,7 +101,10 @@ namespace hexwatershed
     int save_watershed_characteristics();
     int save_segment_characteristics();
     int save_subbasin_characteristics();
+
     int watershed_save_json();
+
+    int watershed_save_stream_segment_json();
 
 
     long watershed_find_index_by_cell_id(long lCellID);

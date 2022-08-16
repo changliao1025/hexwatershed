@@ -37,7 +37,7 @@ namespace hexwatershed
     long lCellIndex_subbasin; 
     long lCellID;   //this is the mesh id from the shapefile, it might be the same with Global ID,
     // this depends upon how mesh id was generated, it can be different from global id
-
+    int iFlag_checked; //used for loop
     int iFlag_active;        //if it has elevation assigned
     int iFlag_watershed;     //whether it is inside a watershed
     int iFlag_stream;        //whether it is a stream grid
