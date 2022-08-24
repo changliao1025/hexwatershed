@@ -63,6 +63,7 @@ namespace hexwatershed
     for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
     {
       vWatershed.at(iWatershed - 1).watershed_save_json();
+      vWatershed.at(iWatershed - 1).watershed_save_stream_segment_json();
     }
 
     if (iFlag_global != 1)

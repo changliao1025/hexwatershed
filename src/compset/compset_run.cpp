@@ -158,6 +158,7 @@ namespace hexwatershed
                 lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                 dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
 
+                dAccumulation_min =  vCell_active.at(lCellIndex_outlet).dAccumulation;
                 switch(iFlag_stream_grid_option)
                   {
                   case 1: //only burnt-in
@@ -228,7 +229,7 @@ namespace hexwatershed
                           {
                             (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
                             dAccumulation= vCell_active.at(lCellIndex_self).dAccumulation;
-                            if (dAccumulation_min < dAccumulation)
+                            if ( dAccumulation < dAccumulation_min)
                               {
                                 dAccumulation_min = dAccumulation;
                               }
@@ -560,6 +561,7 @@ namespace hexwatershed
           {
             for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
               {
+
                 vWatershed.at(iWatershed - 1).watershed_define_subbasin();
               }
           }
@@ -586,6 +588,7 @@ namespace hexwatershed
           {
             for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
               {
+
                 vWatershed.at(iWatershed - 1).calculate_watershed_characteristics();
               }
           }

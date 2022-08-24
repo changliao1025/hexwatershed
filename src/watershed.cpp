@@ -413,6 +413,7 @@ namespace hexwatershed
   }
   int watershed::watershed_define_subbasin()
   {
+
     int error_code = 1;
     int iFound_outlet;
     int iFlag_checked;
@@ -448,9 +449,12 @@ namespace hexwatershed
     }
 
     
+    
     // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
     while (vConfluence_copy.size() != 0)
     {
+
+
       iterator_accumulation = min_element(std::begin(vAccumulation), std::end(vAccumulation));
       lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
       std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
@@ -475,6 +479,7 @@ namespace hexwatershed
             lCellID_downslope = vCell.at(lCellIndex_current).lCellID_downslope_dominant;
             if (lCellID_outlet == lCellID_downslope)
             {
+
               iFound_outlet = 1;
               (*iIterator_self).iSubbasin = iSubbasin;
                (*iIterator_self).iFlag_checked=1;
@@ -1041,7 +1046,7 @@ namespace hexwatershed
     jsonmodel::mesh cMesh;
     for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
     {
-    for (iIterator = (*iIterator1).vCell.begin(); iIterator != (*iIterator1).vCell.end(); iIterator++)
+    for (iIterator = (*iIterator1).vReach_segment.begin(); iIterator != (*iIterator1).vReach_segment.end(); iIterator++)
       {      
         cell pCell;
         pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
