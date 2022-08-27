@@ -125,14 +125,16 @@ namespace hexwatershed
           lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
           vCell.at(lCellIndex_current).iSegment = iSegment_current;
           vReach_segment.push_back(vCell.at(lCellIndex_current));
+          //std::cout << lCellID_upstream << std::endl;
         }
         else
         { // headwater
-          vCell.at(lCellIndex_current).iSegment = iSegment_current;
+          //vCell.at(lCellIndex_current).iSegment = iSegment_current;
           vCell.at(lCellIndex_current).iFlag_first_reach = 1;
           lCellID_current = vCell.at(lCellIndex_current).lCellID;
-          vReach_segment.push_back(vCell.at(lCellIndex_current));
+          //vReach_segment.push_back(vCell.at(lCellIndex_current));
           iFlag_confluence = 1;
+          //std::cout << lCellID_current << std::endl;
         }
       }
 
@@ -1037,7 +1039,7 @@ namespace hexwatershed
     return error_code;
   }
   
-   int watershed::watershed_save_stream_segment_json()
+   int watershed::watershed_save_stream_edge_json()
   {
     int error_code = 1;
     std::vector<segment>::iterator iIterator1;

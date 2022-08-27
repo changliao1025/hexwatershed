@@ -104,7 +104,7 @@ namespace hexwatershed
 
     int watershed_save_json();
 
-    int watershed_save_stream_segment_json();
+    int watershed_save_stream_edge_json();
 
 
     long watershed_find_index_by_cell_id(long lCellID);
