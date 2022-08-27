@@ -1074,7 +1074,7 @@ namespace hexwatershed
       
       }
     }
-    cMesh.SerializeToFile(sFilename_watershed_stream_segment_json.c_str());
+    cMesh.SerializeToFile(sFilename_watershed_stream_edge_json.c_str());
     return error_code;
   }
 

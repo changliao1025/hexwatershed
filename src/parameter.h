@@ -28,6 +28,7 @@ namespace hexwatershed
     int iFlag_resample_method;
     int iFlag_flowline; //has stream burning or not
     int iFlag_stream_burning_topology;//whethet to use topology for stream burning
+    int iFlag_stream_grid_option;
 
     int iFlag_slope_provided;
 

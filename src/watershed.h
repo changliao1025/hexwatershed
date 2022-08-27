@@ -69,7 +69,7 @@ namespace hexwatershed
     std::string sFilename_subbasin_characteristics;
 
     std::string sFilename_watershed_json;
-    std::string sFilename_watershed_stream_segment_json;
+    std::string sFilename_watershed_stream_edge_json;
 
 
     std::vector<hexagon> vCell;

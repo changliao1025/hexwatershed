@@ -149,6 +149,12 @@ namespace hexwatershed
     {
       cCompset.cParameter.iFlag_flowline = pConfigDoc[sKey.c_str()].GetInt();
     }
+    
+    sKey = "iFlag_stream_grid_option";
+    if (pConfigDoc.HasMember(sKey.c_str()))
+    {
+      cCompset.cParameter.iFlag_stream_grid_option = pConfigDoc[sKey.c_str()].GetInt();
+    }
 
     if (cCompset.cParameter.iFlag_flowline == 1)
     {

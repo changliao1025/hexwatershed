@@ -20,6 +20,7 @@ namespace hexwatershed
     iFlag_global = 0;
     iFlag_multiple_outlet=0;
     iFlag_elevation_profile = 0;
+    iFlag_stream_grid_option = 3;
     dAccumulation_threshold = 0.01;
     dBreach_threshold = 5.0; //unit in meter
     nOutlet = 1;

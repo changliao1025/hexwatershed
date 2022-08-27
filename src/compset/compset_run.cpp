@@ -145,8 +145,7 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_stream_grid_option;
     std::vector<hexagon>::iterator iIterator_self;
-
-    iFlag_stream_grid_option = 4;
+    iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
     if (iFlag_global != 1)
       {
         if (iFlag_flowline == 1)
@@ -237,6 +236,7 @@ namespace hexwatershed
                           }
                       }
                       //update threshold
+
                     dAccumulation_threshold = dAccumulation_min;
                     for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
                       {
@@ -374,7 +374,7 @@ namespace hexwatershed
                     make_directory(cWatershed.sWorkspace_output_watershed);
                   }
                 cWatershed.sFilename_watershed_json = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
-                cWatershed.sFilename_watershed_stream_segment_json = cWatershed.sWorkspace_output_watershed + slash + "stream_segment.json";
+                cWatershed.sFilename_watershed_stream_edge_json = cWatershed.sWorkspace_output_watershed + slash + "stream_edge.json";
                 cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
                 cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
                 cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
