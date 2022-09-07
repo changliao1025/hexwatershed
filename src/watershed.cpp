@@ -73,6 +73,7 @@ namespace hexwatershed
     {
       nSegment = nSegment + (*iIterator_self).vUpstream.size();
     }
+    nSubbasin = nSegment;
     // sort cannot be used directly here
 
     return error_code;
@@ -455,8 +456,6 @@ namespace hexwatershed
     // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
     while (vConfluence_copy.size() != 0)
     {
-
-
       iterator_accumulation = min_element(std::begin(vAccumulation), std::end(vAccumulation));
       lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
       std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
@@ -521,7 +520,7 @@ namespace hexwatershed
 
     // assign watershed subbasin cell, maybe later?
     vSubbasin.clear();
-    for (int iSubbasin = 1; iSubbasin <= nSegment; iSubbasin++)
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
     {
       subbasin cSubbasin;
       cSubbasin.iSubbasin = iSubbasin;
@@ -529,7 +528,7 @@ namespace hexwatershed
       vSubbasin.push_back(cSubbasin);
     }
 
-    for (int iSubbasin = 1; iSubbasin <= nSegment; iSubbasin++)
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
     {
       lCellIndex_subbasin = 0;
       for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
@@ -598,6 +597,7 @@ namespace hexwatershed
         }
 
         iFlag_found = 0;
+        
         while (iFlag_found == 0)
         {
           for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
@@ -974,8 +974,6 @@ namespace hexwatershed
     return error_code;
   }
 
- 
-
   int watershed::save_subbasin_characteristics()
   {
     int error_code = 1;
@@ -1111,6 +1109,7 @@ namespace hexwatershed
 
     return iSegmentIndex;
   }
+  
   int watershed::watershed_find_index_by_subbasin_id(int iSegment_in)
   {
     int iSubbasinIndex = -1;
