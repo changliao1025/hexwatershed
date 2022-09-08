@@ -634,6 +634,7 @@ namespace hexwatershed
   int watershed::calculate_watershed_characteristics()
   {
     int error_code = 1;
+    int iSegment;
     int iSegment_downstream;
     int iSegmentIndex;
     float dLength;
@@ -670,12 +671,13 @@ namespace hexwatershed
       }
     }
 
-    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
     {
-      vSubbasin.at(iSegment - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
-      vSubbasin.at(iSegment - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
+      iSegment = iSubbasin;
+      vSubbasin.at(iSubbasin - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
+      vSubbasin.at(iSubbasin - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
       dLength_stream_conceptual = vSegment.at(iSegment - 1).dLength;
-      vSubbasin.at(iSegment - 1).calculate_subbasin_characteristics(dLength_stream_conceptual);
+      vSubbasin.at(iSubbasin - 1).calculate_subbasin_characteristics(dLength_stream_conceptual);
     }
 
     calculate_travel_distance();
@@ -906,11 +908,12 @@ namespace hexwatershed
       (*iIterator1).calculate_travel_distance();
     }
 
-    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
+    for ( iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
     {
+      iSegment= iSubbasin;
       dDistane_to_watershed_outlet = vSegment.at(iSegment - 1).dDistance_to_watershed_outlet;
 
-      for (iIterator = vSubbasin.at(iSegment - 1).vCell.begin(); iIterator != vSubbasin.at(iSegment - 1).vCell.end(); iIterator++)
+      for (iIterator = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator++)
       {
         (*iIterator).dDistance_to_watershed_outlet = (*iIterator).dDistance_to_subbasin_outlet + dDistane_to_watershed_outlet;
       }
