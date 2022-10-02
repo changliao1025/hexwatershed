@@ -84,17 +84,26 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_downslope;
-    
       lCellID_current = (*iIterator).lCellID;
-      while (lCellID_current != lCellID_outlet)
+      if (lCellID_current !=lCellID_outlet)
       {
-        lCellIndex = subbasin_find_index_by_cellid(lCellID_current);
-        lCellID_current = vCell.at(lCellIndex).lCellID_downslope_dominant;       
-        dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet + vCell.at(lCellIndex).dDistance_to_downslope;
+        dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_downslope;         
+        lCellID_current =  (*iIterator).lCellID_downslope_dominant;   
+        while (lCellID_current != lCellID_outlet)
+        {
+          lCellIndex = subbasin_find_index_by_cellid(lCellID_current);
+          lCellID_current = vCell.at(lCellIndex).lCellID_downslope_dominant;       
+          dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet + vCell.at(lCellIndex).dDistance_to_downslope;  
+        }
+
+        (*iIterator).dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet;
+      }
+      else
+      {
+        (*iIterator).dDistance_to_subbasin_outlet = 0.0;
       }
 
-      (*iIterator).dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet;
+      
     }
 
     return error_code;

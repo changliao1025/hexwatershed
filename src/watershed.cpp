@@ -650,16 +650,16 @@ namespace hexwatershed
       (*iIterator0).calculate_stream_segment_characteristics();
     }
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
-    {
-      iSegment_downstream = (*iIterator0).iSegment_downstream;
-      dDistance_to_watershed_outlet = 0.0; //(*iIterator0).dLength;
+    {          
       if ((*iIterator0).iSegment == nSegment)
-      {
+      {        
         // this is the last segment
-        (*iIterator0).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
+        (*iIterator0).dDistance_to_watershed_outlet = 0.0;
       }
       else
       {
+        iSegment_downstream = (*iIterator0).iSegment_downstream;  
+        dDistance_to_watershed_outlet = 0.0; //(*iIterator0).dLength;
         while (iSegment_downstream != nSegment)
         {
           iSegmentIndex = watershed_find_index_by_segment_id(iSegment_downstream);
@@ -667,6 +667,10 @@ namespace hexwatershed
           dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + dLength;
           iSegment_downstream = vSegment.at(iSegmentIndex).iSegment_downstream;
         }
+        //add last segment
+        iSegmentIndex = watershed_find_index_by_segment_id(iSegment_downstream); 
+        dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + vSegment.at(iSegmentIndex).dLength;
+
         (*iIterator0).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
       }
     }
@@ -897,11 +901,14 @@ namespace hexwatershed
     int error_code = 1;
     int iSegment;
     int iSubbasin;
-    float dDistane_to_watershed_outlet;
+    int iSegment_downstream;
+    int iSegmentIndex;
+    float dDistance_to_watershed_outlet;
     // calculate confluence travel
     std::vector<hexagon>::iterator iIterator;
-
+    std::vector<segment>::iterator iIterator0;
     std::vector<subbasin>::iterator iIterator1;
+    
 
     for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
     {
@@ -911,12 +918,25 @@ namespace hexwatershed
     for ( iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
     {
       iSegment= iSubbasin;
-      dDistane_to_watershed_outlet = vSegment.at(iSegment - 1).dDistance_to_watershed_outlet;
-
-      for (iIterator = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator++)
+      if (iSubbasin == nSubbasin)
       {
-        (*iIterator).dDistance_to_watershed_outlet = (*iIterator).dDistance_to_subbasin_outlet + dDistane_to_watershed_outlet;
+        for (iIterator = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator++)
+        {
+          (*iIterator).dDistance_to_watershed_outlet = (*iIterator).dDistance_to_subbasin_outlet ;
+        }
       }
+      else
+      {        
+        //iSegment_downstream = vSegment.at(iSegment-1).iSegment_downstream;          
+        iSegmentIndex = watershed_find_index_by_segment_id(iSegment);          
+        //dDistance_to_watershed_outlet = vSegment.at(iSegmentIndex).dDistance_to_watershed_outlet;
+        dDistance_to_watershed_outlet = vSegment.at(iSegmentIndex).dDistance_to_watershed_outlet;
+        for (iIterator = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator++)
+        {
+          (*iIterator).dDistance_to_watershed_outlet = (*iIterator).dDistance_to_subbasin_outlet + dDistance_to_watershed_outlet;
+        }
+      }
+      
     }
 
     return error_code;
@@ -933,6 +953,9 @@ namespace hexwatershed
     ofs.open(sFilename_watershed_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
+      sLine = "Total number of cells: " + convert_float_to_string(nCell);
+      ofs << sLine << std::endl;
+
       sLine = "Watershed drainage area: " + convert_float_to_string(dArea);
       ofs << sLine << std::endl;
 
