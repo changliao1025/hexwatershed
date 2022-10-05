@@ -986,13 +986,17 @@ namespace hexwatershed
     ofs.open(sFilename_segment_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-
       sLine = "Segment ID, stream order, total length, elevation drop, average slope";
       ofs << sLine << std::endl;
       for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
       {
 
-        sLine = convert_integer_to_string((*iIterator1).iSegment) + "," + convert_integer_to_string((*iIterator1).iSegment_order) + "," + convert_float_to_string((*iIterator1).dLength) + "," + convert_float_to_string((*iIterator1).dElevation_drop) + "," + convert_float_to_string((*iIterator1).dSlope_mean);
+        sLine = convert_integer_to_string((*iIterator1).iSegment) + "," 
+        + convert_integer_to_string((*iIterator1).iSegment_downstream) + "," 
+        + convert_integer_to_string((*iIterator1).iSegment_order) + "," 
+        + convert_float_to_string((*iIterator1).dLength) + "," 
+        + convert_float_to_string((*iIterator1).dElevation_drop) + "," 
+        + convert_float_to_string((*iIterator1).dSlope_mean);
         ofs << sLine << std::endl;
       }
       ofs.close();
