@@ -986,7 +986,7 @@ namespace hexwatershed
     ofs.open(sFilename_segment_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-      sLine = "Segment ID, stream order, total length, elevation drop, average slope";
+      sLine = "Segment ID, downstream segment ID, stream order, total length, elevation drop, average slope";
       ofs << sLine << std::endl;
       for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
       {
