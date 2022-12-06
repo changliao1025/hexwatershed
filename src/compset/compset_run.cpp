@@ -510,7 +510,6 @@ namespace hexwatershed
                             (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
                             (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
                             (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed; // single watershed
-
                             (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
                             cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
                             lCellIndex_watershed = lCellIndex_watershed + 1;
