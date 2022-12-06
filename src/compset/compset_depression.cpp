@@ -323,7 +323,7 @@ namespace hexwatershed
           }
         else
           {
-            std::cout<<"This is a location simulation with multiple outlets"<<std::endl;
+            std::cout<<"This is a regional simulation with multiple outlets"<<std::endl;
             //global case
             if (iFlag_flowline == 1)//with stream burning
               {
