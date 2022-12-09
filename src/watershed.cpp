@@ -86,7 +86,7 @@ namespace hexwatershed
     int iFlag_headwater;
 
     int iUpstream;
-    int iWatershed;
+  
     long lCellIndex_current;
     long lCellID_current;
     long lCellID_upstream;
@@ -106,6 +106,7 @@ namespace hexwatershed
         iSegment_current = nSegment;
         vCell.at(lCellIndex_outlet).iSegment = iSegment_current;
         vReach_segment.push_back(vCell.at(lCellIndex_outlet));
+        iFlag_headwater = 0;
         while (iFlag_headwater != 1)
           {
             iUpstream = vCell.at(lCellIndex_current).nUpstream;
@@ -118,12 +119,9 @@ namespace hexwatershed
               }
             else
               { // headwater
-
                 vCell.at(lCellIndex_current).iFlag_first_reach = 1;
                 lCellID_current = vCell.at(lCellIndex_current).lCellID;
-
                 iFlag_headwater = 1;
-
               }
           }
 
@@ -758,7 +756,7 @@ namespace hexwatershed
 
     // save watershed characteristics to the file
 
-    std::cout << "The watershed characteristics are calculated successfully!" << std::endl;
+    //std::cout << "The watershed characteristics are calculated successfully!" << std::endl;
 
     return error_code;
   }
@@ -787,7 +785,6 @@ namespace hexwatershed
       {
         for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
           {
-
             dArea_total = dArea_total + (*iIterator1).dArea;
           }
       }

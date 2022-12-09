@@ -478,7 +478,7 @@ namespace hexwatershed
                 lCellID_outlet = aBasin.at(iWatershed - 1).lCellID_outlet;
                 lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
                 watershed cWatershed;
-                sWatershed = convert_integer_to_string(iWatershed, 4);
+                sWatershed = convert_integer_to_string(iWatershed, 8); //increase to 8 to include 100 million rivers
                 cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
                 // make output
                 if (path_test(cWatershed.sWorkspace_output_watershed) == 0)
@@ -498,8 +498,21 @@ namespace hexwatershed
                 vCell_active.at(lCellIndex_outlet).iFlag_outlet = 1;
                 for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
                   {
+                    //if it is already in another watershed, skip it
+                    if((vCell_active.at(lCellIndex_self)).iFlag_watershed==1)
+                      {
+                        continue;
+                      }
                     dDistance_to_watershed_outlet = (vCell_active.at(lCellIndex_self)).dDistance_to_downslope;
-                    iFound_outlet = 0;
+                    lCellID_downslope = (vCell_active.at(lCellIndex_self)).lCellID_downslope_dominant;
+                    if (lCellID_downslope!=-1)
+                      {
+                        iFound_outlet = 0;
+                      }
+                    else
+                      {
+                        iFound_outlet =1 ;
+                      }
                     lCellIndex_current = lCellIndex_self;
                     while (iFound_outlet != 1)
                       {
@@ -509,7 +522,7 @@ namespace hexwatershed
                             iFound_outlet = 1;
                             (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
                             (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
-                            (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed; // single watershed
+                            (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed;
                             (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
                             cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
                             lCellIndex_watershed = lCellIndex_watershed + 1;
@@ -518,16 +531,32 @@ namespace hexwatershed
                           {
                             if (lCellID_downslope != -1)
                               {
-                                lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
-                                dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_downslope;
+                                lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);                                
                                 if (lCellIndex_current >= 0)
                                   {
-                                    iFound_outlet = 0;
+                                    if(  vCell_active.at(lCellIndex_current).iWatershed == iWatershed ) //the downslope is already finished
+                                      {
+                                        dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_watershed_outlet;
+                                        (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
+                                        (vCell_active.at(lCellIndex_self)).dDistance_to_watershed_outlet = dDistance_to_watershed_outlet;
+                                        (vCell_active.at(lCellIndex_self)).iWatershed = iWatershed;
+                                        (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
+                                        cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
+                                        lCellIndex_watershed = lCellIndex_watershed + 1;
+                                        iFound_outlet =1;
+                                      }
+                                    else
+                                      {
+                                        dDistance_to_watershed_outlet = dDistance_to_watershed_outlet + (vCell_active.at(lCellIndex_current)).dDistance_to_downslope;
+                                        iFound_outlet = 0;
+                                      }
+                                    
                                   }
                                 else
                                   {
                                     iFound_outlet = 1; // a cell not going in this outlet may be going to a different one
                                   }
+
                               }
                             else
                               {
@@ -536,9 +565,9 @@ namespace hexwatershed
                           }
                       }
                   }
-                (vCell_active.at(lCellIndex_outlet)).iFlag_watershed = 1;
-                vCell_active.at(lCellIndex_outlet).iWatershed = iWatershed;
 
+                vCell_active.at(lCellIndex_outlet).iFlag_watershed = 1;
+                vCell_active.at(lCellIndex_outlet).iWatershed = iWatershed;
                 vCell_active.at(lCellIndex_outlet).lCellIndex_watershed = lCellIndex_watershed;
                 cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
                 vWatershed.push_back(cWatershed);
