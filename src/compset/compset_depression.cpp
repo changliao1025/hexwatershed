@@ -228,7 +228,7 @@ namespace hexwatershed
           {
             std::cout<<"This is a local simulation with only one outlet."<<std::endl;
             vCell_boundary = compset_obtain_boundary(vCell_active);
-            vCell_priority_flood = vCell_boundary;
+          
             //set initial as true for boundary
             if (iFlag_flowline == 1)
               {
@@ -254,9 +254,8 @@ namespace hexwatershed
                     lCellIndex_active = aIndex[1]; //local id
                     dElevation_mean_center = vCell_active.at(lCellIndex_active).dElevation_mean;
 
-                    //remove this cell from queue
-                    vCell_priority_flood.erase( vCell_priority_flood.begin() + lCellIndex_boundary ); 
-                    //add it back
+                   
+                  
                     vCell_priority_flood.push_back(vCell_active.at(lCellIndex_active));
 
                     //new simplified approach
@@ -275,12 +274,17 @@ namespace hexwatershed
                         vCell_active.at(lCellIndex_outlet).dElevation_mean = dElevation_mean_center-10;
                         //burn stream first, set flag as well
                         vCell_active.at(lCellIndex_outlet).iFlag_depression_filling_treated = 1;
+
                         compset_stream_burning_with_topology( vCell_active.at(lCellIndex_outlet).lCellID );
                       }
                     //the model requires the initial boundary to be modified already after stream burning
                     for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
                       {
-                        lCellIndex_active = (*iIterator).lCellIndex;
+                        lCellIndex_active = (*iIterator).lCellIndex;                        
+                        if ( vCell_active.at(lCellIndex_active).iFlag_stream_burning_treated !=1 )
+                        {
+                          vCell_priority_flood.push_back(vCell_active.at(lCellIndex_active));
+                        }
                         vCell_active.at(lCellIndex_active).iFlag_depression_filling_treated = 1;
                       }
 
@@ -665,11 +669,11 @@ namespace hexwatershed
                   }
                 else
                   {
+                    vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
+
                     if (dElevation_mean_neighbor <= dElevation_mean_center)
                       {
-                        vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
-
-                        vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
+                        vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;                        
                       }
 
                       //elevation profile case
@@ -682,7 +686,6 @@ namespace hexwatershed
                               dElevation_profile0_center + abs (dElevation_profile0_center) * 0.0001 + 0.0001;
                           }
                       }
-
                       
                     vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated = 1;
                     vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);

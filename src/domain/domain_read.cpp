@@ -272,8 +272,9 @@ namespace hexwatershed
 
     cCompset.sFilename_json = sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
     // others
+    cCompset.sFilename_domain_json= sWorkspace_output_hexwatershed + slash + "domain.json";
 
-    cCompset.sFilename_animation = sWorkspace_output_hexwatershed + slash + "animation.json";
+    cCompset.sFilename_animation_json = sWorkspace_output_hexwatershed + slash + "animation.json";
 
     sFilename_log = sWorkspace_output_hexwatershed + slash + "starlog" + sExtension_text;
     ofs_log.open(sFilename_log.c_str(), ios::out);
