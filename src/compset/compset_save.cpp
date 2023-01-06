@@ -39,6 +39,8 @@ namespace hexwatershed
 
     // main jasn file
     compset_save_json(sFilename);
+    sFilename = sFilename_animation;
+    compset_save_animation_json(sFilename);
     sFilename = sFilename_vtk;
 
     compset_save_vtk(sFilename);
@@ -48,6 +50,35 @@ namespace hexwatershed
     std::flush(std::cout);
 
     return error_code;
+  }
+
+  int compset::compset_save_animation_json(std::string sFilename_in)
+  {
+    int error_code = 1;
+    
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    std::vector<hexagon>::iterator iIterator;
+
+    jsonmodel::mesh cMesh;
+
+
+     if (iFlag_global != 1)
+    {
+      if (iFlag_multiple_outlet != 1)
+      {
+   //animation
+        for (iIterator = vCell_priority_flood.begin(); iIterator != vCell_priority_flood.end(); iIterator++)
+        {         
+            cell pCell;            
+            pCell.lCellID = (*iIterator).lCellID;           
+            cMesh.aCell.push_back(pCell);          
+        }
+
+        cMesh.SerializeToFile(sFilename_in.c_str());
+      }
+    }
+      return error_code;
   }
 
   int compset::compset_save_json(std::string sFilename_in)
@@ -102,6 +133,8 @@ namespace hexwatershed
         }
 
         cMesh.SerializeToFile(sFilename_in.c_str());
+
+        
       }
       else
       {

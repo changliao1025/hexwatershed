@@ -228,6 +228,7 @@ namespace hexwatershed
           {
             std::cout<<"This is a local simulation with only one outlet."<<std::endl;
             vCell_boundary = compset_obtain_boundary(vCell_active);
+            vCell_priority_flood = vCell_boundary;
             //set initial as true for boundary
             if (iFlag_flowline == 1)
               {
@@ -252,6 +253,11 @@ namespace hexwatershed
                     lCellIndex_boundary = aIndex[0]; //local index in boundary
                     lCellIndex_active = aIndex[1]; //local id
                     dElevation_mean_center = vCell_active.at(lCellIndex_active).dElevation_mean;
+
+                    //remove this cell from queue
+                    vCell_priority_flood.erase( vCell_priority_flood.begin() + lCellIndex_boundary ); 
+                    //add it back
+                    vCell_priority_flood.push_back(vCell_active.at(lCellIndex_active));
 
                     //new simplified approach
                     if (iFlag_stream_burning_topology == 0)
@@ -662,6 +668,8 @@ namespace hexwatershed
                     if (dElevation_mean_neighbor <= dElevation_mean_center)
                       {
                         vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+
+                        vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
                       }
 
                       //elevation profile case

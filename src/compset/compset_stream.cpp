@@ -211,10 +211,14 @@ namespace hexwatershed
             if (iStream_order_neighbor == iStream_order_center)
             {
               vCell_active.at(lCellIndex_neighbor).dElevation_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.1;
+
+              vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
             }
             else
             {
               vCell_active.at(lCellIndex_neighbor).dElevation_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.2;
+
+              vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
             }
           }
           else
@@ -232,6 +236,7 @@ namespace hexwatershed
           {
             vCell_active.at(lCellIndex_neighbor).dElevation_profile0 =
                 dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+          
           }
         }
 
@@ -272,12 +277,16 @@ namespace hexwatershed
                 dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
             // we may increase the elevation agin in the depression filling step
             vCell_active.at(lCellIndex_neighbor).iFlag_stream_burning_treated = 1;
+
+            vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
           }
           else
           {
             if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
             {
               vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
+
+              vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
             }
           }
 
