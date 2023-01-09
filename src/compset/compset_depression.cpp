@@ -253,10 +253,8 @@ namespace hexwatershed
                     lCellIndex_boundary = aIndex[0]; //local index in boundary
                     lCellIndex_active = aIndex[1]; //local id
                     dElevation_mean_center = vCell_active.at(lCellIndex_active).dElevation_mean;
-
-                   
-                  
-                    vCell_priority_flood.push_back(vCell_active.at(lCellIndex_active));
+                
+                    vCell_priority_flood.push_back(vCell_active.at(lCellIndex_outlet));
 
                     //new simplified approach
                     if (iFlag_stream_burning_topology == 0)
