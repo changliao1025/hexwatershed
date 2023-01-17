@@ -44,7 +44,7 @@ Segment
    :members:
 
 Subbasin
-^^^^^^^
+^^^^^^^^
 .. doxygenclass:: hexwatershed::subbasin
    :members:
 

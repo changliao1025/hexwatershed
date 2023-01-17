@@ -12,7 +12,7 @@ build:
     # golang: "1.19"
 
 sphinx:
-  #builder: html
+  builder: html
   configuration: docs/source/conf.py
   fail_on_warning: true
 
