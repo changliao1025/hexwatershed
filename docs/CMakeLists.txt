@@ -10,7 +10,7 @@ message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
 set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/src)
 set(DOXYGEN_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/docs/doxygen)
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/xml/index.xml)
-set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/source/Doxyfile.in)
 set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 message("CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -51,9 +51,9 @@ add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	DEPENDS 
 		# Other docs files you want to track should go here (or in some variable)
-		${CMAKE_CURRENT_SOURCE_DIR}/index.rst
+		${CMAKE_CURRENT_SOURCE_DIR}/source/index.rst
 		${DOXYGEN_INDEX_FILE}
-	MAIN_DEPENDENCY ${SPHINX_SOURCE}/conf.py
+	MAIN_DEPENDENCY ${SPHINX_SOURCE}/source/conf.py
 	COMMENT "Generating documentation with Sphinx")
 
 # Nice named target so we can run the job easily

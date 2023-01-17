@@ -14,12 +14,12 @@ Data
    :members:
 
 Domain
-^^^^
+^^^^^^
 .. doxygenclass:: hexwatershed::domain
    :members:
 
 Compset
-^^^^
+^^^^^^^
 .. doxygenclass:: hexwatershed::compset
    :members:
 
@@ -29,7 +29,7 @@ Edge
    :members:
 
 Flowline
-^^^^^^
+^^^^^^^^
 .. doxygenclass:: hexwatershed::flowline
    :members:
 
