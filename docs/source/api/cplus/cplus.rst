@@ -8,6 +8,11 @@ Overview
 C++ class
 =========
 
+Cell
+^^^^^^^^^
+.. doxygenclass:: jsonmodel::cell
+   :members:
+
 Data
 ^^^^
 .. doxygenclass:: data
@@ -52,6 +57,9 @@ Watershed
 ^^^^^^^^^
 .. doxygenclass:: hexwatershed::watershed
    :members:
+
+
+
 
 C++ function
 ============
