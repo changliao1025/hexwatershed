@@ -33,17 +33,21 @@ namespace hexwatershed
 
 
     long lCellIndex;       //real id used when elevation is assigned
-    long lCellIndex_watershed; 
+    long lCellIndex_watershed;  
     long lCellIndex_subbasin; 
-    long lCellID;   //this is the mesh id from the shapefile, it might be the same with Global ID,
+    /*! \brief Brief description.
+    *   this is the mesh id from the json, it might be the same with Global ID,      
+    *  Detailed description starts here.
+    */
+    long lCellID;   
     // this depends upon how mesh id was generated, it can be different from global id
     int iFlag_checked; //used for loop
     int iFlag_active;        //if it has elevation assigned
     int iFlag_watershed;     //whether it is inside a watershed
     int iFlag_stream;        //whether it is a stream grid
-    int iFlag_stream_burned; //flag for burned stream grid
+    int iFlag_stream_burned; /*flag for burned stream gridd*/
  
-  //be careful, a stream grid maybe visited multiple if breaching is enabled
+    //be careful, a stream grid maybe visited multiple if breaching is enabled
 
     int iFlag_stream_burning_treated;
     int iFlag_depression_filling_treated;//flag to indicate whether a cell is treated for elevation
