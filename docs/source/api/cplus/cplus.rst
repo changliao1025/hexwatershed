@@ -13,6 +13,11 @@ Cell
 .. doxygenclass:: jsonmodel::cell
    :members:
 
+Vertex
+^^^^^^^^^
+.. doxygenclass:: jsonmodel::vertex
+   :members:
+   
 Data
 ^^^^
 .. doxygenclass:: data
