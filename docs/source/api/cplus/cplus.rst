@@ -8,13 +8,12 @@ Overview
 C++ class
 =========
 
-Cell
+JSON
 ^^^^^^^^^
 .. doxygenclass:: jsonmodel::cell
    :members:
 
-Vertex
-^^^^^^^^^
+
 .. doxygenclass:: jsonmodel::vertex
    :members:
    
