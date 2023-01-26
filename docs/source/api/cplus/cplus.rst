@@ -17,52 +17,49 @@ JSON
 .. doxygenclass:: jsonmodel::vertex
    :members:
    
-Data
-^^^^
-.. doxygenclass:: data
-   :members:
+
 
 Domain
 ^^^^^^
 .. doxygenclass:: hexwatershed::domain
    :members:
 
+
+
 Compset
 ^^^^^^^
 .. doxygenclass:: hexwatershed::compset
    :members:
 
-Edge
-^^^^^^
+General
+^^^^^^^
 .. doxygenclass:: hexwatershed::edge
    :members:
 
-Flowline
-^^^^^^^^
+
 .. doxygenclass:: hexwatershed::flowline
    :members:
 
-Hexagon
-^^^^^^^
 .. doxygenclass:: hexwatershed::hexagon
    :members:
 
-Segment
-^^^^^^^
+
 .. doxygenclass:: hexwatershed::segment
    :members:
 
-Subbasin
-^^^^^^^^
+
+
 .. doxygenclass:: hexwatershed::subbasin
    :members:
 
-Watershed
-^^^^^^^^^
+
 .. doxygenclass:: hexwatershed::watershed
    :members:
 
-
+Data
+^^^^
+.. doxygenclass:: data
+   :members:
 
 
 C++ function
