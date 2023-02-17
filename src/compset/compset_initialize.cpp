@@ -35,7 +35,7 @@ namespace hexwatershed
     lVertexIndex =0;
     //vCell_active.reserve(ncell); 
     
-    for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); ++iIterator1)
+    for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
       {
         hexagon pHexagon;
         pHexagon.lCellIndex = lCellIndex;

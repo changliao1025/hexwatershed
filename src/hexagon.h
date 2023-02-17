@@ -32,10 +32,10 @@ namespace hexwatershed
     ~hexagon();
 
 
-    long lCellIndex;       //real id used when elevation is assigned
-    long lCellIndex_watershed;  
+    long lCellIndex;       //it includes cell outside of watershed
+    long lCellIndex_watershed;  //only in the designed watershed
     long lCellIndex_subbasin; 
-    //long lCellIndex_confluence;
+
     /*! \brief Brief description.
     *   this is the mesh id from the json, it might be the same with Global ID,      
     *  Detailed description starts here.

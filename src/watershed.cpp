@@ -706,71 +706,23 @@ namespace hexwatershed
     int iFlag_found;
     long lCellID;
     long lCellID2;
+    long lCellIndex_watershed;
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
 
-    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+   
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
       {
-        lCellID = (*iIterator_self).lCellID;
-
-        if ((*iIterator_self).iWatershed == iWatershed) // not using flag anymore
+        for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
           {
-            //iFlag_found = 0;
-            //while (iFlag_found == 0)
-            //  {
-            //    for (int iSegment = 1; iSegment <= nSegment; iSegment++)
-            //      {
-            //        for (iIterator1 = vSegment.at(iSegment - 1).vReach_segment.begin(); iIterator1 != vSegment.at(iSegment - 1).vReach_segment.end(); iIterator1++)
-            //          {
-            //            lCellID2 = (*iIterator1).lCellID;
-            //            if (lCellID2 == lCellID)
-            //              {
-            //                (*iIterator_self).iSegment = (*iIterator1).iSegment;
-            //                iFlag_found = 1;
-            //                break;
-            //              }
-            //          }
-            //        if (iFlag_found == 1)
-            //          {
-            //            break;
-            //          }
-            //      }
-            //    if (iFlag_found == 0)
-            //      {
-            //        (*iIterator_self).iSegment = -1;
-            //        // this cell is not on any stream segment
-            //        iFlag_found = 1;
-            //      }
-            //  }
-
-            iFlag_found = 0;
-            while (iFlag_found == 0)
-              {
-                for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
-                  {
-                   
-                    for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
-                      {
-                        lCellID2 = (*iIterator2).lCellID;
-                        if (lCellID2 == lCellID)
-                          {
-                            (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
-                            (*iIterator_self).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
-                            (*iIterator_self).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
-
-                            iFlag_found = 1;
-                            break;
-                          }
-                      }
-                    if (iFlag_found == 1)
-                      {
-                        break;
-                      }
-                  }
-              }
-          }
+            lCellIndex_watershed = (*iIterator2).lCellIndex_watershed;   
+                vCell.at(lCellIndex_watershed).iSubbasin = (*iIterator2).iSubbasin;
+                vCell.at(lCellIndex_watershed).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
+                vCell.at(lCellIndex_watershed).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;                        
+          }                  
       }
+       
 
     return error_code;
   }
@@ -1303,19 +1255,5 @@ namespace hexwatershed
     return iSubbasinIndex;
   }
 
-  //int watershed::watershed_find_index_by_confluence(long lCellID_in)
-  //{
-  //  long lCellIndex_confluence = -1;
-  //  std::vector<hexagon>::iterator iIterator;
-  //  for (iIterator = vConfluence.begin(); iIterator != vConfluence.end(); iIterator++)
-  //    {
-  //      if ((*iIterator).lCellID == lCellID_in)
-  //        {
-  //          lCellIndex_confluence = (*iIterator).lCellIndex_confluence;
-  //          break;
-  //        }
-  //    }
-//
-  //  return lCellIndex_confluence;
-  //}
+ 
 } // namespace hexwatershed

@@ -111,6 +111,6 @@ namespace hexwatershed
     long watershed_find_index_by_cell_id(long lCellID);
     int watershed_find_index_by_segment_id(int iSegment);
     int watershed_find_index_by_subbasin_id(int iSubbasin);
-    //int watershed_find_index_by_confluence(long lCellID);
+
   };
 }
