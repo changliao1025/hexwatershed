@@ -1,0 +1,6 @@
+projectKey=hexwatershed
+serverUrl=https://sonarqube.pnnl.gov
+serverVersion=9.7.1.62043
+dashboardUrl=https://sonarqube.pnnl.gov/dashboard?id=hexwatershed
+ceTaskId=AYYPeJiVxRO0yVq9FewU
+ceTaskUrl=https://sonarqube.pnnl.gov/api/ce/task?id=AYYPeJiVxRO0yVq9FewU

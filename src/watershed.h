@@ -85,6 +85,7 @@ namespace hexwatershed
 
     int watershed_build_stream_topology();
     int watershed_define_stream_order();
+    int watershed_define_subbasin_old();
     int watershed_define_subbasin();
     int watershed_update_attribute();
 
@@ -110,5 +111,6 @@ namespace hexwatershed
     long watershed_find_index_by_cell_id(long lCellID);
     int watershed_find_index_by_segment_id(int iSegment);
     int watershed_find_index_by_subbasin_id(int iSubbasin);
+    int watershed_find_index_by_confluence(long lCellID);
   };
 }
