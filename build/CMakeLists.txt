@@ -55,9 +55,7 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.cpp        
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/watershed.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/watershed.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/domain.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/domain.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/watershed.h       
         )
 
 add_executable(hexwatershed ${hexwatershed_srcs})
