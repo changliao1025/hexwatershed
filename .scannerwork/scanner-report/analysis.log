@@ -1,0 +1,56 @@
+Plugins:
+  - Dependency-Check 3.0.1 (dependencycheck)
+  - PMD 3.4.0 (pmd)
+  - Clover 4.1 (clover)
+  - Findbugs 4.2.2 (findbugs)
+  - Checkstyle 10.4 (checkstyle)
+Bundled analyzers:
+  - Python Code Quality and Security 3.19.0.10254 (python)
+  - Go Code Quality and Security 1.11.0.3905 (go)
+  - JaCoCo 1.1.1.1157 (jacoco)
+  - Kotlin Code Quality and Security 2.10.0.1456 (kotlin)
+  - IaC Code Quality and Security 1.9.2.2279 (iac)
+  - JavaScript/TypeScript/CSS Code Quality and Security 9.9.0.19492 (javascript)
+  - Ruby Code Quality and Security 1.11.0.3905 (ruby)
+  - Scala Code Quality and Security 1.11.0.3905 (sonarscala)
+  - C# Code Quality and Security 8.46.0.54807 (csharp)
+  - Java Code Quality and Security 7.14.0.30229 (java)
+  - HTML Code Quality and Security 3.6.0.3106 (web)
+  - Flex Code Quality and Security 2.7.0.2865 (flex)
+  - XML Code Quality and Security 2.6.1.3686 (xml)
+  - PHP Code Quality and Security 3.25.0.9077 (php)
+  - Text file Code Quality and Security 1.1.0.282 (text)
+  - VB.NET Code Quality and Security 8.46.0.54807 (vbnet)
+  - Configuration detection fot Code Quality and Security 1.2.0.267 (config)
+Global server settings:
+  - email.from=noreply@sonarqube.pnnl.gov
+  - sonar.auth.saml.enabled=true
+  - sonar.auth.saml.loginUrl=https://goldeneye.pnl.gov/auth/realms/devc-sso/protocol/saml
+  - sonar.auth.saml.providerId=https://goldeneye.pnl.gov/auth/realms/devc-sso
+  - sonar.auth.saml.providerName=PNNL Keycloak SSO
+  - sonar.auth.saml.signature.enabled=true
+  - sonar.auth.saml.user.email=email
+  - sonar.auth.saml.user.login=login
+  - sonar.auth.saml.user.name=name
+  - sonar.core.id=AD831B7F-AYTp75geONsBYJRvSTSn
+  - sonar.core.serverBaseURL=https://sonarqube.pnnl.gov
+  - sonar.core.startTime=2022-12-07T00:49:40+0000
+  - sonar.forceAuthentication=true
+  - sonar.plugins.risk.consent=ACCEPTED
+Project server settings:
+  - sonar.inclusions=*.h; *cpp
+  - sonar.scm.disabled=true
+Project scanner properties:
+  - sonar.cfamily.compile-commands=/qfs/people/liao313/workspace/cplus/hexwatershed/.vscode/compile_commands.json
+  - sonar.host.url=https://sonarqube.pnnl.gov/
+  - sonar.login=******
+  - sonar.projectBaseDir=/qfs/people/liao313/workspace/cplus/hexwatershed
+  - sonar.projectKey=hexwatershed
+  - sonar.projectName=hexwatershed
+  - sonar.projectVersion=1.0
+  - sonar.scanner.app=ScannerCLI
+  - sonar.scanner.appVersion=4.7.0.2747
+  - sonar.sourceEncoding=UTF-8
+  - sonar.sources=.
+  - sonar.verbose=true
+  - sonar.working.directory=/qfs/people/liao313/workspace/cplus/hexwatershed/.scannerwork

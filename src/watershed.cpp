@@ -61,9 +61,10 @@ namespace hexwatershed
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
       {
         if ((*iIterator_self).nUpstream > 1 && (*iIterator_self).iWatershed == iWatershed && (*iIterator_self).iFlag_stream == 1)
-          {
+          {            
             iCount = iCount + 1;
             (*iIterator_self).iFlag_confluence = 1;
+
             vConfluence.push_back((*iIterator_self));
           }
       }
@@ -86,7 +87,7 @@ namespace hexwatershed
     int iFlag_headwater;
 
     int iUpstream;
-  
+
     long lCellIndex_current;
     long lCellID_current;
     long lCellID_upstream;
@@ -475,7 +476,7 @@ namespace hexwatershed
       }
     return error_code;
   }
-  int watershed::watershed_define_subbasin()
+  int watershed::watershed_define_subbasin_old()
   {
 
     int error_code = 1;
@@ -613,77 +614,115 @@ namespace hexwatershed
 
     return error_code;
   }
+  //The new method for performance improvement
+  int watershed::watershed_define_subbasin()
+  {
+
+    int error_code = 1;
+    int iFound_outlet;
+    int iFlag_checked;
+    int iFlag_checked_downslope;
+    int iSubbasin;
+    long lCellIndex_self;
+    long lCellIndex_current;
+    long lCellID_outlet;
+    long lCellIndex_outlet; // local outlet
+    long lCellIndex_subbasin;
+    long lCellID_downslope;
+    long lCellIndex_downslope;
+    long lCellIndex_accumulation;
+    long lIndex_confluence;
+    std::vector<float> vAccumulation;
+    std::vector<float>::iterator iterator_accumulation;
+    std::vector<hexagon>::iterator iIterator_self;
+    std::vector<long>::iterator iIterator_path;
+    std::vector<hexagon>::iterator iIterator_current;
+    std::vector<long> vSearchPath;
+    // assign watershed subbasin cell, maybe later?
+    vSubbasin.clear();
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
+      {
+        subbasin cSubbasin;
+        cSubbasin.iSubbasin = iSubbasin;
+        cSubbasin.iSubbasinIndex = cSubbasin.iSubbasin - 1;
+        vSubbasin.push_back(cSubbasin);
+      }
+    // the whole watershed first
+
+    //reset flag, we set all segment cell as
+    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+      {
+        if ((*iIterator_self).iSegment >= 1)
+          {
+            iSubbasin = (*iIterator_self).iSegment;
+            (*iIterator_self).iFlag_checked = 1;
+            (*iIterator_self).iSubbasin = iSubbasin;
+            (*iIterator_self).lCellIndex_subbasin = vSubbasin.at(iSubbasin-1).vCell.size();
+            vSubbasin.at(iSubbasin-1).vCell.push_back((*iIterator_self));
+          }
+        else
+          {
+            (*iIterator_self).iFlag_checked = 0;
+          }
+      }
+
+    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+      {
+        lCellIndex_current = (*iIterator_self).lCellIndex_watershed;
+        iFlag_checked = (*iIterator_self).iFlag_checked;
+        if(iFlag_checked == 0)
+          {
+            vSearchPath.clear();
+            while(iFlag_checked_downslope==0)
+              {//not found keep adding to path
+                vSearchPath.push_back(lCellIndex_current);
+                lCellID_downslope = vCell.at(lCellIndex_current).lCellID_downslope_dominant;
+                lCellIndex_current = watershed_find_index_by_cell_id(lCellID_downslope);
+                if (lCellIndex_current != -1)
+                {
+                  iFlag_checked_downslope = vCell.at(lCellIndex_current).iFlag_checked;
+                }
+                else
+                {
+                    std::cout << "This shouldn't happen!" << std::endl;
+                }
+              }
+            iSubbasin = vCell.at(lCellIndex_current).iSubbasin;
+            for (iIterator_path = vSearchPath.begin(); iIterator_path != vSearchPath.end(); iIterator_path++)
+              {
+                vCell.at(*iIterator_path).iSubbasin = iSubbasin;
+                vCell.at(*iIterator_path).iFlag_checked = 1;
+                vCell.at(*iIterator_path).lCellIndex_subbasin = vSubbasin.at(iSubbasin-1).vCell.size();
+                vSubbasin.at(iSubbasin-1).vCell.push_back( vCell.at(*iIterator_path) );
+
+              }
+          }
+      }
+    return error_code;
+  }
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
     int iFlag_found;
     long lCellID;
     long lCellID2;
+    long lCellIndex_watershed;
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
 
-    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+   
+    for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
       {
-        lCellID = (*iIterator_self).lCellID;
-
-        if ((*iIterator_self).iWatershed == iWatershed) // not using flag anymore
+        for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
           {
-            iFlag_found = 0;
-            while (iFlag_found == 0)
-              {
-                for (int iSegment = 1; iSegment <= nSegment; iSegment++)
-                  {
-                    for (iIterator1 = vSegment.at(iSegment - 1).vReach_segment.begin(); iIterator1 != vSegment.at(iSegment - 1).vReach_segment.end(); iIterator1++)
-                      {
-                        lCellID2 = (*iIterator1).lCellID;
-                        if (lCellID2 == lCellID)
-                          {
-                            (*iIterator_self).iSegment = (*iIterator1).iSegment;
-                            iFlag_found = 1;
-                            break;
-                          }
-                      }
-                    if (iFlag_found == 1)
-                      {
-                        break;
-                      }
-                  }
-                if (iFlag_found == 0)
-                  {
-                    (*iIterator_self).iSegment = -1;
-                    // this cell is not on any stream segment
-                    iFlag_found = 1;
-                  }
-              }
-
-            iFlag_found = 0;
-
-            while (iFlag_found == 0)
-              {
-                for (int iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
-                  {
-                    for (iIterator2 = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator2++)
-                      {
-                        lCellID2 = (*iIterator2).lCellID;
-                        if (lCellID2 == lCellID)
-                          {
-                            (*iIterator_self).iSubbasin = (*iIterator2).iSubbasin;
-                            (*iIterator_self).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
-                            (*iIterator_self).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
-
-                            iFlag_found = 1;
-                            break;
-                          }
-                      }
-                    if (iFlag_found == 1)
-                      {
-                        break;
-                      }
-                  }
-              }
-          }
+            lCellIndex_watershed = (*iIterator2).lCellIndex_watershed;   
+                vCell.at(lCellIndex_watershed).iSubbasin = (*iIterator2).iSubbasin;
+                vCell.at(lCellIndex_watershed).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
+                vCell.at(lCellIndex_watershed).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;                        
+          }                  
       }
+       
 
     return error_code;
   }
@@ -1215,4 +1254,6 @@ namespace hexwatershed
 
     return iSubbasinIndex;
   }
+
+ 
 } // namespace hexwatershed

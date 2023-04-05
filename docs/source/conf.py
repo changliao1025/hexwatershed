@@ -44,7 +44,7 @@ breathe_projects = {}
 
 if read_the_docs_build:
     input_dir = '../../src'
-    output_dir = '_build'
+    output_dir = '../_build'
     configureDoxyfile(input_dir, output_dir)
     subprocess.call('doxygen', shell=True)
     breathe_projects['hexwatershed'] = output_dir + '/xml'
