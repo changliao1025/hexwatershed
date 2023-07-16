@@ -746,7 +746,9 @@ namespace hexwatershed
     long lCellIndex;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
-    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+    if (iFlag_flowline == 1)
+    {
+      for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
       {
         watershed cWatershed = vWatershed.at(iWatershed - 1);
         for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
@@ -766,6 +768,8 @@ namespace hexwatershed
               }
           }
       }
+    }
+    
 
     return error_code;
   }

@@ -24,31 +24,30 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
 
     std::string sFilename;
-    if (iFlag_global != 1)
+    if (iFlag_global == 1) // global simulation
     {
-      // now we will update some new result due to debug flag
-      compset_save_watershed_characteristics();
     }
     else
     {
+      // now we will update some new result due to debug flag
+      compset_save_watershed_characteristics();
+      if (iFlag_multiple_outlet == 1) // multiple watershed, so there is also non-watershed cells
+      {
+        sFilename = sFilename_domain_json;
+        compset_save_domain_json(sFilename);
+      }
+      else // single watershed
+      {
+        // main json file
+        sFilename = sFilename_json;
+        compset_save_json(sFilename);
+        sFilename = sFilename_animation_json;
+        compset_save_animation_json(sFilename);
+        // vtk
+        sFilename = sFilename_vtk;
+        compset_save_vtk(sFilename);
+      }
     }
-    
-   
-
-    // update from watershed to main
-
-    // main json file
-    sFilename = sFilename_json;
-    compset_save_json(sFilename);
-    
-    sFilename=sFilename_domain_json;
-    compset_save_domain_json(sFilename);
-
-    sFilename = sFilename_animation_json;
-    compset_save_animation_json(sFilename);
-    sFilename = sFilename_vtk;
-
-    compset_save_vtk(sFilename);
 
     ofs_log.close();
     std::cout << "Finished saving results!" << endl;
@@ -60,30 +59,29 @@ namespace hexwatershed
   int compset::compset_save_animation_json(std::string sFilename_in)
   {
     int error_code = 1;
-    
+
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
 
     jsonmodel::mesh cMesh;
 
-
-     if (iFlag_global != 1)
+    if (iFlag_global != 1)
     {
       if (iFlag_multiple_outlet != 1)
       {
-   //animation
+        // animation
         for (iIterator = vCell_priority_flood.begin(); iIterator != vCell_priority_flood.end(); iIterator++)
-        {         
-            cell pCell;            
-            pCell.lCellID = (*iIterator).lCellID;           
-            cMesh.aCell.push_back(pCell);          
+        {
+          cell pCell;
+          pCell.lCellID = (*iIterator).lCellID;
+          cMesh.aCell.push_back(pCell);
         }
 
         cMesh.SerializeToFile(sFilename_in.c_str());
       }
     }
-      return error_code;
+    return error_code;
   }
   int compset::compset_save_domain_json(std::string sFilename_in)
   {
@@ -101,54 +99,56 @@ namespace hexwatershed
       {
         for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
         {
-          
-            cell pCell;
-            pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-            pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-            pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
-            pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-            pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
-            pCell.dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_subbasin_outlet;
-            pCell.dDistance_to_watershed_outlet = (*iIterator).dDistance_to_watershed_outlet;
-            pCell.dElevation_mean = (*iIterator).dElevation_mean;
-            pCell.dElevation_raw = (*iIterator).dElevation_raw;
-            pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-            pCell.dLength = (*iIterator).dLength_stream_conceptual;
-            pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
-            pCell.dArea = (*iIterator).dArea;
-            pCell.lCellID = (*iIterator).lCellID;
-            pCell.iStream_segment = (*iIterator).iSegment;
-            pCell.iSubbasin = (*iIterator).iSubbasin;
-            pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
 
-            pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-            pCell.dAccumulation = (*iIterator).dAccumulation;
-            pCell.vVertex = (*iIterator).vVertex;
-            pCell.nVertex = pCell.vVertex.size();
-            cMesh.aCell.push_back(pCell);
-          
+          cell pCell;
+          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+          pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+          pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
+          pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
+          pCell.dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_subbasin_outlet;
+          pCell.dDistance_to_watershed_outlet = (*iIterator).dDistance_to_watershed_outlet;
+          pCell.dElevation_mean = (*iIterator).dElevation_mean;
+          pCell.dElevation_raw = (*iIterator).dElevation_raw;
+          pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+          pCell.dLength = (*iIterator).dLength_stream_conceptual;
+          pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
+          pCell.dArea = (*iIterator).dArea;
+          pCell.lCellID = (*iIterator).lCellID;
+          pCell.iStream_segment = (*iIterator).iSegment;
+          pCell.iSubbasin = (*iIterator).iSubbasin;
+          pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
+
+          pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+          pCell.dAccumulation = (*iIterator).dAccumulation;
+          pCell.vVertex = (*iIterator).vVertex;
+          pCell.nVertex = pCell.vVertex.size();
+          cMesh.aCell.push_back(pCell);
         }
 
         cMesh.SerializeToFile(sFilename_in.c_str());
-
       }
     }
     return error_code;
   }
+
   int compset::compset_save_json(std::string sFilename_in)
   {
     int error_code = 1;
     int iWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    int iFlag_flowline = cParameter.iFlag_flowline;
     std::vector<hexagon>::iterator iIterator;
 
     jsonmodel::mesh cMesh;
-
-    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+    if (iFlag_flowline == 1)
     {
-      vWatershed.at(iWatershed - 1).watershed_save_json();
-      vWatershed.at(iWatershed - 1).watershed_save_stream_edge_json();
+      for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+      {
+        vWatershed.at(iWatershed - 1).watershed_save_json();
+        vWatershed.at(iWatershed - 1).watershed_save_stream_edge_json();
+      }
     }
 
     if (iFlag_global != 1)
@@ -187,7 +187,6 @@ namespace hexwatershed
         }
 
         cMesh.SerializeToFile(sFilename_in.c_str());
-     
       }
       else
       {
@@ -254,11 +253,15 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iWatershed;
-    for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+    int iFlag_flowline = cParameter.iFlag_flowline;
+    if (iFlag_flowline == 1)
     {
-      vWatershed.at(iWatershed - 1).save_watershed_characteristics();
-      vWatershed.at(iWatershed - 1).save_segment_characteristics();
-      vWatershed.at(iWatershed - 1).save_subbasin_characteristics();
+      for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+      {
+        vWatershed.at(iWatershed - 1).save_watershed_characteristics();
+        vWatershed.at(iWatershed - 1).save_segment_characteristics();
+        vWatershed.at(iWatershed - 1).save_subbasin_characteristics();
+      }
     }
 
     return error_code;

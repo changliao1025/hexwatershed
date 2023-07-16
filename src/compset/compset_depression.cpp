@@ -226,12 +226,13 @@ namespace hexwatershed
       {
         if (iFlag_multiple_outlet == 0)
           {
-            std::cout<<"This is a local simulation with only one outlet."<<std::endl;
+            std::cout<<"This is a local simulation."<<std::endl;
             vCell_boundary = compset_obtain_boundary(vCell_active);
           
             //set initial as true for boundary
             if (iFlag_flowline == 1)
               {
+                std::cout<<"This is a local simulation with only one outlet."<<std::endl;
                 //only one outlet is used
                 lCellID_outlet = aBasin.at(0).lCellID_outlet;
                 iFlag_found = 0;
