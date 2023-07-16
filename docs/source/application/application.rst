@@ -397,7 +397,7 @@ After the simulation is finished, you should obtain a list of fils within the ou
 
 These files are saved using the GeoJSON file format.
 
-.. list-table:: Output structure
+.. list-table:: Domain-scale output option
    :widths: 20 20 20 20 20
    :header-rows: 1
 
@@ -415,25 +415,76 @@ These files are saved using the GeoJSON file format.
      - Flow direction
      - Yes
      - Yes
-     - Yes
+     - No
    * - Polyline
      - Stream segment
      - Yes
      - Yes
+     - No
+   * - Polygon
+     - Elevation
      - Yes
-   * - Polygone
+     - Yes
+     - No
+   * - Polygon
+     - Slope
+     - Yes
+     - Yes
+     - No
+   * - Polygon
+     - Drainage area
+     - Yes
+     - Yes
+     - No
+   * - Polygon
+     - Travel distance
+     - Yes
+     - Yes
+     - No
+
+
+.. list-table:: Watershed-scale output option
+   :widths: 20 20 20 20 20
+   :header-rows: 1
+
+   * - Vector type
+     - Variable
+     - Global
+     - Multiple outlets
+     - Single outlet
+   * - Point
+     - Dam
+     - No
+     - No
+     - No
+   * - Polyline
+     - Flow direction
+     - No
+     - Yes
+     - Yes
+   * - Polyline
+     - Stream segment
+     - No
+     - Yes
+     - Yes
+   * - Polygon
      - Elevation
      - Yes
      - Yes
      - Yes
-   * - Polygone
+   * - Polygon
      - Slope
      - Yes
      - Yes
      - Yes
-   * - Polygone
+   * - Polygon
      - Drainage area
      - Yes
+     - Yes
+     - Yes
+   * - Polygon
+     - Travel distance
+     - No
      - Yes
      - Yes
 
