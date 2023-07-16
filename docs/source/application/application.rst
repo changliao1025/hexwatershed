@@ -397,6 +397,45 @@ After the simulation is finished, you should obtain a list of fils within the ou
 
 These files are saved using the GeoJSON file format.
 
+.. list-table:: Output structure
+   :widths: 20 20 20 20 20
+   :header-rows: 1
+
+   * - Vector type
+     - Variable
+     - Global
+     - Multiple outlets
+     - Single outlet
+   * - Point
+     - Dam
+     - No
+     - No
+     - No
+   * - Polyline
+     - Flow direction
+     - Yes
+     - Yes
+     - Yes
+   * - Polyline
+     - Stream segment
+     - Yes
+     - Yes
+     - Yes
+   * - Polygone
+     - Elevation
+     - Yes
+     - Yes
+     - Yes
+   * - Polygone
+     - Slope
+     - Yes
+     - Yes
+     - Yes
+   * - Polygone
+     - Drainage area
+     - Yes
+     - Yes
+     - Yes
 
 You can use any GIS tools (ArcGIS, ENVI, and QGIS, etc.) to visualize the results.
 
