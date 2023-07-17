@@ -105,9 +105,7 @@ namespace hexwatershed
     int watershed_export_subbasin_characteristics();
 
     int watershed_export_json();
-
     int watershed_export_stream_edge_json();
-
 
     long watershed_find_index_by_cell_id(long lCellID);
     int watershed_find_index_by_segment_id(int iSegment);

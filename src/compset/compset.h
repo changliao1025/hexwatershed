@@ -87,12 +87,12 @@ namespace hexwatershed
     std::string sFilename_mesh_info;    
 
     std::string sFilename_domain_json;
-    std::string sFilename_json;
-    std::string sFilename_animation_json;
+
+    std::string sFilename_domain_animation_json;
 
     //vtk support
-    std::string sFilename_vtk;
-    std::string sFilename_vtk_debug;
+    std::string sFilename_domain_vtk;
+    std::string sFilename_domain_vtk_debug;
 
     //others
     std::string sDate_default;

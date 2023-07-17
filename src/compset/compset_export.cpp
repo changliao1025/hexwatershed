@@ -196,7 +196,6 @@ namespace hexwatershed
       for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
       {
         vWatershed.at(iWatershed - 1).watershed_export_json();
-
         vWatershed.at(iWatershed - 1).watershed_export_stream_edge_json();
       }
     }
