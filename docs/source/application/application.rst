@@ -469,17 +469,17 @@ These files are saved using the GeoJSON file format.
      - Yes
    * - Polygon
      - Elevation
-     - Yes
+     - No
      - Yes
      - Yes
    * - Polygon
      - Slope
-     - Yes
+     - No
      - Yes
      - Yes
    * - Polygon
      - Drainage area
-     - Yes
+     - No
      - Yes
      - Yes
    * - Polygon

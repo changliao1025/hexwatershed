@@ -57,9 +57,9 @@ namespace hexwatershed
         //sort
         bool operator<(const segment &cSegment);
 
-        int calculate_stream_segment_characteristics();
-        int calculate_stream_segment_length();
-        int calculate_stream_segment_slope();
-        int calculate_travel_distance();
+        int segment_calculate_stream_segment_characteristics();
+        int segment_calculate_stream_segment_length();
+        int segment_calculate_stream_segment_slope();
+        int segment_calculate_travel_distance();
     };
 } // namespace hexwatershed

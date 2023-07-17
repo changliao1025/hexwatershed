@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
         error_code = cDomain.domain_run();
         if (error_code != 0)
         {
-          error_code = cDomain.domain_save();
+          error_code = cDomain.domain_export();
           if (error_code != 0)
           {
             error_code = cDomain.domain_cleanup();

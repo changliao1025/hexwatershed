@@ -90,22 +90,23 @@ namespace hexwatershed
     int watershed_update_attribute();
 
     // the watershed characteristics for comparison
-    int calculate_watershed_characteristics();
-    int calculate_watershed_drainage_area();
-    int calculate_watershed_total_stream_length();
-    int calculate_watershed_longest_stream_length();
-    int calculate_watershed_drainage_density();
-    int calculate_watershed_average_slope();
-    int calculate_topographic_wetness_index();
-    int calculate_travel_distance();
+    int watershed_calculate_characteristics();
+    int watershed_calculate_drainage_area();
+    int watershed_calculate_total_stream_length();
+    int watershed_calculate_longest_stream_length();
+    int watershed_calculate_drainage_density();
+    int watershed_calculate_average_slope();
+    int watershed_calculate_topographic_wetness_index();
+    int watershed_calculate_travel_distance();
 
-    int save_watershed_characteristics();
-    int save_segment_characteristics();
-    int save_subbasin_characteristics();
 
-    int watershed_save_json();
+    int watershed_export_characteristics();
+    int watershed_export_segment_characteristics();
+    int watershed_export_subbasin_characteristics();
 
-    int watershed_save_stream_edge_json();
+    int watershed_export_json();
+
+    int watershed_export_stream_edge_json();
 
 
     long watershed_find_index_by_cell_id(long lCellID);

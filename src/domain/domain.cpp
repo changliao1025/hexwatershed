@@ -95,10 +95,10 @@ namespace hexwatershed
     return error_code;
   }
 
-  int domain::domain_save ()
+  int domain::domain_export ()
   {
     int error_code=1;
-    cCompset.compset_save_model();
+    cCompset.compset_export_model();
     return  error_code;
   }
 

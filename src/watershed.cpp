@@ -731,7 +731,7 @@ namespace hexwatershed
    * calculate the watershed characteristics
    * @return
    */
-  int watershed::calculate_watershed_characteristics()
+  int watershed::watershed_calculate_characteristics()
   {
     int error_code = 1;
     int iSegment;
@@ -747,7 +747,7 @@ namespace hexwatershed
 
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
       {
-        (*iIterator0).calculate_stream_segment_characteristics();
+        (*iIterator0).segment_calculate_stream_segment_characteristics();
       }
     for (iIterator0 = vSegment.begin(); iIterator0 != vSegment.end(); iIterator0++)
       {
@@ -781,17 +781,17 @@ namespace hexwatershed
         vSubbasin.at(iSubbasin - 1).cCell_outlet = vSegment.at(iSegment - 1).cReach_end;
         vSubbasin.at(iSubbasin - 1).lCellID_outlet = vSegment.at(iSegment - 1).cReach_end.lCellID;
         dLength_stream_conceptual = vSegment.at(iSegment - 1).dLength;
-        vSubbasin.at(iSubbasin - 1).calculate_subbasin_characteristics(dLength_stream_conceptual);
+        vSubbasin.at(iSubbasin - 1).subbasin_calculate_characteristics(dLength_stream_conceptual);
       }
 
-    calculate_travel_distance();
+    watershed_calculate_travel_distance();
     watershed_update_attribute();
-    calculate_watershed_drainage_area();
-    calculate_watershed_total_stream_length();
-    calculate_watershed_longest_stream_length();
-    calculate_watershed_drainage_density();
-    calculate_watershed_average_slope();
-    calculate_topographic_wetness_index();
+    watershed_calculate_drainage_area();
+    watershed_calculate_total_stream_length();
+    watershed_calculate_longest_stream_length();
+    watershed_calculate_drainage_density();
+    watershed_calculate_average_slope();
+    watershed_calculate_topographic_wetness_index();
 
     // save watershed characteristics to the file
 
@@ -805,7 +805,7 @@ namespace hexwatershed
    * we can either sum up hexagon or sum up subbasin
    * @return
    */
-  int watershed::calculate_watershed_drainage_area()
+  int watershed::watershed_calculate_drainage_area()
   {
     int error_code = 1;
     int iOption = 2; // sum up subbasin
@@ -835,7 +835,7 @@ namespace hexwatershed
    * calculate the total stream length
    * @return
    */
-  int watershed::calculate_watershed_total_stream_length()
+  int watershed::watershed_calculate_total_stream_length()
   {
     int error_code = 1;
     int iOption = 2; // sum up subbasin
@@ -873,7 +873,7 @@ namespace hexwatershed
    * calculate the longest stream length
    * @return
    */
-  int watershed::calculate_watershed_longest_stream_length()
+  int watershed::watershed_calculate_longest_stream_length()
   {
     int error_code = 1;
 
@@ -901,7 +901,7 @@ namespace hexwatershed
    * calculate the watershed area to stream length ratio
    * @return
    */
-  int watershed::calculate_watershed_drainage_density()
+  int watershed::watershed_calculate_drainage_density()
   {
     int error_code = 1;
 
@@ -924,7 +924,7 @@ namespace hexwatershed
    * we can use either subbasin or each cell
    * @return
    */
-  int watershed::calculate_watershed_average_slope()
+  int watershed::watershed_calculate_average_slope()
   {
     int error_code = 1;
     int iOption = 1;
@@ -958,7 +958,7 @@ namespace hexwatershed
    * // {\displaystyle \ln {a \over \tan b}}
    * @return
    */
-  int watershed::calculate_topographic_wetness_index()
+  int watershed::watershed_calculate_topographic_wetness_index()
   {
     int error_code = 1;
     float a;
@@ -995,7 +995,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::calculate_travel_distance()
+  int watershed::watershed_calculate_travel_distance()
   {
     int error_code = 1;
     int iSegment;
@@ -1011,7 +1011,7 @@ namespace hexwatershed
 
     for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        (*iIterator1).calculate_travel_distance();
+        (*iIterator1).subbasin_calculate_travel_distance();
       }
 
     for ( iSubbasin = 1; iSubbasin <= nSubbasin; iSubbasin++)
@@ -1044,7 +1044,7 @@ namespace hexwatershed
    * save the watershed characteristics in the output
    * @return
    */
-  int watershed::save_watershed_characteristics()
+  int watershed::watershed_export_characteristics()
   {
     int error_code = 1;
     std::string sLine;
@@ -1076,7 +1076,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::save_segment_characteristics()
+  int watershed::watershed_export_segment_characteristics()
   {
     int error_code = 1;
     std::string sLine;
@@ -1103,7 +1103,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::save_subbasin_characteristics()
+  int watershed::watershed_export_subbasin_characteristics()
   {
     int error_code = 1;
     std::string sLine;
@@ -1126,7 +1126,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::watershed_save_json()
+  int watershed::watershed_export_json()
   {
     int error_code = 1;
     std::vector<hexagon>::iterator iIterator;
@@ -1166,7 +1166,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int watershed::watershed_save_stream_edge_json()
+  int watershed::watershed_export_stream_edge_json()
   {
     int error_code = 1;
     std::vector<segment>::iterator iIterator1;

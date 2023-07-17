@@ -727,7 +727,7 @@ namespace hexwatershed
           {
             for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
               {
-                vWatershed.at(iWatershed - 1).calculate_watershed_characteristics();
+                vWatershed.at(iWatershed - 1).watershed_calculate_characteristics();
               }
           }
       }

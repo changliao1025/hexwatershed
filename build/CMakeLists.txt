@@ -12,7 +12,7 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_direction.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_initialize.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_run.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_save.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_export.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_stream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset.h

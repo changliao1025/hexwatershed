@@ -378,7 +378,7 @@ namespace hexwatershed
                           {
 
                             vContinent_boundary.clear();
-                            find_continent_boundary((*iIterator_self).lCellID);
+                            compset_find_continent_boundary((*iIterator_self).lCellID);
 
                             for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                               {
@@ -411,7 +411,7 @@ namespace hexwatershed
                           {
 
                             vContinent_boundary.clear();
-                            find_continent_boundary((*iIterator_self).lCellID);
+                            compset_find_continent_boundary((*iIterator_self).lCellID);
 
                             for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                               {
@@ -485,7 +485,7 @@ namespace hexwatershed
                       {
 
                         vContinent_boundary.clear();
-                        find_continent_boundary((*iIterator_self).lCellID);
+                        compset_find_continent_boundary((*iIterator_self).lCellID);
 
                         for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                           {
@@ -518,7 +518,7 @@ namespace hexwatershed
                       {
 
                         vContinent_boundary.clear();
-                        find_continent_boundary((*iIterator_self).lCellID);
+                        compset_find_continent_boundary((*iIterator_self).lCellID);
 
                         for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                           {
@@ -552,7 +552,7 @@ namespace hexwatershed
  * @param lCellID_in 
  * @return int 
  */
-  int compset::find_land_ocean_interface_neighbors(long lCellID_in)
+  int compset::compset_find_land_ocean_interface_neighbors(long lCellID_in)
   {
     int error_code = 1;
     int iNeighbor;
@@ -581,7 +581,7 @@ namespace hexwatershed
                 vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated = 1;
 
                 vContinent_boundary.push_back(vCell_active.at(lCellIndex_neighbor));
-                find_land_ocean_interface_neighbors(lCellID_neighbor);
+                compset_find_land_ocean_interface_neighbors(lCellID_neighbor);
               }
           }
 
@@ -591,7 +591,7 @@ namespace hexwatershed
 
   }
 
-  int compset::find_continent_boundary(long lCellID_in)
+  int compset::compset_find_continent_boundary(long lCellID_in)
   {
     int error_code=1;
     //std::vector<long> vCellID_boundary;
@@ -610,7 +610,7 @@ namespace hexwatershed
 
 
 
-    find_land_ocean_interface_neighbors(lCellID_current);
+    compset_find_land_ocean_interface_neighbors(lCellID_current);
 
 
 

@@ -38,11 +38,11 @@ namespace hexwatershed
           
 
           //function
-          int calculate_subbasin_characteristics(float dLength_stream_conceptual);
-          int calculate_subbasin_total_area();
-          int calculate_subbasin_slope();
-          int calculate_subbasin_drainage_density(float dLength_stream_conceptual);
-          int calculate_travel_distance();
+          int subbasin_calculate_characteristics(float dLength_stream_conceptual);
+          int subbasin_calculate_total_area();
+          int subbasin_calculate_slope();
+          int subbasin_calculate_drainage_density(float dLength_stream_conceptual);
+          int subbasin_calculate_travel_distance();
           long subbasin_find_index_by_cellid(long lCellID_in);
       };
   } // namespace hexwatershed

@@ -137,7 +137,7 @@ namespace hexwatershed
     int domain_initialize ();
     int domain_retrieve_user_input();
     int domain_run ();
-    int domain_save ();
+    int domain_export ();
     int domain_cleanup ();
     int domain_setup();
 
