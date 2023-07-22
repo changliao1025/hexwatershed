@@ -673,6 +673,7 @@ namespace hexwatershed
         if(iFlag_checked == 0)
           {
             vSearchPath.clear();
+            iFlag_checked_downslope = 0;
             while(iFlag_checked_downslope==0)
               {//not found keep adding to path
                 vSearchPath.push_back(lCellIndex_current);
@@ -1026,9 +1027,8 @@ namespace hexwatershed
           }
         else
           {
-            //iSegment_downstream = vSegment.at(iSegment-1).iSegment_downstream;
             iSegmentIndex = watershed_find_index_by_segment_id(iSegment);
-            //dDistance_to_watershed_outlet = vSegment.at(iSegmentIndex).dDistance_to_watershed_outlet;
+          
             dDistance_to_watershed_outlet = vSegment.at(iSegmentIndex).dDistance_to_watershed_outlet;
             for (iIterator = vSubbasin.at(iSubbasin - 1).vCell.begin(); iIterator != vSubbasin.at(iSubbasin - 1).vCell.end(); iIterator++)
               {

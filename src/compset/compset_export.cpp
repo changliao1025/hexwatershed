@@ -37,7 +37,6 @@ namespace hexwatershed
       {
         sFilename = sFilename_domain_json;
         compset_export_domain_json(sFilename); // this one for domain
-
         compset_export_watershed_json(); // this one for each watershed
         compset_export_watershed_characteristics();
       }
@@ -46,21 +45,18 @@ namespace hexwatershed
         // when there is only single watershed, we will only output watershed level output because domain-scale is the same
         // now we will update some new result due to debug flag
 
-        // main json file
-        sFilename = sFilename_json;
+        // main json file        
         compset_export_watershed_json();
 
         // reserved for animation
         if (iFlag_animation == 1)
-        {
-          sFilename = sFilename_animation_json;
-          compset_export_watershed_animation_json(sFilename);
+        {          
+          compset_export_watershed_animation_json(sFilename_domain_animation_json);
         }
 
         // vtk
         // sFilename = sFilename_vtk;
         // compset_export_watershed_vtk(sFilename);
-
         // watershed level
         compset_export_watershed_characteristics();
       }
