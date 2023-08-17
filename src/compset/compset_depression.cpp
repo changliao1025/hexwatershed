@@ -700,7 +700,4 @@ namespace hexwatershed
     return error_code;
   }
 
-
-
-
 }

@@ -179,13 +179,13 @@ namespace jsonmodel
 		writer->Double(dLongitude_center_degree);
 		writer->String("dLatitude_center_degree");
 		writer->Double(dLatitude_center_degree);
-		writer->String("Area");
+		writer->String("dArea");
 		writer->Double(dArea);
-		writer->String("Elevation_raw");
+		writer->String("dElevation_raw");
 		writer->Double(dElevation_raw);
-		writer->String("Elevation");
+		writer->String("dElevation");
 		writer->Double(dElevation_mean);
-		writer->String("Elevation_profile");
+		writer->String("dElevation_profile");
 		writer->Double(dElevation_profile0);
 		writer->String("dSlope_between");
 		writer->Double(dSlope_between);
@@ -200,7 +200,7 @@ namespace jsonmodel
 		writer->String("dLength_flowline");
 		writer->Double(dLength_flowline);
 
-		writer->String("DrainageArea");
+		writer->String("dDrainage_area");
 		writer->Double(dAccumulation);
 		writer->String("dDistance_to_downslope");
 		writer->Double(dDistance_to_downslope);
