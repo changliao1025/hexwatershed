@@ -169,7 +169,7 @@ namespace jsonmodel
 		writer->String("lCellID_downslope");
 		writer->Int64(lCellID_downslope);
 
-		writer->String("iSegment");
+		writer->String("iStream_segment");
 		writer->Int(iStream_segment);
 
 		writer->String("iSubbasin");

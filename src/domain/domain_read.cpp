@@ -103,13 +103,21 @@ namespace hexwatershed
           }
           else
           {
-            if (sMesh_type == "tin")
+            if (sMesh_type == "dggrid")
             {
               iMesh_type = 5;
             }
             else
             {
-              std::cout << "Unsupported mesh type" << std::endl;
+              if (sMesh_type == "tin")
+              {
+                 iMesh_type = 6;
+              }
+              else
+              {
+                std::cout << "Unsupported mesh type" << std::endl;
+              }
+              
             }
           }
         }
@@ -341,7 +349,7 @@ namespace hexwatershed
       }
     }
     break;
-    case 5:
+    case 5: //dggrid
     {
       domain_read_elevation_json(sFilename_mesh_info);
       for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
