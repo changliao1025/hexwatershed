@@ -18,7 +18,8 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath> // abs, floor
-
+#include <chrono>
+#include <ctime> //for timing recording
 #include "../system.h"
 #include "../hexagon.h"
 #include "../flowline.h"
@@ -84,7 +85,7 @@ namespace hexwatershed
     //watershed cWatershed;
     std::vector <watershed> vWatershed;
     std::vector<float> vElevation; //vector to store the DEM raster data
-    std::vector <flowline> vFlowline;
+    //std::vector <flowline> vFlowline; //no longer used
     // this may be merged with global id
     std::vector <vertex> vVertex_active; //for vtk support, it store all the vertex in 3D
 
@@ -104,7 +105,7 @@ namespace hexwatershed
     int compset_export_model ();
     int compset_cleanup_model ();
 
-    int compset_assign_stream_burning_cell();
+    //int compset_assign_stream_burning_cell(); //no longer needed
     int compset_priority_flood_depression_filling ();
     int compset_stream_burning_with_topology (long lCellID_center);
     int compset_stream_burning_without_topology (long lCellID_center);

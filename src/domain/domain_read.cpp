@@ -368,6 +368,15 @@ namespace hexwatershed
       }
     }
     break;
+    case eMesh_type::eM_tin: //tin
+    {
+      domain_read_elevation_json(sFilename_mesh_info);
+      for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
+      {
+        cCompset.aCell.push_back((*it));
+      }
+    }
+    break;
     default:
     {
       domain_read_elevation_json(sFilename_mesh_info);

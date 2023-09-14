@@ -26,6 +26,10 @@ namespace hexwatershed
     long lCellIndex=0;
     long lCellIndex_outlet;
     long ncell = this->aCell.size();
+    float dLongtitue_min = 180;
+    float dLongtitue_max = -180;
+    float dLatitude_min = 90;
+    float dLatitude_max = -90;
   
     std::vector<cell>::iterator iIterator1;
     std::vector<vertex>::iterator iIterator2;
@@ -33,8 +37,7 @@ namespace hexwatershed
     vVertex_active.clear();
     vCell_active.clear();
     lVertexIndex =0;
-    //vCell_active.reserve(ncell); 
-    
+    //vCell_active.reserve(ncell); //CL: dont remember that this does    
     for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
       {
         hexagon pHexagon;
@@ -61,6 +64,9 @@ namespace hexwatershed
         pHexagon.nEdge = (*iIterator1).nEdge;
         pHexagon.nVertex = (*iIterator1).nVertex;
         pHexagon.vVertex.clear();
+
+        //define the bounding box
+
         for (int i=0; i< pHexagon.nVertex; i++)
         {
           vertex pVertex = (*iIterator1).vVertex.at(i);        
@@ -76,8 +82,26 @@ namespace hexwatershed
               pVertex.lVertexIndex = lVertexIndex;
               lVertexIndex = lVertexIndex + 1;
               vVertex_active.push_back(pVertex);
-            }      
+            }    
+          if (pVertex.dLongitude_degree < dLongtitue_min)
+          {
+            dLongtitue_min = pVertex.dLongitude_degree;
+          }  
+          if (pVertex.dLongitude_degree > dLongtitue_max)
+          {
+            dLongtitue_max = pVertex.dLongitude_degree;
+          }
+          if (pVertex.dLatitude_degree < dLatitude_min)
+          {
+            dLatitude_min = pVertex.dLatitude_degree;
+          }
+          if (pVertex.dLatitude_degree > dLatitude_max)
+          {
+            dLatitude_max = pVertex.dLatitude_degree;
+          }
           pHexagon.vVertex.push_back(pVertex);
+          //define the bounding box using the vertex info
+          pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
 
         }
 
@@ -100,85 +124,20 @@ namespace hexwatershed
         vCell_active.push_back(pHexagon);
         lCellIndex = lCellIndex +1 ;
       }
-
+    // Get the current time point
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    // Convert the time point to a time_t object
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+    // Convert the time_t object to a string representation
+    std::string timeStr = std::ctime(&currentTime);
+    // Print the current time
+    std::cout << "Current time: " << timeStr;
     std::cout << "Finished initialization!" << std::endl;
     std::flush(std::cout);
     return error_code;
   }
 
-  int compset::compset_assign_stream_burning_cell()
-  {
-    int error_code = 1;
-    int iFlag_stream_burning_topology= cParameter.iFlag_stream_burning_topology;
-    int iMeshStrseg;
-    int iMeshStrord;
-    int iFlag_merged;
-    int iFlag_active;
-    long lCellID;
-    std::vector<flowline>::iterator iIterator;
-    std::vector<hexagon>::iterator iIterator2;
-
-    if (iFlag_stream_burning_topology == 0)
-      {
-        for (iIterator = vFlowline.begin(); iIterator != vFlowline.end(); iIterator++)
-          {
-
-            lCellID = (*iIterator).lCellID;
-            //find in vector
-            //at this time, we do not yet know whether a stream is within watershed or not
-            //a mesh may have multiple nhd within
-            for (iIterator2 = vCell_active.begin(); iIterator2 != vCell_active.end(); iIterator2++)
-              {
-                if ((*iIterator2).lCellID == lCellID)
-                  {
-                    (*iIterator2).iFlag_stream_burned = 1;
-                  }
-              }
-          }
-      }
-    else
-      {
-
-        for (iIterator = vFlowline.begin(); iIterator != vFlowline.end(); iIterator++)
-          {
-            iFlag_active = (*iIterator).iFlag_active;
-            lCellID = (*iIterator).lCellID;
-            iMeshStrseg = (*iIterator).iStream_segment;
-            iMeshStrord = (*iIterator).iStream_order;
-            if (iFlag_active == 1)
-              {
-                //find in vector
-                //at this time, we do not yet know whether a stream is within watershed or not
-                //a mesh may have multiple nhd within
-                for (iIterator2 = vCell_active.begin(); iIterator2 != vCell_active.end(); iIterator2++)
-                  {
-                    if ((*iIterator2).lCellID == lCellID)
-                      {
-                        (*iIterator2).iFlag_stream_burned = 1;
-                        //assign the stream order
-                        if (iMeshStrord > (*iIterator2).iStream_order_burned)
-                          {
-                            //this code will be run at least once because default value is negative
-                            (*iIterator2).iStream_order_burned = iMeshStrord;
-                            //because the stream order is changed, the stream segment must be updated as well
-                            (*iIterator2).iStream_segment_burned = iMeshStrseg;
-                          }
-                        else
-                          {
-                            /* code */
-                          }
-                      }
-                  }
-              }
-            else
-              {
-                //simplified
-              }
-          }
-      }
-
-    return error_code;
-  }
+  
 
   long compset::compset_find_index_by_cell_id(long lCellID_in)
   {
