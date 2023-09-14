@@ -218,7 +218,7 @@ namespace hexwatershed
     int nUpstream;
     int iFlag_first_reach;
     int iFlag_confluence;
-    int lSegment_confluence;
+    long lSegment_confluence;
     long lCellID_upstream;
     long lCellIndex_upstream;
     segment cSegment; // be careful with the scope
@@ -358,7 +358,7 @@ namespace hexwatershed
   int watershed::watershed_build_stream_topology()
   {
     int error_code = 1;
-    int lSegment;
+    long lSegment;
     // rebuild stream topology
     std::vector<segment>::iterator iIterator_segment_self;
     std::vector<segment>::iterator iIterator_segment;
@@ -403,7 +403,7 @@ namespace hexwatershed
   int watershed::watershed_define_stream_order()
   {
     int error_code = 1;
-    int lSegment;
+    long lSegment;
     int iUpstream;
     int iStream_order_max;
     int iFlag_all_upstream_done;
@@ -477,142 +477,7 @@ namespace hexwatershed
     }
     return error_code;
   }
-  int watershed::watershed_define_subbasin_old()
-  {
-
-    int error_code = 1;
-    int iFound_outlet;
-    int iFlag_checked;
-    long lSubbasin;
-    long lCellIndex_self;
-    long lCellIndex_current;
-    long lCellID_outlet;
-    long lCellIndex_outlet; // local outlet
-    long lCellIndex_subbasin;
-    long lCellID_downslope;
-    long lCellIndex_downslope;
-    long lCellIndex_accumulation;
-    std::vector<float> vAccumulation;
-    std::vector<float>::iterator iterator_accumulation;
-    std::vector<hexagon> vConfluence_copy(vConfluence);
-    std::vector<hexagon>::iterator iIterator_self;
-    std::vector<long>::iterator iIterator_upstream;
-    std::vector<hexagon>::iterator iIterator_current;
-
-    // the whole watershed first
-    for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
-    {
-      (*iIterator_self).iFlag_checked = 0;
-      if ((*iIterator_self).lWatershed == lWatershed) // not using flag anymore
-      {
-        (*iIterator_self).lSubbasin = nSegment;
-      }
-    }
-
-    for (iIterator_self = vConfluence_copy.begin(); iIterator_self != vConfluence_copy.end(); iIterator_self++)
-    {
-      vAccumulation.push_back((*iIterator_self).dAccumulation);
-    }
-
-    // now starting from the confluences loop, vConfluence_copy is only usable for one watershed
-    while (vConfluence_copy.size() != 0)
-    {
-      iterator_accumulation = min_element(std::begin(vAccumulation), std::end(vAccumulation));
-      lCellIndex_accumulation = std::distance(vAccumulation.begin(), iterator_accumulation);
-      std::vector<long> vUpstream((vConfluence_copy.at(lCellIndex_accumulation)).vUpstream);
-      for (iIterator_upstream = vUpstream.begin(); iIterator_upstream != vUpstream.end(); iIterator_upstream++)
-      {
-        // use the watershed method again here
-        lCellID_outlet = *iIterator_upstream;
-        lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
-        lSubbasin = (vCell.at(lCellIndex_outlet)).lSegment;
-        (vCell.at(lCellIndex_outlet)).lSubbasin = lSubbasin;
-        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
-        {
-          iFound_outlet = 0;
-          lCellIndex_current = (*iIterator_self).lCellIndex_watershed;
-          iFlag_checked = (*iIterator_self).iFlag_checked;
-          if (iFlag_checked == 1)
-          {
-            continue;
-          }
-          while (iFound_outlet != 1)
-          {
-            lCellID_downslope = vCell.at(lCellIndex_current).lCellID_downslope_dominant;
-            if (lCellID_outlet == lCellID_downslope)
-            {
-
-              iFound_outlet = 1;
-              (*iIterator_self).lSubbasin = lSubbasin;
-              (*iIterator_self).iFlag_checked = 1;
-            }
-            else
-            {
-              lCellIndex_current = watershed_find_index_by_cell_id(lCellID_downslope);
-              if (lCellIndex_current == -1)
-              {
-                // this one does not belong in this watershed
-                iFound_outlet = 1;
-              }
-              else
-              {
-                lCellID_downslope = vCell.at(lCellIndex_current).lCellID_downslope_dominant;
-                if (lCellID_downslope == -1)
-                {
-                  // this is the outlet
-                  iFound_outlet = 1;
-                  //(*iIterator_self).iFlag_checked=1;
-                }
-                else
-                {
-                  // std::cout << lCellID_downslope << std::endl;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // remove the confluence now
-      vAccumulation.erase(iterator_accumulation);
-      vConfluence_copy.erase(vConfluence_copy.begin() + lCellIndex_accumulation);
-      // repeat
-    }
-
-    // assign watershed subbasin cell, maybe later?
-    vSubbasin.clear();
-    for (int lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
-    {
-      subbasin cSubbasin;
-      cSubbasin.lSubbasin = lSubbasin;
-      cSubbasin.lSubbasinIndex = cSubbasin.lSubbasin - 1;
-      vSubbasin.push_back(cSubbasin);
-    }
-
-    for (int lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
-    {
-      lCellIndex_subbasin = 0;
-      for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
-      {
-        long lSubbasin_dummy = (*iIterator_self).lSubbasin;
-        if (lSubbasin_dummy == lSubbasin)
-        {
-          (*iIterator_self).lCellIndex_subbasin = lCellIndex_subbasin;
-          (vSubbasin[lSubbasin - 1]).vCell.push_back(*iIterator_self);
-          lCellIndex_subbasin = lCellIndex_subbasin + 1;
-        }
-        else
-        {
-          if (lSubbasin_dummy == -1)
-          {
-            std::cout << "Something is wrong" << std::endl;
-          }
-        }
-      }
-    }
-
-    return error_code;
-  }
+  
   // The new method for performance improvement
   int watershed::watershed_define_subbasin()
   {
@@ -659,6 +524,7 @@ namespace hexwatershed
         (*iIterator_self).lSubbasin = lSubbasin;
         (*iIterator_self).lCellIndex_subbasin = vSubbasin.at(lSubbasin - 1).vCell.size();
         vSubbasin.at(lSubbasin - 1).vCell.push_back((*iIterator_self));
+        vSubbasin.at(lSubbasin - 1).mCellIdToIndex[(*iIterator_self).lCellID] = (*iIterator_self).lCellIndex_subbasin;
       }
       else
       {
@@ -695,6 +561,8 @@ namespace hexwatershed
           vCell.at(*iIterator_path).iFlag_checked = 1;
           vCell.at(*iIterator_path).lCellIndex_subbasin = vSubbasin.at(lSubbasin - 1).vCell.size();
           vSubbasin.at(lSubbasin - 1).vCell.push_back(vCell.at(*iIterator_path));
+          vSubbasin.at(lSubbasin - 1).mCellIdToIndex[vCell.at(*iIterator_path).lCellID] = vCell.at(*iIterator_path).lCellIndex_subbasin;
+
         }
       }
     }
@@ -711,7 +579,7 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
 
-    for (int lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       for (iIterator2 = vSubbasin.at(lSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(lSubbasin - 1).vCell.end(); iIterator2++)
       {

@@ -451,7 +451,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFound_outlet;
-    int lWatershed;
+    long lWatershed;
     long lCellIndex_self;
     long lCellIndex_current;
     long lCellIndex_downslope;
@@ -599,7 +599,7 @@ namespace hexwatershed
   int compset::compset_define_stream_confluence()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -635,7 +635,7 @@ namespace hexwatershed
   int compset::compset_define_stream_segment()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -656,7 +656,7 @@ namespace hexwatershed
   int compset::compset_build_stream_topology()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -675,7 +675,7 @@ namespace hexwatershed
   int compset::compset_define_stream_order()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
@@ -698,7 +698,7 @@ namespace hexwatershed
   int compset::compset_define_subbasin()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
 
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
@@ -725,7 +725,7 @@ namespace hexwatershed
   int compset::compset_calculate_watershed_characteristics()
   {
     int error_code = 1;
-    int lWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;

@@ -86,8 +86,7 @@ namespace hexwatershed
     int watershed_tag_confluence_upstream( long lCellID_confluence);
 
     int watershed_build_stream_topology();
-    int watershed_define_stream_order();
-    int watershed_define_subbasin_old();
+    int watershed_define_stream_order();    
     int watershed_define_subbasin();
     int watershed_update_attribute();
 
