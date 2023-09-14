@@ -118,9 +118,9 @@ std::string sError_data_missing = "Failed to read some data from: ";
 std::string sLog_data_quality = "Data quality is low. ";
 std::string sLog_open_success = "Succeed to open file: ";
 
-      std::string sExtension_header      = ".hdr";
-      std::string sExtension_envi      = ".dat";
-      std::string sExtension_text      = ".txt";
+std::string sExtension_header      = ".hdr";
+std::string sExtension_envi      = ".dat";
+std::string sExtension_text      = ".txt";
 
 
 

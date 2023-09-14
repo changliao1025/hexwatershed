@@ -4,12 +4,43 @@
 
 
 #pragma once
-#include <vector>
+#include <map>
 #include <string>
+#include <vector>
 using namespace std;
+
+
 
 namespace hexwatershed
 {
+
+
+enum eMesh_type {
+                 eM_hexagon = 1,
+                 eM_square = 2,
+                 eM_latlon = 3,
+                 eM_mpas = 4,
+                 eM_dggrid = 5,
+                 eM_tin = 6,
+};
+
+extern std::map<std::string, eMesh_type> mMesh_type;
+
+
+enum eVariable {
+                eV_elevation,
+                eV_flow_direction,
+                eV_flow_accumulation,
+                eV_stream_grid,
+                eV_confluence,
+                eV_watershed,
+                eV_subbasin,
+                eV_segment,
+                eV_slope_between,
+                eV_slope_within,
+                eV_stream_order,
+                eV_wetness_index,
+};
 
   class parameter {
 
@@ -22,7 +53,10 @@ namespace hexwatershed
     int iFlag_configuration_file;
     int iFlag_debug;
     int iFlag_elevation_profile;
-    int iMesh_type;
+    //int iMesh_type; replaced by the enum
+
+    eMesh_type pMesh_type;
+
     int iFlag_global;
     int iFlag_multiple_outlet; //multiple outlet in one simulation
     int iFlag_resample_method;
@@ -34,6 +68,7 @@ namespace hexwatershed
 
     int iFlag_merge_reach;
 
+
     
 
     //parameters
@@ -44,6 +79,8 @@ namespace hexwatershed
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;
+
+      eMesh_type define_mesh_type(const std::string  sMesh_type);
 
   };
 }

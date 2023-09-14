@@ -22,7 +22,9 @@ namespace hexwatershed
     int error_code = 1;
     int iFlag_stream_burned;
     int iFlag_has_stream;
-    int iMesh_type = cParameter.iMesh_type;
+    //int iMesh_type = cParameter.iMesh_type;
+
+    eMesh_type pMesh_type = this->cParameter.pMesh_type;
 
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
@@ -353,7 +355,7 @@ namespace hexwatershed
           else
           {
             // normal land grid neighbor, this cell maybe on the edge, if so, we can set it mannually as beach
-            if ( iMesh_type == 4) // this only apply to mpas that does not consider the vertex neighbors
+            if ( pMesh_type == eMesh_type::eM_hexagon || pMesh_type == eMesh_type::eM_mpas || pMesh_type == eMesh_type::eM_dggrid ) // this only apply to mpas that does not consider the vertex neighbors
             {
               if ((vCell_active.at(lCellIndex_self)).nNeighbor_land == (vCell_active.at(lCellIndex_self)).nVertex)
               {

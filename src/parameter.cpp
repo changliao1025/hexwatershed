@@ -14,6 +14,14 @@
 
 namespace hexwatershed
 {
+  std::map<std::string, eMesh_type> mMesh_type = {
+        {"hexagon", eM_hexagon},
+        {"square", eM_square},
+        {"latlon", eM_latlon},
+        {"mpas", eM_mpas},
+        {"dggrid", eM_dggrid},
+        {"tin", eM_tin}
+  };
 
   parameter::parameter()
   {
@@ -28,6 +36,20 @@ namespace hexwatershed
 
   parameter::~parameter()
   {
+  }
+
+  eMesh_type parameter::define_mesh_type(const std::string sMesh_type)
+  {
+        if (mMesh_type.find(sMesh_type) != mMesh_type.end())
+        {
+            this->pMesh_type = mMesh_type[sMesh_type];
+            return mMesh_type[sMesh_type];
+        }
+        else
+        {
+            this->pMesh_type = static_cast<eMesh_type>(-1);
+            return static_cast<eMesh_type>(-1); // Indicates not found
+        }
   }
 
 

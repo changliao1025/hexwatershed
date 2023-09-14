@@ -37,28 +37,6 @@ using namespace std;
 using namespace rapidjson;
 using namespace jsonmodel;
 
-enum eMesh_type {
-                 eM_hexagon,
-                 eM_square,
-                 eM_latlon,
-                 eM_triangle,
-                 eM_mpas,
-};
-
-enum eVariable {
-                eV_elevation,
-                eV_flow_direction,
-                eV_flow_accumulation,
-                eV_stream_grid,
-                eV_confluence,
-                eV_watershed,
-                eV_subbasin,
-                eV_segment,
-                eV_slope_between,
-                eV_slope_within,
-                eV_stream_order,
-                eV_wetness_index,
-};
 
 namespace hexwatershed
 {
@@ -100,7 +78,6 @@ namespace hexwatershed
   
     std::ofstream ofs_log; // used for IO starlog file
 
-    //std::map <std::string, std::string> mParameter; //for input data and parameters
     std::vector <hexagon> vCell;                    //all the cells based on shapefile
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
     std::vector <hexagon> vCell_priority_flood;             //all calls has elevation (not missing value)

@@ -111,9 +111,7 @@ namespace hexwatershed
     std::string sExtension_json;
 
     std::ofstream ofs_log; // used for IO starlog file
-
-    //std::map <std::string, std::string> mParameter; //for input data and parameters
-
+ 
     //rapidjson object
     jsonmodel::mesh cMesh;
     jsonmodel::multibasin cBasin;

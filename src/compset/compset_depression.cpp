@@ -98,14 +98,15 @@ namespace hexwatershed
   std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon> vCell_in)
   {
     int error_code = 1;
-    int iMesh_type = this->cParameter.iMesh_type;
+    //int iMesh_type = this->cParameter.iMesh_type;
+    eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<hexagon>::iterator iIterator1;
 
     std::vector<hexagon> vCell_out;
 
     for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
       {
-        if (iMesh_type ==1 || iMesh_type ==4 )
+        if (pMesh_type == eMesh_type::eM_hexagon || pMesh_type == eMesh_type::eM_mpas || pMesh_type == eMesh_type::eM_dggrid )
         {
           if ((*iIterator1).nNeighbor_land < (*iIterator1).nVertex) //or vertex
           {
