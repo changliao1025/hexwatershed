@@ -404,7 +404,6 @@ namespace hexwatershed
             {
               // topology based stream burning
               lCellID_outlet = aBasin.at(i).lCellID_outlet;
-
               lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
               dElevation_mean_center = vCell_active.at(lCellIndex_active).dElevation_mean;
 

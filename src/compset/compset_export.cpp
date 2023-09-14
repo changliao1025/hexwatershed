@@ -322,7 +322,8 @@ namespace hexwatershed
         {
           sLine = "2 ";
           lCellID = (*iIterator).lCellID_downslope_dominant;
-          lCellIndex = compset_find_index_by_cell_id(lCellID);
+          //lCellIndex = compset_find_index_by_cell_id(lCellID);
+          lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;
         }
@@ -443,7 +444,8 @@ namespace hexwatershed
           sLine = "2 ";
           // cannot use cellindex anymore?
           lCellID = (*iIterator).lCellID_downslope_dominant;
-          lCellIndex = compset_find_index_by_cell_id(lCellID);
+          //lCellIndex = compset_find_index_by_cell_id(lCellID);
+          lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;
         }

@@ -522,7 +522,7 @@ namespace hexwatershed
               {
                 if (lCellID_downslope != -1)
                 {
-                  lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
+                  lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);                  
                   if (lCellIndex_current >= 0)
                   {
                     if (vCell_active.at(lCellIndex_current).lWatershed == lWatershed) // the downslope is already finished
@@ -738,7 +738,7 @@ namespace hexwatershed
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     long lCellID1; 
-    long lCellIndex;
+    long lCellIndex, lCellIndex1;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
     if (iFlag_flowline == 1)
@@ -750,6 +750,12 @@ namespace hexwatershed
         {
           lCellID1 = (*iIterator1).lCellID;
           lCellIndex = compset_find_index_by_cell_id(lCellID1);
+          lCellIndex1 = (*iIterator1).lCellIndex;
+          if (lCellIndex != lCellIndex1)
+          {
+              //print an error information
+              std::cout << " compset_transfer_watershed_to_domain error: lCellIndex != lCellIndex1" << std::endl;
+          }
           if (lCellIndex != -1)
           {
             vCell_active.at(lCellIndex).lSubbasin = (*iIterator1).lSubbasin;

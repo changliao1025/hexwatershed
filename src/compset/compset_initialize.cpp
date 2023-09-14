@@ -144,18 +144,6 @@ namespace hexwatershed
   long compset::compset_find_index_by_cell_id(long lCellID_in)
   {
     long lCellIndex = -1;
-    /* the old methos is too slow for large cell number
-    std::vector<hexagon>::iterator iIterator;
-    for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID == lCellID_in)
-          {
-            lCellIndex = (*iIterator).lCellIndex;
-            break;
-          }
-      }
-    return lCellIndex;
-      */
     // the new method uses unordered map to speed up
     auto iIterator = mCellIdToIndex.find(lCellID_in);
     if (iIterator != mCellIdToIndex.end())

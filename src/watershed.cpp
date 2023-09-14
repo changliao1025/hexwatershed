@@ -29,18 +29,16 @@ namespace hexwatershed
     nSegment = 0;
     nConfluence = 0;
     long lCellID_downstream;
-    long lCellIndex_downstream;
+    long lCellIndex_downstream, lCellIndex_downstream1;
     std::vector<hexagon>::iterator iIterator_self;
-
     iCount = 0;
-
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
       // we only consider cells within the watershed
       if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).lWatershed == lWatershed)
       {
         lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
-        lCellIndex_downstream = watershed_find_index_by_cell_id(lCellID_downstream);
+        lCellIndex_downstream = watershed_find_index_by_cell_id(lCellID_downstream);        
         if (lCellIndex_downstream != -1)
         {
           (vCell.at(lCellIndex_downstream)).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index

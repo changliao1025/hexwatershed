@@ -34,7 +34,7 @@ namespace hexwatershed
 
     long lCellIndex;       //it includes cell outside of watershed
     long lCellIndex_watershed;  //only in the designed watershed
-    long lCellIndex_subbasin; 
+    long lCellIndex_subbasin; //index in a subbasin
 
     /*! \brief Brief description.
     *   this is the mesh id from the json, it might be the same with Global ID,      
