@@ -65,11 +65,10 @@ namespace hexwatershed
     int iFlag_neighbor;    //this flag is used to check whether a hexagon is neighbor to another hexagon
     int iFlag_outlet;      //whether this hexagon is an outlet or not
     int iFlag_confluence;  //whether this hexagon is a stream confluence or not, confluence is where stream meets.
-
-    int iSegment;       //the stream segment index
     int iSegment_order; //the stream order of segment, there are different type of definition
-    int iSubbasin;      //the subbasin index, should be the same with the segment
-    int iWatershed;
+    long lSegment;       //the stream segment id    
+    long lSubbasin;      //the subbasin id, should be the same with the segment
+    long lWatershed; 
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge
     int nNeighbor_land;
@@ -77,7 +76,7 @@ namespace hexwatershed
     int nUpslope;  //all upslope including stream
     int nDownslope;
     int nUpstream;           //only consider stream upslope
-    int iSegment_downstream; //if a hexagon is a stream, this is the downstream index, -1 for outlet
+    long lSegment_downstream; //if a hexagon is a stream, this is the downstream index, -1 for outlet
 
     int nVertex; //the vertex number from polygon, should always be constant for uniform resolution, for MPAS, this can be 5, 6, 7
     int nEdge; //total number of edge

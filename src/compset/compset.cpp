@@ -35,31 +35,40 @@ namespace hexwatershed
   }
 
   int compset::compset_run_model()
-
   {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_debug = cParameter.iFlag_debug;
     std::string sFilename;
+    std::string sTime ;
+    
+    //step 1
     error_code = compset_priority_flood_depression_filling();
     if (error_code != 1)
     {
       return error_code;
     }
-    sLog = "Finished depression filling";
+    sTime = get_current_time();
+    sLog = "Finished depression filling at " + sTime;
     ofs_log << sLog << std::endl;
-    ofs_log.flush();
+    ofs_log.flush();    
     std::cout << sLog << std::endl;
+    std::flush(std::cout);
+
+    //step 2
     compset_calculate_flow_direction();
-    sLog = "Finished flow direction";
+    sTime = get_current_time();     
+    sLog = "Finished flow direction" + sTime;;
     ofs_log << sLog << std::endl;
     ofs_log.flush();
     std::flush(std::cout);
     std::cout << sLog << std::endl;
 
+    //step 3
     compset_calculate_flow_accumulation();
-    sLog = "Finished flow accumulation";
+    sTime = get_current_time();  
+    sLog = "Finished flow accumulation" + sTime;
     ofs_log << sLog << std::endl;
     ofs_log.flush();
     std::cout << sLog << std::endl;
@@ -72,7 +81,7 @@ namespace hexwatershed
     {
       if (iFlag_multiple_outlet == 1)
       {
-        // multiple outlet case, do we need these information?
+        // multiple outlet case, do we need these information?        
         compset_define_stream_grid();
         sLog = "Finished defining stream grid";
         ofs_log << sLog << std::endl;
@@ -123,52 +132,68 @@ namespace hexwatershed
       }
       else
       {
-        compset_define_stream_grid();
-        sLog = "Finished defining stream grid";
+        //step 4
+        compset_define_stream_grid(); 
+        sTime = get_current_time(); 
+        sLog = "Finished defining stream grid" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
         iFlag_debug = 0;
+        //step 5
         compset_define_watershed_boundary();
-        sLog = "Finished defining watershed boundary";
+        sTime = get_current_time();  
+        sLog = "Finished defining watershed boundary" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
-        // start from here, we can actually run all the algorithm using the watershed object
+        //step 6
+        //start from here, we can actually run all the algorithm using the watershed object
         compset_define_stream_confluence();
-        sLog = "Finished defining confluence";
+        sTime = get_current_time();  
+        sLog = "Finished defining confluence" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
+        //step 7
         compset_define_stream_segment();
-        sLog = "Finished defining stream segment";
+        sTime = get_current_time();  
+        sLog = "Finished defining stream segment" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
+        //step 8
         compset_build_stream_topology();
-        sLog = "Finished defining stream topology";
+        sTime = get_current_time();  
+        sLog = "Finished defining stream topology" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
+        //step 9
         compset_define_stream_order();
-        sLog = "Finished defining stream order";
+        sTime = get_current_time();  
+        sLog = "Finished defining stream order" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
+        //step 10
         compset_define_subbasin();
-        sLog = "Finished defining subbasin";
+        sTime = get_current_time();  
+        sLog = "Finished defining subbasin" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
+        //step 11
         compset_calculate_watershed_characteristics();
-        sLog = "Finished watershed characteristics";
+        sTime = get_current_time();  
+        sLog = "Finished watershed characteristics" + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;

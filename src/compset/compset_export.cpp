@@ -100,7 +100,7 @@ namespace hexwatershed
   int compset::compset_export_domain_json(std::string sFilename_in)
   {
     int error_code = 1;
-    int iWatershed;
+    long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_flowline = cParameter.iFlag_flowline;
@@ -112,7 +112,6 @@ namespace hexwatershed
     {
       for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
       {
-
         cell pCell;
         pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
         pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
@@ -185,14 +184,14 @@ namespace hexwatershed
   int compset::compset_export_watershed_json()
   {
     int error_code = 1;
-    int iWatershed;
+    long lWatershed;
     int iFlag_flowline = cParameter.iFlag_flowline;
     if (iFlag_flowline == 1)
     {
-      for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
-        vWatershed.at(iWatershed - 1).watershed_export_json();
-        vWatershed.at(iWatershed - 1).watershed_export_stream_edge_json();
+        vWatershed.at(lWatershed - 1).watershed_export_json();
+        vWatershed.at(lWatershed - 1).watershed_export_stream_edge_json();
       }
     }
 
@@ -205,15 +204,15 @@ namespace hexwatershed
   int compset::compset_export_watershed_characteristics()
   {
     int error_code = 1;
-    int iWatershed;
+    long lWatershed;
     int iFlag_flowline = cParameter.iFlag_flowline;
     if (iFlag_flowline == 1)
     {
-      for (iWatershed = 1; iWatershed <= cParameter.nOutlet; iWatershed++)
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
-        vWatershed.at(iWatershed - 1).watershed_export_characteristics();
-        vWatershed.at(iWatershed - 1).watershed_export_segment_characteristics();
-        vWatershed.at(iWatershed - 1).watershed_export_subbasin_characteristics();
+        vWatershed.at(lWatershed - 1).watershed_export_characteristics();
+        vWatershed.at(lWatershed - 1).watershed_export_segment_characteristics();
+        vWatershed.at(lWatershed - 1).watershed_export_subbasin_characteristics();
       }
     }
 

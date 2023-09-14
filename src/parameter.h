@@ -49,12 +49,11 @@ enum eVariable {
 
     ~parameter();
     int iCase_index;
-    int nOutlet;
+    
     int iFlag_configuration_file;
     int iFlag_debug;
     int iFlag_elevation_profile;
     //int iMesh_type; replaced by the enum
-
     eMesh_type pMesh_type;
 
     int iFlag_global;
@@ -68,19 +67,16 @@ enum eVariable {
 
     int iFlag_merge_reach;
 
-
-    
+    long nOutlet;
 
     //parameters
     float dAccumulation_threshold;
     float dBreach_threshold; //the threshold parameter for stream burning breaching algorithm
-
     float dMissing_value_dem;
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;
-
-      eMesh_type define_mesh_type(const std::string  sMesh_type);
+    eMesh_type define_mesh_type(const std::string  sMesh_type);
 
   };
 }

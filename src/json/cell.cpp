@@ -89,10 +89,10 @@ namespace jsonmodel
 		{
 			this->lCellID_downstream_burned = obj[sKey.c_str()].GetInt64();
 		}
-		sKey = "iStream_segment_burned";
+		sKey = "iStream_segment_burned"; //temporary, will covnert to long if needed
 		if (obj.HasMember(sKey.c_str()))
 		{
-			this->iStream_segment_burned = obj[sKey.c_str()].GetInt();
+			this->lStream_segment_burned = obj[sKey.c_str()].GetInt64();
 		}
 		sKey = "iStream_order_burned";
 		if (obj.HasMember(sKey.c_str()))
@@ -169,11 +169,11 @@ namespace jsonmodel
 		writer->String("lCellID_downslope");
 		writer->Int64(lCellID_downslope);
 
-		writer->String("iStream_segment");
-		writer->Int(iStream_segment);
+		writer->String("lStream_segment");
+		writer->Int64(lStream_segment);
 
-		writer->String("iSubbasin");
-		writer->Int(iSubbasin);
+		writer->String("lSubbasin");
+		writer->Int64(lSubbasin);
 
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);

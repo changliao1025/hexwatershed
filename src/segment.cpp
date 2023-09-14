@@ -16,10 +16,10 @@ namespace hexwatershed
   segment::segment()
   {
     iFlag_headwater = 0;
-    iSegment = 0;
-    iSegmentIndex = -1;
+    lSegment = 0;
+    lSegmentIndex = -1;
     iSegment_order = -1;
-    iSegment_downstream = -1;
+    lSegment_downstream = -1;
 
     iFlag_has_upstream = -1;
     iFlag_has_downstream = -1;
@@ -33,7 +33,7 @@ namespace hexwatershed
 
   bool segment::operator<(const segment &cSegment)
   {
-    return (this->iSegment < cSegment.iSegment);
+    return (this->lSegment < cSegment.lSegment);
   }
 
   /**

@@ -17,6 +17,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <unordered_map>
 #include "conversion.h"
 #include "hexagon.h"
 #include "segment.h"
@@ -39,11 +40,8 @@ namespace hexwatershed
 
     ~watershed();
 
-    int iWatershed; // id
-
-    
-
-    int iSegment_current;
+    long lWatershed; // id of watershed 
+    long lSegment_current;
     float dArea;
     float dSlope;
     float dSlope_mean;
@@ -62,7 +60,6 @@ namespace hexwatershed
     float dLongest_length_stream;    // the length of longest stream segment
     float dLength_stream_conceptual; // total stream length
 
-
     std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
@@ -76,6 +73,11 @@ namespace hexwatershed
     std::vector<segment> vSegment;
     std::vector<subbasin> vSubbasin;
     std::vector<hexagon> vConfluence;
+
+    //add an unordered map for index searching
+    std::unordered_map<long, long> mCellIdToIndex;
+    std::unordered_map<long, long> mSegmentIdToIndex;
+    std::unordered_map<long, long> mSubbasinIdToIndex;
 
     // function
 
@@ -108,8 +110,8 @@ namespace hexwatershed
     int watershed_export_stream_edge_json();
 
     long watershed_find_index_by_cell_id(long lCellID);
-    int watershed_find_index_by_segment_id(int iSegment);
-    int watershed_find_index_by_subbasin_id(int iSubbasin);
+    long watershed_find_index_by_segment_id(long lSegment);
+    long watershed_find_index_by_subbasin_id(long lSubbasin);
 
   };
 }

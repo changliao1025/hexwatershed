@@ -51,10 +51,11 @@ namespace jsonmodel
     int nNeighbor_land;
     int nNeighbor_ocean;
     int nVertex; /*!<number of vertex*/
-    int iStream_segment_burned;
     int iStream_order_burned;
-    int iStream_segment;
-    int iSubbasin;
+    long lStream_segment_burned;
+    
+    long lStream_segment;
+    long lSubbasin;
     long lCellID; /*!<global cell ID*/
     long lCellID_downstream_burned;/*!<pre-descibed global downstream cell ID*/
     long lCellID_downslope;/*!<global downslope cell ID*/

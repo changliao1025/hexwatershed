@@ -4,6 +4,7 @@
 
 #pragma once
 #include <iostream>
+#include <unordered_map>
 #include "hexagon.h"
 #include "./json/JSONBase.h"
 #include "./json/mesh.h"
@@ -20,8 +21,8 @@ namespace hexwatershed
 
           ~subbasin();
 
-          int iSubbasin; //each subbasin should have the same index with its segment
-          int iSubbasinIndex;
+          long lSubbasin; //each subbasin should have the same index with its segment
+          long lSubbasinIndex;
           long nCell;
           long lCellID_outlet; //the index of the subbasin outlet
           float dArea;
@@ -35,6 +36,7 @@ namespace hexwatershed
           float dDrainage_density;
           hexagon cCell_outlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
           std::vector <hexagon> vCell;
+          std::unordered_map<long, long> mCellIdToIndex;
           
 
           //function

@@ -474,3 +474,20 @@ long get_file_size(std::string sFilename_in)
 	ifs.close();
 	return lfsize;
 }
+
+/**
+ * @brief Get the current time object
+ * 
+ * @return std::string 
+ */
+std::string get_current_time()
+{
+	// Get the current time point
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    // Convert the time point to a time_t object
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+    // Convert the time_t object to a string representation
+    std::string timeStr = std::ctime(&currentTime);
+    // Print the current time
+	return timeStr;    
+}

@@ -9,7 +9,7 @@ namespace hexwatershed
 
   subbasin::subbasin()
   {
-    iSubbasinIndex=-1;
+    lSubbasinIndex=-1;
   }
   subbasin::~subbasin()
   {

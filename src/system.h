@@ -17,6 +17,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <cstring>
+
+#include <chrono>
+#include <ctime>
 //c++ library
 
 #include <fstream>
@@ -85,3 +88,5 @@ int path_test(std::string sPath);
 int run_command(std::string sCommand);
 
 long get_file_size(std::string sFilename);
+
+std::string get_current_time();

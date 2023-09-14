@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath> // abs, floor
+#include <unordered_map>
 #include <chrono>
 #include <ctime> //for timing recording
 #include "../system.h"
@@ -79,8 +80,9 @@ namespace hexwatershed
   
     std::ofstream ofs_log; // used for IO starlog file
 
-    std::vector <hexagon> vCell;                    //all the cells based on shapefile
+    //std::vector <hexagon> vCell;                    //all the cells based on shapefile, no longer used as pyflowline deals with the dem already
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
+    std::unordered_map<long, long> mCellIdToIndex; //a map for fast search
     std::vector <hexagon> vCell_priority_flood;             //all calls has elevation (not missing value)
     //watershed cWatershed;
     std::vector <watershed> vWatershed;
@@ -116,7 +118,7 @@ namespace hexwatershed
     int compset_define_watershed_boundary ();
     int compset_define_stream_confluence ();
     int compset_define_stream_segment ();
-    int compset_tag_confluence_upstream (int iWatershed, long lCellID_confluence);
+    int compset_tag_confluence_upstream (long lWatershed, long lCellID_confluence);
 
     int compset_build_stream_topology();
     int compset_define_stream_order();

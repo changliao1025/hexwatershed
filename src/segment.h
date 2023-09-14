@@ -30,13 +30,15 @@ namespace hexwatershed
 
         ~segment();
 
-        int nReach;
-        int iSegment;
-        int iSegmentIndex;
-        int iWatershed; //which watershed it belongs to
+        long nReach;
+        long lSegment;
+        long lSegmentIndex;
+        long lWatershed; //which watershed it belongs to
 
-        int iSegment_downstream;
+        long lSegment_downstream;
+
         int iSegment_order;
+
         int iFlag_headwater;
         int iFlag_has_upstream;
         int iFlag_has_downstream;
@@ -47,7 +49,7 @@ namespace hexwatershed
         float dElevation_drop; //elevation drop between headwater to outlet
         float dDistance_to_watershed_outlet;
 
-        std::vector<int> vSegment_upstream;
+        std::vector<long> vSegment_upstream;
 
         hexagon cReach_start;
         hexagon cReach_end;
