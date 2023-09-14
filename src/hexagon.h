@@ -53,7 +53,6 @@ namespace hexwatershed
     int iFlag_stream_burning_treated;
     int iFlag_depression_filling_treated;//flag to indicate whether a cell is treated for elevation
 
-    int iStream_segment_burned;
     int iStream_order_burned;
     int nFlowline_burned;
     int iFlag_confluence_burned;
@@ -66,6 +65,7 @@ namespace hexwatershed
     int iFlag_outlet;      //whether this hexagon is an outlet or not
     int iFlag_confluence;  //whether this hexagon is a stream confluence or not, confluence is where stream meets.
     int iSegment_order; //the stream order of segment, there are different type of definition
+    long lStream_segment_burned;
     long lSegment;       //the stream segment id    
     long lSubbasin;      //the subbasin id, should be the same with the segment
     long lWatershed; 

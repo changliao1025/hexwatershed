@@ -31,7 +31,7 @@ namespace hexwatershed
 
     iFlag_confluence_burned = 0;
     iFlag_headwater_burned =0;
-    iStream_segment_burned = -1;
+    lStream_segment_burned = -1;
     lCellID_downstream_burned = -1;//only assign it if we found on
     iStream_order_burned = -1;
     iFlag_outlet = -1;

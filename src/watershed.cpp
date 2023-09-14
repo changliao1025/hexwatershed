@@ -272,6 +272,7 @@ namespace hexwatershed
         cSegment.lSegment_downstream = lSegment_confluence;
         // add the segment to the watershed object
         vSegment.push_back(cSegment);
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
 
         // update segment index
         lSegment_current = lSegment_current - 1;
@@ -340,6 +341,7 @@ namespace hexwatershed
         cSegment.lWatershed = lWatershed;
         cSegment.lSegment_downstream = lSegment_confluence;
         vSegment.push_back(cSegment);
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
         lSegment_current = lSegment_current - 1;
         if (iFlag_first_reach != 1)
         {
@@ -407,11 +409,8 @@ namespace hexwatershed
     int iUpstream;
     int iStream_order_max;
     int iFlag_all_upstream_done;
-
     std::vector<int> vStream_order;
-
     std::vector<segment>::iterator iIterator_segment;
-
     if (nSegment == 1)
     {
       vSegment.at(0).iSegment_order = 1;
@@ -584,6 +583,7 @@ namespace hexwatershed
       for (iIterator2 = vSubbasin.at(lSubbasin - 1).vCell.begin(); iIterator2 != vSubbasin.at(lSubbasin - 1).vCell.end(); iIterator2++)
       {
         lCellIndex_watershed = (*iIterator2).lCellIndex_watershed;
+        //may also use the map to find index
         vCell.at(lCellIndex_watershed).lSubbasin = (*iIterator2).lSubbasin;
         vCell.at(lCellIndex_watershed).dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
         vCell.at(lCellIndex_watershed).dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
@@ -1007,9 +1007,9 @@ namespace hexwatershed
         pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
         pCell.dArea = (*iIterator).dArea;
         pCell.lCellID = (*iIterator).lCellID;
-        pCell.iStream_segment = (*iIterator).lSegment;
+        pCell.lStream_segment = (*iIterator).lSegment;
         pCell.lSubbasin = (*iIterator).lSubbasin;
-        pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
+        pCell.lStream_segment_burned = (*iIterator).lStream_segment_burned; // flag for burned stream
         pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
         pCell.dAccumulation = (*iIterator).dAccumulation;
         pCell.vVertex = (*iIterator).vVertex;
@@ -1048,9 +1048,9 @@ namespace hexwatershed
         pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
         pCell.dArea = (*iIterator).dArea;
         pCell.lCellID = (*iIterator).lCellID;
-        pCell.iStream_segment = (*iIterator).lSegment;
+        pCell.lStream_segment = (*iIterator).lSegment;
         pCell.lSubbasin = (*iIterator).lSubbasin;
-        pCell.iStream_segment_burned = (*iIterator).iStream_segment_burned; // flag for burned stream
+        pCell.lStream_segment_burned = (*iIterator).lStream_segment_burned; // flag for burned stream
         pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
         pCell.dAccumulation = (*iIterator).dAccumulation;
         pCell.vVertex = (*iIterator).vVertex;

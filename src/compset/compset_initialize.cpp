@@ -105,11 +105,11 @@ namespace hexwatershed
         pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
       }
 
-      pHexagon.iStream_segment_burned = (*iIterator1).iStream_segment_burned;
+      pHexagon.lStream_segment_burned = (*iIterator1).lStream_segment_burned;
       pHexagon.iStream_order_burned = (*iIterator1).iStream_order_burned;
       pHexagon.lCellID_downstream_burned = (*iIterator1).lCellID_downstream_burned;
 
-      if (pHexagon.iStream_segment_burned > 0) // check it starts with 1
+      if (pHexagon.lStream_segment_burned > 0) // check it starts with 1
       {
         pHexagon.iFlag_stream_burned = 1;
       }

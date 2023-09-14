@@ -59,7 +59,7 @@ namespace hexwatershed
     //step 2
     compset_calculate_flow_direction();
     sTime = get_current_time();     
-    sLog = "Finished flow direction" + sTime;;
+    sLog = "Finished flow direction at " + sTime;
     ofs_log << sLog << std::endl;
     ofs_log.flush();
     std::flush(std::cout);
@@ -68,7 +68,7 @@ namespace hexwatershed
     //step 3
     compset_calculate_flow_accumulation();
     sTime = get_current_time();  
-    sLog = "Finished flow accumulation" + sTime;
+    sLog = "Finished flow accumulation at " + sTime;
     ofs_log << sLog << std::endl;
     ofs_log.flush();
     std::cout << sLog << std::endl;
@@ -83,18 +83,21 @@ namespace hexwatershed
       {
         // multiple outlet case, do we need these information?        
         compset_define_stream_grid();
-        sLog = "Finished defining stream grid";
+        sTime = get_current_time();  
+        sLog = "Finished defining stream grid  at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
         iFlag_debug = 0;
         compset_define_watershed_boundary();
+        sTime = get_current_time();  
         sLog = "Finished defining watershed boundary";
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
         // start from here, we can actually run all the algorithm using the watershed object
         compset_define_stream_confluence();
+        sTime = get_current_time();  
         sLog = "Finished defining confluence";
         ofs_log << sLog << std::endl;
         ofs_log.flush();
@@ -135,7 +138,7 @@ namespace hexwatershed
         //step 4
         compset_define_stream_grid(); 
         sTime = get_current_time(); 
-        sLog = "Finished defining stream grid" + sTime;
+        sLog = "Finished defining stream grid at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -144,7 +147,7 @@ namespace hexwatershed
         //step 5
         compset_define_watershed_boundary();
         sTime = get_current_time();  
-        sLog = "Finished defining watershed boundary" + sTime;
+        sLog = "Finished defining watershed boundary at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -153,7 +156,7 @@ namespace hexwatershed
         //start from here, we can actually run all the algorithm using the watershed object
         compset_define_stream_confluence();
         sTime = get_current_time();  
-        sLog = "Finished defining confluence" + sTime;
+        sLog = "Finished defining confluence at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -161,7 +164,7 @@ namespace hexwatershed
         //step 7
         compset_define_stream_segment();
         sTime = get_current_time();  
-        sLog = "Finished defining stream segment" + sTime;
+        sLog = "Finished defining stream segment at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -169,7 +172,7 @@ namespace hexwatershed
         //step 8
         compset_build_stream_topology();
         sTime = get_current_time();  
-        sLog = "Finished defining stream topology" + sTime;
+        sLog = "Finished defining stream topology at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -177,7 +180,7 @@ namespace hexwatershed
         //step 9
         compset_define_stream_order();
         sTime = get_current_time();  
-        sLog = "Finished defining stream order" + sTime;
+        sLog = "Finished defining stream order at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -185,7 +188,7 @@ namespace hexwatershed
         //step 10
         compset_define_subbasin();
         sTime = get_current_time();  
-        sLog = "Finished defining subbasin" + sTime;
+        sLog = "Finished defining subbasin at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
@@ -193,7 +196,7 @@ namespace hexwatershed
         //step 11
         compset_calculate_watershed_characteristics();
         sTime = get_current_time();  
-        sLog = "Finished watershed characteristics" + sTime;
+        sLog = "Finished watershed characteristics at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;

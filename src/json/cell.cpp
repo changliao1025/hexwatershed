@@ -5,7 +5,7 @@ namespace jsonmodel
 {
 	cell::cell()
 	{
-		iStream_segment_burned = -1;
+		lStream_segment_burned = -1;
 		iStream_order_burned = -1;
 
 		dAccumulation = 0.0;
