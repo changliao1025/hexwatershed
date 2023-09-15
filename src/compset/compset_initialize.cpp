@@ -20,7 +20,6 @@ namespace hexwatershed
   int compset::compset_initialize_model()
   {
     int error_code = 1;
-
     // get informaiton from the domain pass variable
     long lVertexIndex = 0;
     long lCellIndex = 0;
@@ -31,14 +30,12 @@ namespace hexwatershed
     float dLatitude_min = 90;
     float dLatitude_max = -90;
     std::string sTime;
-
     std::vector<cell>::iterator iIterator1;
     std::vector<vertex>::iterator iIterator2;
-
     vVertex_active.clear();
     vCell_active.clear();
     lVertexIndex = 0;
-    // vCell_active.reserve(ncell); //CL: dont remember that this does
+    //vCell_active.reserve(ncell); //CL: dont remember that this does but it speeds up the code
     for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
     {
       hexagon pHexagon;

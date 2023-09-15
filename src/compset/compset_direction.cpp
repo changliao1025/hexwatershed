@@ -22,13 +22,9 @@ namespace hexwatershed
     int error_code = 1;
     int iFlag_stream_burned;
     int iFlag_has_stream;
-    //int iMesh_type = cParameter.iMesh_type;
-
     eMesh_type pMesh_type = this->cParameter.pMesh_type;
-
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
-  
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
@@ -57,7 +53,6 @@ namespace hexwatershed
     std::vector<float> vNeighbor_distance;
     std::vector<long> vNeighbor;
     std::vector<long> vNeighbor_land;
-
     std::vector<long>::iterator iIterator;
     std::vector<long>::iterator iIterator_neighbor;
 
@@ -387,7 +382,7 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!" << std::endl;
+                  std::cout << "It should have one downslope!" << lCellID_lowest << std::endl;
                 }
               }
               else

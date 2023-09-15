@@ -72,7 +72,7 @@ namespace hexwatershed
   int domain::domain_retrieve_user_input()
   {
     int error_code = 1;
-    //int iMesh_type;
+    
     eMesh_type pMesh_type;
     std::string sMesh_type;
     std::string sKey = "sMesh_type";
@@ -85,55 +85,10 @@ namespace hexwatershed
 
     pMesh_type = cCompset.cParameter.define_mesh_type(sMesh_type);
 
-    /*
-    if (sMesh_type == "hexagon")
-    {
-      iMesh_type = 1;
-    }
-    else
-    {
-      if (sMesh_type == "square")
-      {
-        iMesh_type = 2;
-      }
-      else
-      {
-        if (sMesh_type == "latlon")
-        {
-          iMesh_type = 3;
-        }
-        else
-        {
-          if (sMesh_type == "mpas")
-          {
-            iMesh_type = 4;
-          }
-          else
-          {
-            if (sMesh_type == "dggrid")
-            {
-              iMesh_type = 5;
-            }
-            else
-            {
-              if (sMesh_type == "tin")
-              {
-                 iMesh_type = 6;
-              }
-              else
-              {
-                std::cout << "Unsupported mesh type" << std::endl;
-              }
-              
-            }
-          }
-        }
-      }
-    }
-    */
+    
 
     cCompset.cParameter.sMesh_type = sMesh_type;
-    //cCompset.cParameter.iMesh_type = iMesh_type;
+    
     cCompset.cParameter.pMesh_type = pMesh_type;
 
     sKey = "iFlag_resample_method";
@@ -316,7 +271,7 @@ namespace hexwatershed
   int domain::domain_read_input_data()
   {
     int error_code = 1;
-    //int iMesh_type = cCompset.cParameter.iMesh_type;
+    
     eMesh_type pMesh_type = cCompset.cParameter.pMesh_type;
 
     int iFlag_flowline = cCompset.cParameter.iFlag_flowline;

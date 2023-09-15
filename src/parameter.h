@@ -53,7 +53,7 @@ enum eVariable {
     int iFlag_configuration_file;
     int iFlag_debug;
     int iFlag_elevation_profile;
-    //int iMesh_type; replaced by the enum
+    
     eMesh_type pMesh_type;
 
     int iFlag_global;

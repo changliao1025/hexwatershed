@@ -96,7 +96,7 @@ namespace hexwatershed
   std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon> vCell_in)
   {
     int error_code = 1;
-    // int iMesh_type = this->cParameter.iMesh_type;
+    
     eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<hexagon>::iterator iIterator1;
 
