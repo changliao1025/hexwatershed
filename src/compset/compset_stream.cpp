@@ -337,18 +337,18 @@ namespace hexwatershed
         lCellIndex2 = compset_find_index_by_cell_id(lCellID_downstream);
         dElevation_downstream = vCell_active.at(lCellIndex2).dElevation_mean;  
         dDifference_dummy = dElevation_upstream - dElevation_downstream;
-        if (dDifference_dummy < 0.0)
+        if (dDifference_dummy <= 0.0) //how about equals to 0.0?
         {
-          vCell_active.at(lCellIndex2).dElevation_mean = dElevation_upstream;
-          vCell_active.at(lCellIndex_active).dElevation_mean = dElevation_downstream;
-          vCell_active.at(lCellIndex_active).dElevation_downstream = dElevation_upstream;
+          vCell_active.at(lCellIndex2).dElevation_mean = dElevation_upstream-0.01;
+          vCell_active.at(lCellIndex_active).dElevation_mean = dElevation_downstream+0.01;
+          vCell_active.at(lCellIndex_active).dElevation_downstream = dElevation_upstream-0.01;
           // find out the next downstream elevation
           lCellID_downstream2 = vCell_active.at(lCellIndex2).lCellID_downstream_burned;
           if (lCellID_downstream2 != -1)
           {
             lCellIndex3 = compset_find_index_by_cell_id(lCellID_downstream2);
             dDifference_dummy = vCell_active.at(lCellIndex2).dElevation_mean - vCell_active.at(lCellIndex3).dElevation_mean;
-            if (dDifference_dummy < 0.0) // another depression
+            if (dDifference_dummy <= 0.0) // another depression
             {
               lCellID_next = lCellID_downstream;
               compset_breaching_stream_elevation(lCellID_next);
