@@ -341,7 +341,7 @@ namespace hexwatershed
         {
           vCell_active.at(lCellIndex2).dElevation_mean = dElevation_upstream-0.01;
           vCell_active.at(lCellIndex_active).dElevation_mean = dElevation_downstream+0.01;
-          vCell_active.at(lCellIndex_active).dElevation_downstream = dElevation_upstream-0.01;
+          vCell_active.at(lCellIndex_active).dElevation_downstream = vCell_active.at(lCellIndex2).dElevation_mean;
           // find out the next downstream elevation
           lCellID_downstream2 = vCell_active.at(lCellIndex2).lCellID_downstream_burned;
           if (lCellID_downstream2 != -1)
