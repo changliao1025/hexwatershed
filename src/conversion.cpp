@@ -153,9 +153,9 @@ float convert_from_calorie_per_centimeter_to_joule_per_meter(float dCalorie_per_
 	return dJoule_per_meter_out;
 }
 
-float convert_degree_to_radian(float dAngle_degree)
+float convert_degree_to_radian(const float dAngle_degree)
 {
-	 float dAngle_radian =  dAngle_degree / 180.0 * pi;
+	 const float dAngle_radian =  dAngle_degree / 180.0 * pi;
 	 return dAngle_radian;
 }
 

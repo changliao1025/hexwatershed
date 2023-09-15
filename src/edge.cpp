@@ -63,7 +63,7 @@ namespace hexwatershed
     }
 
     /**
-     * @brief check whether an edge overlap with another edge, this algorithm has error
+     * @brief check whether an edge overlap with another edge, this algorithm has error?
      * 
      * @param pVertex_start 
      * @param pVertex_end 

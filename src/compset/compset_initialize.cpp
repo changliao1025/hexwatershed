@@ -128,10 +128,9 @@ namespace hexwatershed
     }
 
     // Convert the time_t object to a string representation
-    sTime = get_current_time();
-    // Print the current time
-    std::cout << "Current time: " << sTime;
-    std::cout << "Finished initialization!" << std::endl;
+    sTime = get_current_time();        
+    sLog = "Finished initialization at " + sTime;
+    std::cout << sLog << std::endl;
     std::flush(std::cout);
     return error_code;
   }

@@ -14,6 +14,7 @@
  */
 #pragma once
 #include <string>
+#include <cmath>
 using namespace std;
 
 //50==================================================

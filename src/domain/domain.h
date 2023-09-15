@@ -60,6 +60,7 @@ namespace hexwatershed
     
     std::string sFilename_log;
     std::string sLog;
+    std::string sTime;
 
     std::string sFilename_mesh_info;
     std::string sFilename_flowline_info;

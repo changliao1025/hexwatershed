@@ -19,15 +19,16 @@ namespace hexwatershed
    */
   int domain::domain_read()
   {
-    int error_code = 1;
+    int error_code = 1;    
     domain_read_configuration_file();
     domain_retrieve_user_input();
     domain_read_input_data();
 
     cCompset.sFilename_mesh_info = this->sFilename_mesh_info;
     cCompset.compset_read_model();
-
-    std::cout << "Finished reading data!" << std::endl;
+    sTime = get_current_time();        
+    sLog = "Finished reading data at " + sTime;
+    std::cout << sLog << std::endl;   
     std::flush(std::cout);
     return error_code;
   }

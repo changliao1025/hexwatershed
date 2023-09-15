@@ -51,10 +51,6 @@ namespace hexwatershed
 
     time_t now = time(0);
     tm *ltm = localtime(&now);
-
-
-
-
     int iYear = 1900 + ltm->tm_year;
     int iMonth = 1 + ltm->tm_mon;
     int iDay = ltm->tm_mday;
