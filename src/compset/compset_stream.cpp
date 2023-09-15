@@ -104,7 +104,7 @@ namespace hexwatershed
       }
     }
     // land second
-    //it might have modified, so need update
+    // it might have modified, so need update
     dElevation_mean_center = vCell_active.at(lCellIndex_center).dElevation_mean;
     // for (int i = 0; i < vCell_active.at (lCellIndex_center).nNeighbor_land; i++)
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
@@ -185,8 +185,6 @@ namespace hexwatershed
     // stream elevation
     iStream_order_center = vCell_active.at(lCellIndex_center).iStream_order_burned;
     lCellID_current = vCell_active.at(lCellIndex_center).lCellID;
-
-    
     // stream first
 
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
@@ -197,14 +195,11 @@ namespace hexwatershed
       {
         iStream_order_neighbor = vCell_active.at(lCellIndex_neighbor).iStream_order_burned;
         dElevation_mean_neighbor = vCell_active.at(lCellIndex_neighbor).dElevation_mean;
-
-        vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
-
+        vCell_priority_flood.push_back(vCell_active.at(lCellIndex_neighbor));
         vCell_active.at(lCellIndex_neighbor).dElevation_downstream = dElevation_mean_center; // need update after modification
         dDifference_dummy = dElevation_mean_neighbor - dElevation_mean_center;
-        if (dDifference_dummy >= 0)
+        if (dDifference_dummy > 0) // should not be equally to 0.0
         {
-          
         }
         else
         {
@@ -214,14 +209,12 @@ namespace hexwatershed
             // if it is slight lower, we will increase  it
             if (iStream_order_neighbor == iStream_order_center)
             {
-              vCell_active.at(lCellIndex_neighbor).dElevation_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.1;              
+              vCell_active.at(lCellIndex_neighbor).dElevation_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.1;
             }
             else
             {
               vCell_active.at(lCellIndex_neighbor).dElevation_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.2;
-             
-            } 
-            
+            }
           }
           else
           {
@@ -238,7 +231,6 @@ namespace hexwatershed
           {
             vCell_active.at(lCellIndex_neighbor).dElevation_profile0 =
                 dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
-          
           }
         }
 
@@ -247,8 +239,8 @@ namespace hexwatershed
         // burn recusively
         lIndex_center_next = lCellIndex_neighbor;
 
-        //std::cout << vCell_active.at(lCellIndex_neighbor).lCellID << ": " << vCell_active.at(lCellIndex_neighbor).dElevation_mean << std::endl;
-        // go to the new grid
+        // std::cout << vCell_active.at(lCellIndex_neighbor).lCellID << ": " << vCell_active.at(lCellIndex_neighbor).dElevation_mean << std::endl;
+        //  go to the new grid
         if (vCell_active.at(lIndex_center_next).iFlag_headwater_burned != 1)
         {
           compset_stream_burning_with_topology(vCell_active.at(lCellIndex_neighbor).lCellID);
@@ -256,7 +248,7 @@ namespace hexwatershed
       }
     }
 
-    //it might have modified, so need update
+    // it might have modified, so need update
     dElevation_mean_center = vCell_active.at(lCellIndex_center).dElevation_mean;
 
     // land second
@@ -268,31 +260,25 @@ namespace hexwatershed
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
 
-      
-
       if (iFlag_stream_burned_neighbor != 1)
       {
         if (iFlag_stream_burning_treated_neighbor != 1)
         {
 
-          vCell_priority_flood.push_back( vCell_active.at(lCellIndex_neighbor) );
-          
+          vCell_priority_flood.push_back(vCell_active.at(lCellIndex_neighbor));
 
           dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
 
           if (dElevation_mean_neighbor < dElevation_mean_center)
           {
             vCell_active.at(lCellIndex_neighbor).dElevation_mean =
-                dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;           
-           
+                dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
           }
           else
           {
             if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
             {
               vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
-
-             
             }
           }
           vCell_active.at(lCellIndex_neighbor).iFlag_stream_burning_treated = 1;
@@ -331,20 +317,14 @@ namespace hexwatershed
     long lCellIndex2, lCellIndex3;
     float dElevation_upstream;
     float dElevation_downstream;
-
     long lCellID_downstream;
     long lCellID_downstream2;
     long lCellID_next;
-
     int iFlag_finished = 0;
-    int iFlag_found;
-    int iFlag_found1;
     float dDifference_dummy;
     float dElevation_before;
     float dElevation_after;
     float dElevation_dummy;
-    // std::vector<hexagon>::iterator iIterator2;
-    // std::vector<hexagon>::iterator iIterator3;
     lCellIndex_active = compset_find_index_by_cell_id(lCellID_active_in);
     while (iFlag_finished != 1)
     {
@@ -354,67 +334,40 @@ namespace hexwatershed
       // iStream_order_neighbor = vCell_active.at(lCellIndex_active).iStream_order_burned;
       if (lCellID_downstream != -1)
       {
-        iFlag_found = 0;
-        // for (iIterator2 = vCell_active.begin (); iIterator2 != vCell_active.end (); iIterator2++)
-        for (long lIndex2 = 0; lIndex2 < vCell_active.size(); lIndex2++)
+        lCellIndex2 = compset_find_index_by_cell_id(lCellID_downstream);
+        dElevation_downstream = vCell_active.at(lCellIndex2).dElevation_mean;  
+        dDifference_dummy = dElevation_upstream - dElevation_downstream;
+        if (dDifference_dummy < 0.0)
         {
-          lCellIndex2 = vCell_active.at(lIndex2).lCellIndex;
-          lCellID2 = vCell_active.at(lCellIndex2).lCellID;
-          if (lCellID2 == lCellID_downstream)
+          vCell_active.at(lCellIndex2).dElevation_mean = dElevation_upstream;
+          vCell_active.at(lCellIndex_active).dElevation_mean = dElevation_downstream;
+          vCell_active.at(lCellIndex_active).dElevation_downstream = dElevation_upstream;
+          // find out the next downstream elevation
+          lCellID_downstream2 = vCell_active.at(lCellIndex2).lCellID_downstream_burned;
+          if (lCellID_downstream2 != -1)
           {
-            iFlag_found = 1;
-            dElevation_downstream = vCell_active.at(lCellIndex2).dElevation_mean;
-            // dElevation_before = dElevation_downstream;
-            //  iStream_order_center = (*iIterator2).iStream_order_burned;
-            dDifference_dummy = dElevation_upstream - dElevation_downstream;
-            if (dDifference_dummy < 0)
+            lCellIndex3 = compset_find_index_by_cell_id(lCellID_downstream2);
+            dDifference_dummy = vCell_active.at(lCellIndex2).dElevation_mean - vCell_active.at(lCellIndex3).dElevation_mean;
+            if (dDifference_dummy < 0.0) // another depression
             {
-              vCell_active.at(lCellIndex2).dElevation_mean = dElevation_upstream;
-              vCell_active.at(lCellIndex_active).dElevation_mean = dElevation_downstream;
-              //std::cout << "Breached: CellID " << lCellID_active_in << "->" << lCellID_downstream
-              //          << ", before: "
-              //          << "upstream: " << dElevation_upstream << "downstream: " << dElevation_downstream
-              //          << ", After: "
-              //          << "upstream: " << vCell_active.at(lCellIndex_active).dElevation_mean << "downstream: " << vCell_active.at(lCellIndex2).dElevation_mean << std::endl;
-              // update
-              vCell_active.at(lCellIndex_active).dElevation_downstream = dElevation_upstream;
-              // find out the next downstream elevation
-              lCellID_downstream2 = vCell_active.at(lCellIndex2).lCellID_downstream_burned;
-              if (lCellID_downstream2 != -1)
-              {
-                iFlag_found1 = 0;
-                // for (iIterator3 = vCell_active.begin (); iIterator3 != vCell_active.end (); iIterator3++)
-                for (long lIndex3 = 0; lIndex3 < vCell_active.size(); lIndex3++)
-                {
-                  lCellIndex3 = vCell_active.at(lIndex3).lCellIndex;
-                  lCellID3 = vCell_active.at(lCellIndex3).lCellID;
-                  if (lCellID3 == lCellID_downstream2)
-                  {
-                    iFlag_found1 = 1;
-                    dDifference_dummy = vCell_active.at(lCellIndex2).dElevation_mean - vCell_active.at(lCellIndex3).dElevation_mean;
-                    if (dDifference_dummy < 0.0) // another depression
-                    {
-                      lCellID_next = lCellID_downstream;
-                      compset_breaching_stream_elevation(lCellID_next);
-                      //}
-                    }
-                    iFlag_finished = 1;
-                    break;
-                  }
-                }
-              }
-              else
-              {
-                iFlag_finished = 1;
-                break;
-              }
+              lCellID_next = lCellID_downstream;
+              compset_breaching_stream_elevation(lCellID_next);
             }
             else
             {
-              // stop
               iFlag_finished = 1;
+              break;
             }
           }
+          else
+          {
+            iFlag_finished = 1;
+            break;
+          }
+        }
+        else
+        {
+          iFlag_finished = 1;
         }
       }
       else

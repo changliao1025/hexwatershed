@@ -983,34 +983,34 @@ namespace hexwatershed
   int watershed::watershed_export_json()
   {
     int error_code = 1;
-    std::vector<hexagon>::iterator iIterator;
-
     jsonmodel::mesh cMesh;
-    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+   
+    //for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    for (const hexagon& pHexagon : vCell)
     {
-      if ((*iIterator).iFlag_watershed == 1)
+      if (pHexagon.iFlag_watershed == 1)
       {
         cell pCell;
-        pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-        pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-        pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
-        pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-        pCell.dDistance_to_downslope = (*iIterator).dDistance_to_downslope;
-        pCell.dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_subbasin_outlet;
-        pCell.dDistance_to_watershed_outlet = (*iIterator).dDistance_to_watershed_outlet;
-        pCell.dElevation_mean = (*iIterator).dElevation_mean;
-        pCell.dElevation_raw = (*iIterator).dElevation_raw;
-        pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-        pCell.dLength = (*iIterator).dLength_stream_conceptual;
-        pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
-        pCell.dArea = (*iIterator).dArea;
-        pCell.lCellID = (*iIterator).lCellID;
-        pCell.lStream_segment = (*iIterator).lSegment;
-        pCell.lSubbasin = (*iIterator).lSubbasin;
-        pCell.lStream_segment_burned = (*iIterator).lStream_segment_burned; // flag for burned stream
-        pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-        pCell.dAccumulation = (*iIterator).dAccumulation;
-        pCell.vVertex = (*iIterator).vVertex;
+        pCell.dLongitude_center_degree = pHexagon.dLongitude_center_degree;
+        pCell.dLatitude_center_degree =pHexagon.dLatitude_center_degree;
+        pCell.dSlope_between = pHexagon.dSlope_max_downslope;
+        pCell.dSlope_profile = pHexagon.dSlope_elevation_profile0;
+        pCell.dDistance_to_downslope = pHexagon.dDistance_to_downslope;
+        pCell.dDistance_to_subbasin_outlet = pHexagon.dDistance_to_subbasin_outlet;
+        pCell.dDistance_to_watershed_outlet = pHexagon.dDistance_to_watershed_outlet;
+        pCell.dElevation_mean = pHexagon.dElevation_mean;
+        pCell.dElevation_raw = pHexagon.dElevation_raw;
+        pCell.dElevation_profile0 = pHexagon.dElevation_profile0;
+        pCell.dLength = pHexagon.dLength_stream_conceptual;
+        pCell.dLength_flowline = pHexagon.dLength_stream_burned;
+        pCell.dArea = pHexagon.dArea;
+        pCell.lCellID = pHexagon.lCellID;
+        pCell.lStream_segment = pHexagon.lSegment;
+        pCell.lSubbasin = pHexagon.lSubbasin;
+        pCell.lStream_segment_burned = pHexagon.lStream_segment_burned; // flag for burned stream
+        pCell.lCellID_downslope = pHexagon.lCellID_downslope_dominant;
+        pCell.dAccumulation = pHexagon.dAccumulation;
+        pCell.vVertex = pHexagon.vVertex;
         pCell.nVertex = pCell.vVertex.size();
         cMesh.aCell.push_back(pCell);
       }

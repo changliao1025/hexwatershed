@@ -25,6 +25,7 @@
 #include <numeric>
 #include <utility>
 
+#include "../system.h"
 #include "../compset/compset.h"
 
 

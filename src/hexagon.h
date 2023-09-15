@@ -125,7 +125,7 @@ namespace hexwatershed
     float dDistance_to_watershed_outlet; 
     
     //a 4 element array to define the bounding box, which will use used by rtree spatial index
-    std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
+    //std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
     
 
     std::vector<long> vNeighbor;  //list of neighbor local id

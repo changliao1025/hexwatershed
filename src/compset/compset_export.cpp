@@ -63,7 +63,11 @@ namespace hexwatershed
     }
 
     ofs_log.close();
-    std::cout << "Finished saving results!" << endl;
+
+    sTime = get_current_time();        
+    sLog = "Finished saving results! at " + sTime;
+    std::cout << sLog << std::endl;
+    
     std::flush(std::cout);
 
     return error_code;

@@ -77,6 +77,7 @@ namespace hexwatershed
     //others
     std::string sDate_default;
     std::string sDate;
+    std::string sTime;
   
     std::ofstream ofs_log; // used for IO starlog file
 

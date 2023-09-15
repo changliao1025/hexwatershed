@@ -41,7 +41,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_debug = cParameter.iFlag_debug;
     std::string sFilename;
-    std::string sTime ;
     
     //step 1
     error_code = compset_priority_flood_depression_filling();
@@ -136,7 +135,7 @@ namespace hexwatershed
         // now all the watersheds are processed, we can transfer back to main object
         compset_transfer_watershed_to_domain();
         compset_update_cell_elevation();
-        compset_update_vertex_elevation();
+        //compset_update_vertex_elevation();
       }
       else
       {
