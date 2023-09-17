@@ -135,7 +135,7 @@ namespace hexwatershed
         // now all the watersheds are processed, we can transfer back to main object
         compset_transfer_watershed_to_domain();
         compset_update_cell_elevation();
-        //compset_update_vertex_elevation();
+        compset_update_vertex_elevation();
       }
       else
       {
@@ -209,7 +209,7 @@ namespace hexwatershed
         // now all the watersheds are processed, we can transfer back to main object
         compset_transfer_watershed_to_domain();
         compset_update_cell_elevation();
-        //compset_update_vertex_elevation();
+        compset_update_vertex_elevation();
       }
     }
 

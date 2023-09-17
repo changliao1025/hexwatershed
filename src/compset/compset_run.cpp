@@ -793,7 +793,6 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_vtk = cParameter.iFlag_vtk;
-    // long lVertexIndex = 0;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<vertex>::iterator iIterator2, iIterator3;
     // Build a mapping from vertices to cells

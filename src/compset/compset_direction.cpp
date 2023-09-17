@@ -165,7 +165,6 @@ namespace hexwatershed
               iFlag_has_stream = 1;
               break;
             }
-    
           }
 
           if (iFlag_has_stream == 1)
@@ -197,7 +196,7 @@ namespace hexwatershed
                 else
                 {
                   // this is an upslope stream grid, but may not the steepest one, so we can skip the lowest
-                  //the vUpslope may not be used since it does not guarantee this upstream is the burned upstream
+                  // the vUpslope may not be used since it does not guarantee this upstream is the burned upstream
                   (vCell_active.at(lCellIndex_self)).vUpslope.push_back(*iIterator_neighbor);
                 }
               }
@@ -360,12 +359,7 @@ namespace hexwatershed
                 if (lCellID_lowest != -1)
                 {
                   (vCell_active.at(lCellIndex_self)).lCellID_downslope_dominant = lCellID_lowest;
-                  // before define stream, we cannot establish upslope relationship
-                  // calculate slope
-                  // if (dSlope_downslope < 0.0)
-                  //{
-                  //  std::cout << "Downslope should be positive!" << std::endl;
-                  //}
+                  // before define stream, we cannot establish upslope relationship                 
                   (vCell_active.at(lCellIndex_self)).dSlope_max_downslope = dSlope_downslope;
                   (vCell_active.at(lCellIndex_self)).dDistance_to_downslope = dDistance_downslope;
 
@@ -384,7 +378,14 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!" << lCellID_lowest << std::endl;
+                  std::cout << "It should have one downslope!" << lCellID << " -> " << lCellID_lowest << std::endl;           
+                  std::cout << iFlag_has_stream << std::endl;
+                  std::cout << iFlag_stream_burned << std::endl;
+                  std::cout << lCellID << std::endl;
+                  std::cout << lCellID_downstream << std::endl;
+                  std::cout << lCellID_lowest << std::endl;
+                  std::cout << lCellID_highest << std::endl;
+                  std::cout << dSlope_downslope << dSlope_upslope << std::endl;
                 }
               }
               else
@@ -457,21 +458,7 @@ namespace hexwatershed
               }
             }
           }
-
-          // add the check here whether the slope is still 0.0
-          //if ((vCell_active.at(lCellIndex_self)).dSlope_max_downslope == 0.0)
-          //{
-          //  std::cout << "Slope should not be 0.0!" << std::endl;
-          //  std::cout << iFlag_has_stream << std::endl;
-          //  std::cout << iFlag_stream_burned << std::endl;
-          //  std::cout << lCellID << std::endl;
-          //  std::cout << lCellID_downstream << std::endl;
-          //  std::cout << lCellID_lowest << std::endl;
-          //  std::cout << lCellID_highest << std::endl;
-          //  std::cout << dSlope_downslope << dSlope_upslope << std::endl;
-          //  error_code = -1;
-          //  return error_code;
-          //}
+        
         }
       }
     }

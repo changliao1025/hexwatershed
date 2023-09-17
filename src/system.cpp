@@ -491,3 +491,20 @@ std::string get_current_time()
     // Print the current time
 	return timeStr;    
 }
+
+void remove_duplicate_vector(std::vector<long> &vVector_in, std::vector<size_t> &vIndex_out)
+{
+    std::vector<long>::iterator itr = vVector_in.begin();
+    std::unordered_set<long> s;
+ 
+    for (auto curr = vVector_in.begin(); curr != vVector_in.end(); ++curr)
+    {
+        if (s.insert(*curr).second) 
+        {
+            *itr++ = *curr;
+            vIndex_out.push_back(std::distance(vVector_in.begin(), curr));
+        }
+    }
+ 
+    vVector_in.erase(itr, vVector_in.end());
+}

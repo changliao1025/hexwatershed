@@ -84,6 +84,7 @@ namespace hexwatershed
     //std::vector <hexagon> vCell;                    //all the cells based on shapefile, no longer used as pyflowline deals with the dem already
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
     std::unordered_map<long, long> mCellIdToIndex; //a map for fast search
+    std::unordered_map<long, long> mVertexIdToIndex;
     std::vector <hexagon> vCell_priority_flood;             //all calls has elevation (not missing value)
     //watershed cWatershed;
     std::vector <watershed> vWatershed;

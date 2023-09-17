@@ -143,12 +143,13 @@ namespace jsonmodel
 		for (int i = 0; i < this->nVertex; i++)
 		{
 			vertex pVertex;
+			//pVertex.lVertexID = rVertex[i]["lVertexID"].GetInt64(); //how about ID?
 			pVertex.dLongitude_degree = rVertex[i]["dLongitude_degree"].GetFloat();
 			pVertex.dLatitude_degree = rVertex[i]["dLatitude_degree"].GetFloat();
 			pVertex.dLongitude_radian = convert_degree_to_radian(pVertex.dLongitude_degree);
 			pVertex.dLatitude_radian = convert_degree_to_radian(pVertex.dLatitude_degree);
 			pVertex.dElevation = this->dElevation_raw;
-			pVertex.update_location();
+			pVertex.update_location();				
 			this->vVertex.push_back(pVertex);
 		}
 
