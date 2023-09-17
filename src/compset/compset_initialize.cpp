@@ -20,23 +20,23 @@ namespace hexwatershed
   int compset::compset_initialize_model()
   {
     int error_code = 1;
-    long lVertexIndex = 0;
+    // long lVertexIndex = 0;
     long lCellIndex = 0;
     long lCellIndex_outlet;
     long ncell = this->aCell.size();
-    //float dLongtitue_min = 180;
-    //float dLongtitue_max = -180;
-    //float dLatitude_min = 90;
-    //float dLatitude_max = -90;
-    
-    //std::vector<cell>::iterator iIterator1;
-    //std::vector<vertex>::iterator iIterator2;
-    vVertex_active.clear();
+    // float dLongtitue_min = 180;
+    // float dLongtitue_max = -180;
+    // float dLatitude_min = 90;
+    // float dLatitude_max = -90;
+
+    // std::vector<cell>::iterator iIterator1;
+    // std::vector<vertex>::iterator iIterator2;
+    // vVertex_active.clear();
     vCell_active.clear();
-    
-    vCell_active.reserve(ncell); //CL: dont remember that this does but it speeds up the code
-    //for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
-    for (const cell& pCell : aCell) 
+
+    vCell_active.reserve(ncell); // CL: dont remember that this does but it speeds up the code
+    // for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
+    for (const cell &pCell : aCell)
     {
       hexagon pHexagon;
       pHexagon.lCellIndex = lCellIndex;
@@ -61,49 +61,48 @@ namespace hexwatershed
       // pHexagon.nNeighbor_ocean = pCell.nNeighbor_ocean;
       pHexagon.nEdge = pCell.nEdge;
       pHexagon.nVertex = pCell.nVertex;
-      //pHexagon.vVertex.clear();
+      // pHexagon.vVertex.clear();
 
       // define the bounding box
-      pHexagon.vVertex.reserve(pHexagon.nVertex); 
-      //for (int i = 0; i < pHexagon.nVertex; i++)
-      for (const vertex& pV : pCell.vVertex)
+      pHexagon.vVertex.reserve(pHexagon.nVertex);
+      // for (int i = 0; i < pHexagon.nVertex; i++)
+      for (const vertex &pV : pCell.vVertex)
       {
         vertex pVertex = pV;
         pVertex.dElevation = pHexagon.dElevation_mean; // this needs to be updated
-        auto iIterator2 = std::find(vVertex_active.begin(), vVertex_active.end(), pVertex);
-        if (iIterator2 != vVertex_active.end())
-        {
-          // it is already indexed
-          pVertex.lVertexIndex = (*iIterator2).lVertexIndex;
-        }
-        else
-        {
-          pVertex.lVertexIndex = lVertexIndex;
-          lVertexIndex = lVertexIndex + 1;
-          vVertex_active.push_back(pVertex);
-        }
-        //if (pVertex.dLongitude_degree < dLongtitue_min)
+        // auto iIterator2 = std::find(vVertex_active.begin(), vVertex_active.end(), pVertex);
+        // if (iIterator2 != vVertex_active.end())
+        //{
+        //   // it is already indexed
+        //   pVertex.lVertexIndex = (*iIterator2).lVertexIndex;
+        // }
+        // else
+        //{
+        // pVertex.lVertexIndex = lVertexIndex;
+        // lVertexIndex = lVertexIndex + 1;
+        // vVertex_active.push_back(pVertex);
+        //}
+        // if (pVertex.dLongitude_degree < dLongtitue_min)
         //{
         //  dLongtitue_min = pVertex.dLongitude_degree;
         //}
-        //if (pVertex.dLongitude_degree > dLongtitue_max)
+        // if (pVertex.dLongitude_degree > dLongtitue_max)
         //{
         //  dLongtitue_max = pVertex.dLongitude_degree;
         //}
-        //if (pVertex.dLatitude_degree < dLatitude_min)
+        // if (pVertex.dLatitude_degree < dLatitude_min)
         //{
         //  dLatitude_min = pVertex.dLatitude_degree;
         //}
-        //if (pVertex.dLatitude_degree > dLatitude_max)
+        // if (pVertex.dLatitude_degree > dLatitude_max)
         //{
         //  dLatitude_max = pVertex.dLatitude_degree;
         //}
         pHexagon.vVertex.push_back(pVertex);
-        }
+      }
 
       // define the bounding box using the vertex info, no longer needed for spatial index
-      //pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
-   
+      // pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
 
       pHexagon.lStream_segment_burned = pCell.lStream_segment_burned;
       pHexagon.iStream_order_burned = pCell.iStream_order_burned;
@@ -128,7 +127,7 @@ namespace hexwatershed
     }
 
     // Convert the time_t object to a string representation
-    sTime = get_current_time();        
+    sTime = get_current_time();
     sLog = "Finished initialization at " + sTime;
     std::cout << sLog << std::endl;
     std::flush(std::cout);

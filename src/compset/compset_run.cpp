@@ -522,7 +522,7 @@ namespace hexwatershed
               {
                 if (lCellID_downslope != -1)
                 {
-                  lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);                  
+                  lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
                   if (lCellIndex_current >= 0)
                   {
                     if (vCell_active.at(lCellIndex_current).lWatershed == lWatershed) // the downslope is already finished
@@ -737,7 +737,7 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
-    //long lCellID1; 
+    // long lCellID1;
     long lCellIndex; //, lCellIndex1;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
@@ -748,14 +748,14 @@ namespace hexwatershed
         watershed cWatershed = vWatershed.at(lWatershed - 1);
         for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
         {
-          //lCellID1 = (*iIterator1).lCellID;
-          //lCellIndex = compset_find_index_by_cell_id(lCellID1);
+          // lCellID1 = (*iIterator1).lCellID;
+          // lCellIndex = compset_find_index_by_cell_id(lCellID1);
           lCellIndex = (*iIterator1).lCellIndex;
-          //if (lCellIndex != lCellIndex1)
+          // if (lCellIndex != lCellIndex1)
           //{
-          //    //print an error information
-          //    std::cout << " compset_transfer_watershed_to_domain error: lCellIndex != lCellIndex1" << std::endl;
-          //}
+          //     //print an error information
+          //     std::cout << " compset_transfer_watershed_to_domain error: lCellIndex != lCellIndex1" << std::endl;
+          // }
           if (lCellIndex != -1)
           {
             vCell_active.at(lCellIndex).lSubbasin = (*iIterator1).lSubbasin;
@@ -792,27 +792,29 @@ namespace hexwatershed
   int compset::compset_update_vertex_elevation()
   {
     int error_code = 1;
-    //long lVertexIndex = 0;
+    int iFlag_vtk = cParameter.iFlag_vtk;
+    // long lVertexIndex = 0;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<vertex>::iterator iIterator2, iIterator3;
     // Build a mapping from vertices to cells
-   
-
-    for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); ++iIterator2)
+    if (iFlag_vtk == 1)
     {
-      for (iIterator1 = vCell_active.begin(); iIterator1 != vCell_active.end(); ++iIterator1)
+      for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); ++iIterator2)
       {
-        iIterator3 = std::find((*iIterator1).vVertex.begin(), (*iIterator1).vVertex.end(), (*iIterator2));
-        if (iIterator3 != (*iIterator1).vVertex.end())
+        for (iIterator1 = vCell_active.begin(); iIterator1 != vCell_active.end(); ++iIterator1)
         {
-          // found
-          (*iIterator2).dElevation = (*iIterator1).dElevation_mean;
-          // update location too
-          (*iIterator2).update_location();
-          break;
-        }
-        else
-        {
+          iIterator3 = std::find((*iIterator1).vVertex.begin(), (*iIterator1).vVertex.end(), (*iIterator2));
+          if (iIterator3 != (*iIterator1).vVertex.end())
+          {
+            // found
+            (*iIterator2).dElevation = (*iIterator1).dElevation_mean;
+            // update location too
+            (*iIterator2).update_location();
+            break;
+          }
+          else
+          {
+          }
         }
       }
     }

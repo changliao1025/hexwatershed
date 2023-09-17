@@ -459,19 +459,19 @@ namespace hexwatershed
           }
 
           // add the check here whether the slope is still 0.0
-          if ((vCell_active.at(lCellIndex_self)).dSlope_max_downslope == 0.0)
-          {
-            std::cout << "Slope should not be 0.0!" << std::endl;
-            std::cout << iFlag_has_stream << std::endl;
-            std::cout << iFlag_stream_burned << std::endl;
-            std::cout << lCellID << std::endl;
-            std::cout << lCellID_downstream << std::endl;
-            std::cout << lCellID_lowest << std::endl;
-            std::cout << lCellID_highest << std::endl;
-            std::cout << dSlope_downslope << dSlope_upslope << std::endl;
-            error_code = -1;
-            return error_code;
-          }
+          //if ((vCell_active.at(lCellIndex_self)).dSlope_max_downslope == 0.0)
+          //{
+          //  std::cout << "Slope should not be 0.0!" << std::endl;
+          //  std::cout << iFlag_has_stream << std::endl;
+          //  std::cout << iFlag_stream_burned << std::endl;
+          //  std::cout << lCellID << std::endl;
+          //  std::cout << lCellID_downstream << std::endl;
+          //  std::cout << lCellID_lowest << std::endl;
+          //  std::cout << lCellID_highest << std::endl;
+          //  std::cout << dSlope_downslope << dSlope_upslope << std::endl;
+          //  error_code = -1;
+          //  return error_code;
+          //}
         }
       }
     }

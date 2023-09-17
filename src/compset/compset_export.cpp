@@ -20,7 +20,8 @@ namespace hexwatershed
   int compset::compset_export_model()
   {
     int error_code = 1;
-    int iFlag_animation = 0;
+    int iFlag_animation = cParameter.iFlag_animation;
+    int iFlag_vtk = cParameter.iFlag_vtk;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
 
@@ -55,8 +56,11 @@ namespace hexwatershed
         }
 
         // vtk
-        // sFilename = sFilename_vtk;
-        // compset_export_watershed_vtk(sFilename);
+        if (iFlag_vtk == 1)
+        {
+          compset_export_watershed_vtk(sFilename_domain_vtk);
+        }
+       
         // watershed level
         compset_export_watershed_characteristics();
       }
