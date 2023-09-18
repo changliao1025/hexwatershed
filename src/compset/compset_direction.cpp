@@ -199,6 +199,15 @@ namespace hexwatershed
                   // the vUpslope may not be used since it does not guarantee this upstream is the burned upstream
                   (vCell_active.at(lCellIndex_self)).vUpslope.push_back(*iIterator_neighbor);
                 }
+
+                if (lCellID == 7110065)
+                {
+                  std::cout << dElevation_diff << std::endl;
+                  std::cout << (*iIterator_neighbor) << std::endl;
+                  std::cout << dSlope_new << std::endl;
+                  std::cout << dSlope_downslope << std::endl;
+                  std::cout << dDistance_downslope << std::endl;
+                }
               }
               else
               {
@@ -378,7 +387,7 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!" << lCellID << " -> " << lCellID_lowest << std::endl;           
+                  std::cout << "It should have one downslope!"  << std::endl;           
                   std::cout << iFlag_has_stream << std::endl;
                   std::cout << iFlag_stream_burned << std::endl;
                   std::cout << lCellID << std::endl;

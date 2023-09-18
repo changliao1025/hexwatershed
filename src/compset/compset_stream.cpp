@@ -269,7 +269,7 @@ namespace hexwatershed
 
           dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
 
-          if (dElevation_mean_neighbor < dElevation_mean_center)
+          if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
           {
             vCell_active.at(lCellIndex_neighbor).dElevation_mean =
                 dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
