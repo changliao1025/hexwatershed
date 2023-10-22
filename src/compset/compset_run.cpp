@@ -408,7 +408,10 @@ namespace hexwatershed
             lCellIndex_outlet = (vCell_active.at(lCellIndex_self)).lCellIndex;
           }
         }
+        
         dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
+        //also set the outlet id
+        lCellID_outlet = vCell_active.at(lCellIndex_outlet).lCellID;
 
         for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
         {
@@ -424,6 +427,16 @@ namespace hexwatershed
             (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
           }
         }
+
+        //should we update at least one watershed?
+        basin pBasin;
+        aBasin.clear();
+        aBasin.push_back(pBasin);
+        aBasin.at(0).lCellID_outlet = lCellID_outlet;
+        //we also need to update the nOutlet?
+        cParameter.nOutlet = 1;
+
+
       }
     }
     else
@@ -461,8 +474,8 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) or without flowline are the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           lCellID_outlet = aBasin.at(lWatershed - 1).lCellID_outlet;
@@ -565,12 +578,8 @@ namespace hexwatershed
           vWatershed.push_back(cWatershed);
         }
         // how about other auto-defined watershed?
-        // todo
-      }
-      else
-      {
-        // without flowline
-      }
+        
+      
     }
     else
     {
@@ -593,8 +602,8 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         nSegment_total = 0;
         nConfluence_total = 0;
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
@@ -602,12 +611,7 @@ namespace hexwatershed
           vWatershed.at(lWatershed - 1).watershed_define_stream_confluence();
           nConfluence_total = nConfluence_total + vWatershed.at(lWatershed - 1).nConfluence;
           nSegment_total = nSegment_total + vWatershed.at(lWatershed - 1).nSegment;
-        }
-      }
-      else
-      {
-        // pure dem based?
-      }
+        }     
     }
     else
     {
@@ -629,13 +633,13 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           vWatershed.at(lWatershed - 1).watershed_define_stream_segment();
         }
-      }
+      
     }
 
     return error_code;
@@ -650,13 +654,13 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           vWatershed.at(lWatershed - 1).watershed_build_stream_topology();
         }
-      }
+      
     }
     return error_code;
   }
@@ -669,13 +673,13 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           vWatershed.at(lWatershed - 1).watershed_define_stream_order();
         }
-      }
+      
     }
     return error_code;
   }
@@ -693,13 +697,13 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           vWatershed.at(lWatershed - 1).watershed_define_subbasin();
         }
-      }
+      
     }
     return error_code;
   }
@@ -719,13 +723,13 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
-      {
+      //if (iFlag_flowline == 1) //without flowline is the same
+      
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
           vWatershed.at(lWatershed - 1).watershed_calculate_characteristics();
         }
-      }
+      
     }
     return error_code;
   }
@@ -741,7 +745,7 @@ namespace hexwatershed
     long lCellIndex; //, lCellIndex1;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
-    if (iFlag_flowline == 1)
+    if (iFlag_global == 0)
     {
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {

@@ -194,14 +194,13 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_flowline = cParameter.iFlag_flowline;
-    if (iFlag_flowline == 1)
-    {
+    
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         vWatershed.at(lWatershed - 1).watershed_export_json();
         vWatershed.at(lWatershed - 1).watershed_export_stream_edge_json();
       }
-    }
+    
 
     return error_code;
   }
@@ -214,15 +213,14 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_flowline = cParameter.iFlag_flowline;
-    if (iFlag_flowline == 1)
-    {
+    
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         vWatershed.at(lWatershed - 1).watershed_export_characteristics();
         vWatershed.at(lWatershed - 1).watershed_export_segment_characteristics();
         vWatershed.at(lWatershed - 1).watershed_export_subbasin_characteristics();
       }
-    }
+    
 
     return error_code;
   }

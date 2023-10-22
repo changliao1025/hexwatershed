@@ -187,6 +187,9 @@ namespace hexwatershed
     lCellID_current = vCell_active.at(lCellIndex_center).lCellID;
     // stream first
 
+    //std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
+      
+  
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
@@ -293,7 +296,7 @@ namespace hexwatershed
                   dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
             }
           }
-        }
+        }       
       }
     }
 

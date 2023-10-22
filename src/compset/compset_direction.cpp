@@ -198,16 +198,7 @@ namespace hexwatershed
                   // this is an upslope stream grid, but may not the steepest one, so we can skip the lowest
                   // the vUpslope may not be used since it does not guarantee this upstream is the burned upstream
                   (vCell_active.at(lCellIndex_self)).vUpslope.push_back(*iIterator_neighbor);
-                }
-
-                if (lCellID == 7110065)
-                {
-                  std::cout << dElevation_diff << std::endl;
-                  std::cout << (*iIterator_neighbor) << std::endl;
-                  std::cout << dSlope_new << std::endl;
-                  std::cout << dSlope_downslope << std::endl;
-                  std::cout << dDistance_downslope << std::endl;
-                }
+                }    
               }
               else
               {
@@ -235,6 +226,7 @@ namespace hexwatershed
                     lCellIndex_neighbor_highest = lCellIndex_self;
                   }
                 }
+                
               }
             }
           }
@@ -287,7 +279,7 @@ namespace hexwatershed
               {
 
                 lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-                if (vCell_active.at(lCellIndex_neighbor).lCellID == lCellID_downstream) // thi is the downstream
+                if (vCell_active.at(lCellIndex_neighbor).lCellID == lCellID_downstream) // this is the downstream
                 {
                   (vCell_active.at(lCellIndex_self)).lCellID_downslope_dominant = *iIterator_neighbor;
                   // only use this stream elevation to calcualte slope
@@ -387,14 +379,7 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!"  << std::endl;           
-                  std::cout << iFlag_has_stream << std::endl;
-                  std::cout << iFlag_stream_burned << std::endl;
-                  std::cout << lCellID << std::endl;
-                  std::cout << lCellID_downstream << std::endl;
-                  std::cout << lCellID_lowest << std::endl;
-                  std::cout << lCellID_highest << std::endl;
-                  std::cout << dSlope_downslope << dSlope_upslope << std::endl;
+                  std::cout << "It should have one downslope!"  << std::endl;     
                 }
               }
               else

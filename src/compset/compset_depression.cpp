@@ -30,6 +30,7 @@ namespace hexwatershed
     int nNeighbor_land;
     int nEdge;
     long lCellID_neighbor;
+    //long lCellIndex_neighbor;
     long lCellIndex_self, lCelllIndex_search;
     float dElevation_min;
     float dElevation_self;
@@ -54,18 +55,21 @@ namespace hexwatershed
           for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
           {
             lCellID_neighbor = vNeighbor_land[iNeighbor];
-            // find it
-            for (lCelllIndex_search = 0; lCelllIndex_search < vCell_in.size(); lCelllIndex_search++)
-            {
-              if (vCell_in.at(lCelllIndex_search).lCellID == lCellID_neighbor)
-              {
-                vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
-              }
-              else
-              {
-                // continue;
-              }
-            }
+
+            lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+            vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            //find it
+            //for (lCelllIndex_search = 0; lCelllIndex_search < vCell_in.size(); lCelllIndex_search++)
+            //{
+            //  if (vCell_in.at(lCelllIndex_search).lCellID == lCellID_neighbor)
+            //  {
+            //    vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            //  }
+            //  else
+            //  {
+            //    // continue;
+            //  }
+            //}
           }
           // if it is the lowest?
           dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
@@ -641,7 +645,7 @@ namespace hexwatershed
     compset_find_land_ocean_interface_neighbors(lCellID_current);
 
     return error_code;
-    ;
+    
   }
 
   int compset::priority_flood_depression_filling(std::vector<hexagon> vCell_boundary_in)
