@@ -40,10 +40,9 @@ namespace hexwatershed
 
         vertex cVertex_start;
         vertex cVertex_end;
-
        
-        int share_vertex(flowline pFlowline_in);
-        int share_vertex(flowline pFlowline_in, vertex pVertex_in);
+        int share_vertex(const flowline &pFlowline_in);
+        int share_vertex(const flowline &pFlowline_in, const vertex &pVertex_in);
         
     };
 } // namespace hexwatershed

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-float calculate_distance_based_on_lon_lat_degree(float dLongitude_degree0, 
+float calculate_distance_based_on_lon_lat_degree(float dLongitude_degree0,
 float dLatitude_degree0, 
 float dLongitude_degree1, 
 float dLatitude_degree1);

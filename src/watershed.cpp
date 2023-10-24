@@ -52,7 +52,7 @@ namespace hexwatershed
     // sum up the size the upstream
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
-      (*iIterator_self).nUpstream = ((*iIterator_self).vUpstream).size();
+      (*iIterator_self).nUpstream = (*iIterator_self).vUpstream.size();
     }
     // calculate total segment
     vConfluence.clear();
@@ -99,7 +99,7 @@ namespace hexwatershed
     std::vector<hexagon> vReach_segment;
     vCell[lCellIndex_outlet].iFlag_last_reach = 1;
 
-    if (nSegment == 1) // these is only one segment in this watershed
+    if (nSegment == 1) // there is only one segment in this watershed
     {
       lSegment_current = nSegment;
       vCell[lCellIndex_outlet].lSegment = lSegment_current;
@@ -243,7 +243,7 @@ namespace hexwatershed
       vCell[lCellIndex_upstream].lSegment_downstream = vCell[lCellIndex_confluence].lSegment;
       vReach_segment.clear();
 
-      // if the immediate upstream is also confluence: 1-1, we can quickly setup then move on
+      // if the immediate upstream is also confluence: 1-1, we can quickly set up then move on
       // to the confluence
       if (iFlag_confluence == 1)
       {
@@ -478,21 +478,12 @@ namespace hexwatershed
   // The new method for performance improvement
   int watershed::watershed_define_subbasin()
   {
-
     int error_code = 1;
-    int iFound_outlet;
     int iFlag_checked;
     int iFlag_checked_downslope;
     long lSubbasin;
-    long lCellIndex_self;
     long lCellIndex_current;
-    long lCellID_outlet;
-    long lCellIndex_outlet; // local outlet
-    long lCellIndex_subbasin;
     long lCellID_downslope;
-    long lCellIndex_downslope;
-    long lCellIndex_accumulation;
-    long lIndex_confluence;
     std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_accumulation;
     std::vector<hexagon>::iterator iIterator_self;
@@ -501,7 +492,7 @@ namespace hexwatershed
     std::vector<long> vSearchPath;
     // assign watershed subbasin cell, maybe later?
     vSubbasin.clear();
-    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    for (lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       subbasin cSubbasin;
       cSubbasin.lSubbasin = lSubbasin;
@@ -568,9 +559,6 @@ namespace hexwatershed
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
-    int iFlag_found;
-    long lCellID;
-    long lCellID2;
     long lCellIndex_watershed;
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<hexagon>::iterator iIterator1;
@@ -603,7 +591,7 @@ namespace hexwatershed
     long lSegmentIndex;
     float dLength;
     float dDistance_to_watershed_outlet;
-    float dLength_stream_conceptual;
+    float dLength_stream_conceptual_basin;
 
     std::vector<segment>::iterator iIterator0;
     std::vector<segment>::iterator iIterator2;
@@ -644,8 +632,8 @@ namespace hexwatershed
       lSegment = lSubbasin;
       vSubbasin[lSubbasin - 1].cCell_outlet = vSegment[lSegment - 1].cReach_end;
       vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;
-      dLength_stream_conceptual = vSegment[lSegment - 1].dLength;
-      vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual);
+        dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
+      vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual_basin);
     }
 
     watershed_calculate_travel_distance();
@@ -672,25 +660,14 @@ namespace hexwatershed
   int watershed::watershed_calculate_drainage_area()
   {
     int error_code = 1;
-    int iOption = 2; // sum up subbasin
-
     float dArea_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     std::vector<subbasin>::iterator iIterator1;
-    if (iOption == 1)
-    {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-      {
-        dArea_total = dArea_total + (*iIterator).dArea;
-      }
-    }
-    else
-    {
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
         dArea_total = dArea_total + (*iIterator1).dArea;
       }
-    }
+
     dArea = dArea_total;
     return error_code;
   }
@@ -702,31 +679,18 @@ namespace hexwatershed
   int watershed::watershed_calculate_total_stream_length()
   {
     int error_code = 1;
-    int iOption = 2; // sum up subbasin
+
 
     float dLength_total = 0.0;
 
     std::vector<hexagon>::iterator iIterator;
     std::vector<segment>::iterator iIterator1;
-    if (iOption == 1)
-    {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-      {
 
-        if ((*iIterator).iFlag_stream == 1)
-        {
-          // should have calculated dLength_stream_conceptual by now
-          dLength_total = dLength_total + (*iIterator).dLength_stream_conceptual;
-        }
-      }
-    }
-    else
-    {
       for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
       {
         dLength_total = dLength_total + (*iIterator1).dLength;
       }
-    }
+
 
     dLength_stream_conceptual = dLength_total;
 
@@ -742,17 +706,17 @@ namespace hexwatershed
     int error_code = 1;
 
     float dLength_longest = 0.0;
-    float dLength_stream_conceptual;
+    float dLength_stream_conceptual_temp;
 
     // loop through head water
     std::vector<segment>::iterator iIterator;
 
     for (iIterator = vSegment.begin(); iIterator != vSegment.end(); iIterator++)
     {
-      dLength_stream_conceptual = (*iIterator).dLength;
-      if (dLength_stream_conceptual > dLength_longest)
+        dLength_stream_conceptual_temp = (*iIterator).dLength;
+      if (dLength_stream_conceptual_temp > dLength_longest)
       {
-        dLength_longest = dLength_stream_conceptual;
+        dLength_longest = dLength_stream_conceptual_temp;
       }
     }
 
@@ -828,18 +792,11 @@ namespace hexwatershed
     float a;
     float b;
     float c;
-    float d;
     float dTwi;
     std::vector<hexagon>::iterator iIterator;
     // can use openmp
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      // if ((*iIterator).iFlag_outlet == 1)
-      //{
-      //   (*iIterator).dTwi = -1;
-      // }
-      // else
-      //{
       a = float(((*iIterator).dAccumulation));
       b = (*iIterator).dSlope_max_downslope;
       c = tan(b);
@@ -853,7 +810,7 @@ namespace hexwatershed
         std::cout << a << b << c << std::endl;
       }
       (*iIterator).dTwi = dTwi;
-      //}
+
     }
 
     return error_code;
@@ -864,7 +821,6 @@ namespace hexwatershed
     int error_code = 1;
     long lSegment;
     long lSubbasin;
-    long lSegment_downstream;
     long lSegmentIndex;
     float dDistance_to_watershed_outlet;
     // calculate confluence travel
@@ -972,7 +928,7 @@ namespace hexwatershed
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_integer_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
+        sLine = convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
         ofs << sLine << std::endl;
       }
       ofs.close();

@@ -36,7 +36,7 @@ namespace hexwatershed
      * @param pFlowline_in 
      * @return int 
      */
-    int flowline::share_vertex(flowline pFlowline_in)
+    int flowline::share_vertex(const flowline &pFlowline_in)
     {
         int iFlag_share = 0;
         vertex pVertex1, pVertex2;
@@ -59,7 +59,7 @@ namespace hexwatershed
      * @param pVertex_shared 
      * @return int 
      */
-    int flowline::share_vertex(flowline pFlowline_in, vertex pVertex_shared)
+    int flowline::share_vertex(const flowline &pFlowline_in, const vertex &pVertex_shared)
     {
         int iFlag_share = 0;
         std::vector<long> aOut;

@@ -26,11 +26,9 @@ namespace hexwatershed
   int compset::compset_check_digital_elevation_model_depression(std::vector<hexagon> vCell_in)
   {
     int error_code = 1;
-    int iNeighbor;
     int nNeighbor_land;
-    int nEdge;
     int nVertex;
-    long lCellID_neighbor;
+
     // long lCellIndex_neighbor;
     long lCellIndex_self, lCellIndex_neighbor;
     float dElevation_min;
@@ -43,7 +41,7 @@ namespace hexwatershed
     switch (pMesh_type)
     {
     case eMesh_type::eM_hexagon:
-      //#pragma omp parallel for private(lCellIndex_self, iIterator, iNeighbor, vNeighbor_land, \
+        //#pragma omp parallel for private(lCellIndex_self, iIterator, iNeighbor, vNeighbor_land, \
     dElevation_self, vElevation_neighbor,  \
     lCellID_neighbor, dElevation_min, lCellIndex_neighbor)
       for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
@@ -128,7 +126,6 @@ namespace hexwatershed
         if (error_code == 1)
         {
           nNeighbor_land = vCell_in[lCellIndex_self].nNeighbor_land;
-          nEdge = vCell_in[lCellIndex_self].nEdge;
           nVertex = vCell_in[lCellIndex_self].nVertex;
           if (nNeighbor_land == 8)
           {
@@ -242,7 +239,6 @@ namespace hexwatershed
         if (error_code == 1)
         {
           nNeighbor_land = vCell_in[lCellIndex_self].nNeighbor_land;
-          nEdge = vCell_in[lCellIndex_self].nEdge;
           nVertex = vCell_in[lCellIndex_self].nVertex;
           if (nNeighbor_land == nVertex)
           {
@@ -251,8 +247,6 @@ namespace hexwatershed
             vElevation_neighbor.clear();
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              //lCellID_neighbor = vNeighbor_land[iNeighbor];
-              //lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
               lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
               vElevation_neighbor.push_back(vCell_in[lCellIndex_neighbor].dElevation_mean);
             }
@@ -408,45 +402,18 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_finished = 0;
-    int iFlag_has_stream;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
-    int iFlag_stream_burning_treated_neighbor;
-    int nOutlet = cParameter.nOutlet;
-
+    long nOutlet = cParameter.nOutlet;
     long lCellID_outlet;
     long lCellIndex_outlet;
-
     float dBreach_threshold = cParameter.dBreach_threshold;
-    int iFlag_stream_burned;
-    int iFlag_stream_burned_center;
-    int iFlag_stream_burned_neighbor;
-    int iFlag_depression_filling_treated;
-    int iFlag_depression_filling_treated_neighbor;
     int iFlag_found;
-    int iOption_filling = 1; // 2 switch
-
-    long lCellIndex_boundary;
     long lCellIndex_active;
-    long lCellIndex_neighbor;
-    long iAttempt = 0;
-    long lCellID_center;
-    long lCellID_neighbor;
-    long lCellID_self;
-    long lCellID_temp;
-    long lCellID_next;
-    long lCellIndex_next;
-
-    long lCellID_downstream;
-    long lCellID_downstream_neighbor;
     float dElevation_mean_center;
-    float dElevation_mean_neighbor;
-    float dElevation_history;
-    float dDifference_dummy;
     std::array<long, 3> aIndex;
-
     std::vector<hexagon> vCell_boundary;
     std::vector<flowline>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator;
@@ -468,7 +435,7 @@ namespace hexwatershed
           iFlag_found = 0;
           for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
           {
-            // the outlet must be on the boundary at the begining
+            // the outlet must be on the boundary at the beginning
             if ((*iIterator).lCellID == lCellID_outlet)
             {
               lCellIndex_outlet = (*iIterator).lCellIndex;
@@ -481,17 +448,16 @@ namespace hexwatershed
           {
             // set the stream as the lowest if possible
             aIndex = compset_find_lowest_cell_in_priority_queue(vCell_boundary);
-            lCellIndex_boundary = aIndex[0]; // local index in boundary
+            //lCellIndex_boundary = aIndex[0]; // local index in boundary
             lCellIndex_active = aIndex[1];   // local id
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
-
             vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]);
 
             // new simplified approach
             if (iFlag_stream_burning_topology == 0)
             {
               // rasterization based stream burning
-              // this will make sure the outlet is the lowest point in the begining
+              // this will make sure the outlet is the lowest point in the beginning
               vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; // deep reduction
               // set boundary as treated
               vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
@@ -545,9 +511,7 @@ namespace hexwatershed
               lCellIndex_active = (*iIterator).lCellIndex;
               vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
             }
-
             priority_flood_depression_filling(vCell_boundary);
-
             // check again
             iFlag_finished = compset_check_digital_elevation_model_depression(vCell_active);
 
@@ -571,12 +535,11 @@ namespace hexwatershed
             for (int i = 0; i < nOutlet; i++)
             {
               lCellID_outlet = aBasin[i].lCellID_outlet;
-
               //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
               lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
-              dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
+              dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
               // rasterization based stream burning
-              // this will make sure the outlet is the lowest point in the begining
+              // this will make sure the outlet is the lowest point in the beginning
               vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; //    deep reduction
               // set boundary as treated
               vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
@@ -587,11 +550,10 @@ namespace hexwatershed
           {
             for (int i = 0; i < nOutlet; i++)
             {
-              // topology based stream burning
+              //topology based stream burning
               lCellID_outlet = aBasin[i].lCellID_outlet;
-              //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
               lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
-              dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
+              dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
 
               // burn stream first, set flag as well
               vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
@@ -607,22 +569,18 @@ namespace hexwatershed
             {
               if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
               {
-
                 vContinent_boundary.clear();
                 compset_find_continent_boundary((*iIterator_self).lCellID);
-
                 for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                 {
                   lCellIndex_active = (*iIterator).lCellIndex;
                   vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
                 }
-
                 // start flooding
                 if (vContinent_boundary.size() >= 3) // careful
                 {
                   priority_flood_depression_filling(vContinent_boundary);
                 }
-
                 // reset to the next continent
                 vContinent_boundary.clear();
               }
@@ -638,10 +596,8 @@ namespace hexwatershed
             {
               if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
               {
-
                 vContinent_boundary.clear();
                 compset_find_continent_boundary((*iIterator_self).lCellID);
-
                 for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
                 {
                   lCellIndex_active = (*iIterator).lCellIndex;
@@ -653,7 +609,6 @@ namespace hexwatershed
                 {
                   priority_flood_depression_filling(vContinent_boundary);
                 }
-
                 // reset to the next continent
                 vContinent_boundary.clear();
               }
@@ -673,10 +628,9 @@ namespace hexwatershed
           for (int i = 0; i < nOutlet; i++)
           {
             lCellID_outlet = aBasin[i].lCellID_outlet;
-
             //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
             lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
-            dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
+            dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
             // rasterization based stream burning
             // this will make sure the outlet is the lowest point in the begining
             vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; //    deep reduction
@@ -691,10 +645,9 @@ namespace hexwatershed
           {
             // topology based stream burning
             lCellID_outlet = aBasin[i].lCellID_outlet;
-
             //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
             lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
-            dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
+            dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
 
             // burn stream first, set flag as well
             vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
@@ -803,7 +756,7 @@ namespace hexwatershed
         {
           vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
           vContinent_boundary.push_back(vCell_active[lCellIndex_neighbor]);
-          compset_find_land_ocean_interface_neighbors(lCellID_neighbor);
+          compset_find_land_ocean_interface_neighbors(*iIterator_neighbor);
         }
       }
     }

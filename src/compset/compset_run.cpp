@@ -25,16 +25,14 @@ namespace hexwatershed
     long lFlag_total = 0;
     long lCellIndex_neighbor;
     long lCellID_downslope_neighbor;
-    long lCellID_neighbor;
 
     std::vector<hexagon>::iterator iIterator_self;
-    // std::vector<long>::iterator iIterator_neighbor;
     std::vector<int> vFlag(vCell_active.size());
     std::vector<int> vFinished(vCell_active.size());
     std::fill(vFlag.begin(), vFlag.end(), 0);
     std::fill(vFinished.begin(), vFinished.end(), 0);
-       std::vector<long> vNeighbor_land;
-           std::vector<long>::iterator iIterator_neighbor;
+    std::vector<long> vNeighbor_land;
+    std::vector<long>::iterator iIterator_neighbor;
 
     // the initial run
 
@@ -56,12 +54,10 @@ namespace hexwatershed
           iFlag_has_upslope = 0;
           iFlag_all_upslope_done = 1;
           vNeighbor_land = (*iIterator_self).vNeighbor_land;
-          //for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            //lCellID_neighbor = (*iIterator_self).vNeighbor_land[i;
-            //lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+
+            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
 
             lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
@@ -95,12 +91,9 @@ namespace hexwatershed
             if (iFlag_all_upslope_done == 1)
             {
               // and they are finished scanning
-              //for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
               for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                //lCellID_neighbor = (*iIterator_self).vNeighbor_land[i];
-                //lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
                 lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
                 if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
@@ -160,8 +153,8 @@ namespace hexwatershed
         {
           // use outlet id as largest
           lCellID_outlet = aBasin[0].lCellID_outlet;
-          //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
-          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
+
+          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
           dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
 
           dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
@@ -285,8 +278,8 @@ namespace hexwatershed
           for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
           {
             lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-            //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
-            lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
+
+            lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
             dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
             dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
             switch (iFlag_stream_grid_option)
@@ -416,9 +409,9 @@ namespace hexwatershed
             lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
           }
         }
-        
+
         dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
-        //also set the outlet id
+        // also set the outlet id
         lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
 
         for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
@@ -436,15 +429,13 @@ namespace hexwatershed
           }
         }
 
-        //should we update at least one watershed?
+        // should we update at least one watershed?
         basin pBasin;
         aBasin.clear();
         aBasin.push_back(pBasin);
         aBasin[0].lCellID_outlet = lCellID_outlet;
-        //we also need to update the nOutlet?
+        // we also need to update the nOutlet?
         cParameter.nOutlet = 1;
-
-
       }
     }
     else
@@ -466,7 +457,7 @@ namespace hexwatershed
     long lWatershed;
     long lCellIndex_self;
     long lCellIndex_current;
-    long lCellIndex_downslope;
+
     long lCellIndex_outlet;
     long lCellIndex_watershed;
     long lCellID_downslope;
@@ -478,119 +469,113 @@ namespace hexwatershed
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) or without flowline are the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-          
-          //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
-          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
-          watershed cWatershed;
-          sWatershed = convert_integer_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
-          cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
-          // make output
-          if (path_test(cWatershed.sWorkspace_output_watershed) == 0)
-          {
-            make_directory(cWatershed.sWorkspace_output_watershed);
-          }
-          cWatershed.sFilename_watershed_json = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
-          cWatershed.sFilename_watershed_stream_edge_json = cWatershed.sWorkspace_output_watershed + slash + "stream_edge.json";
-          cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
-          cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
-          cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
-          cWatershed.vCell.clear();
-          cWatershed.lWatershed = lWatershed;
-          cWatershed.lCellID_outlet = lCellID_outlet;
-          lCellIndex_watershed = 0;
-          // we may check the mesh id as well
-          vCell_active[lCellIndex_outlet].iFlag_outlet = 1;
-          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-          {
-            // if it is already in another watershed, skip it
-            if ((vCell_active[lCellIndex_self]).iFlag_watershed == 1)
-            {
-              continue;
-            }
 
-            lCellID_downslope = (vCell_active[lCellIndex_self]).lCellID_downslope_dominant;
-            if (lCellID_downslope != -1)
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+
+        lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
+        watershed cWatershed;
+        sWatershed = convert_long_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
+        cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
+        // make output
+        if (path_test(cWatershed.sWorkspace_output_watershed) == 0)
+        {
+          make_directory(cWatershed.sWorkspace_output_watershed);
+        }
+        cWatershed.sFilename_watershed_json = cWatershed.sWorkspace_output_watershed + slash + "watershed.json";
+        cWatershed.sFilename_watershed_stream_edge_json = cWatershed.sWorkspace_output_watershed + slash + "stream_edge.json";
+        cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
+        cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
+        cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
+        cWatershed.vCell.clear();
+        cWatershed.lWatershed = lWatershed;
+        cWatershed.lCellID_outlet = lCellID_outlet;
+        lCellIndex_watershed = 0;
+        // we may check the mesh id as well
+        vCell_active[lCellIndex_outlet].iFlag_outlet = 1;
+        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        {
+          // if it is already in another watershed, skip it
+          if ((vCell_active[lCellIndex_self]).iFlag_watershed == 1)
+          {
+            continue;
+          }
+
+          lCellID_downslope = (vCell_active[lCellIndex_self]).lCellID_downslope_dominant;
+          if (lCellID_downslope != -1)
+          {
+            iFound_outlet = 0;
+          }
+          else
+          {
+            iFound_outlet = 1;
+          }
+          lCellIndex_current = lCellIndex_self;
+          while (iFound_outlet != 1)
+          {
+            lCellID_downslope = (vCell_active[lCellIndex_current]).lCellID_downslope_dominant;
+            if (lCellID_outlet == lCellID_downslope)
             {
-              iFound_outlet = 0;
+              iFound_outlet = 1;
+              (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
+              (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
+              (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
+              // only push the cell, not the outlet
+              cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
+              cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
+              lCellIndex_watershed = lCellIndex_watershed + 1;
             }
             else
             {
-              iFound_outlet = 1;
-            }
-            lCellIndex_current = lCellIndex_self;
-            while (iFound_outlet != 1)
-            {
-              lCellID_downslope = (vCell_active[lCellIndex_current]).lCellID_downslope_dominant;
-              if (lCellID_outlet == lCellID_downslope)
+              if (lCellID_downslope != -1)
               {
-                iFound_outlet = 1;
-                (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
-                (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
-                (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
-                // only push the cell, not the outlet
-                cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
-                cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
-                lCellIndex_watershed = lCellIndex_watershed + 1;
-              }
-              else
-              {
-                if (lCellID_downslope != -1)
+                lCellIndex_current = (mCellIdToIndex.find(lCellID_downslope))->second;
+                if (lCellIndex_current >= 0)
                 {
-                  //lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
-                  lCellIndex_current = (mCellIdToIndex.find(lCellID_downslope))->second; 
-                  if (lCellIndex_current >= 0)
+                  if (vCell_active[lCellIndex_current].lWatershed == lWatershed) // the downslope is already finished
                   {
-                    if (vCell_active[lCellIndex_current].lWatershed == lWatershed) // the downslope is already finished
-                    {
 
-                      (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
+                    (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
 
-                      (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
-                      (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
-                      cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
-                      cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
-                      lCellIndex_watershed = lCellIndex_watershed + 1;
-                      iFound_outlet = 1;
-                    }
-                    else
-                    {
-
-                      iFound_outlet = 0;
-                    }
+                    (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
+                    (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
+                    cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
+                    cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
+                    lCellIndex_watershed = lCellIndex_watershed + 1;
+                    iFound_outlet = 1;
                   }
                   else
                   {
-                    iFound_outlet = 1; // a cell not going in this outlet may be going to a different one
+
+                    iFound_outlet = 0;
                   }
                 }
                 else
                 {
-                  iFound_outlet = 1; // this cell is going out of domain and it does not belong to any user-defined watersheds.
+                  iFound_outlet = 1; // a cell not going in this outlet may be going to a different one
                 }
+              }
+              else
+              {
+                iFound_outlet = 1; // this cell is going out of domain and it does not belong to any user-defined watersheds.
               }
             }
           }
-
-          // in the last step, we then push in the outlet
-          vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
-          vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
-          vCell_active[lCellIndex_outlet].lCellIndex_watershed = lCellIndex_watershed;
-          cWatershed.vCell.push_back(vCell_active[lCellIndex_outlet]);
-          cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
-          vWatershed.push_back(cWatershed);
         }
-        // how about other auto-defined watershed?
-        
-      
+
+        // in the last step, we then push in the outlet
+        vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
+        vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
+        vCell_active[lCellIndex_outlet].lCellIndex_watershed = lCellIndex_watershed;
+        cWatershed.vCell.push_back(vCell_active[lCellIndex_outlet]);
+        cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
+        vWatershed.push_back(cWatershed);
+      }
+      // how about other auto-defined watershed?
     }
     else
     {
@@ -609,20 +594,18 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        nSegment_total = 0;
-        nConfluence_total = 0;
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_define_stream_confluence();
-          nConfluence_total = nConfluence_total + vWatershed[lWatershed - 1].nConfluence;
-          nSegment_total = nSegment_total + vWatershed[lWatershed - 1].nSegment;
-        }     
+
+      nSegment_total = 0;
+      nConfluence_total = 0;
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_define_stream_confluence();
+        nConfluence_total = nConfluence_total + vWatershed[lWatershed - 1].nConfluence;
+        nSegment_total = nSegment_total + vWatershed[lWatershed - 1].nSegment;
+      }
     }
     else
     {
@@ -640,17 +623,14 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_define_stream_segment();
-        }
-      
+
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_define_stream_segment();
+      }
     }
 
     return error_code;
@@ -661,17 +641,14 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_build_stream_topology();
-        }
-      
+
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_build_stream_topology();
+      }
     }
     return error_code;
   }
@@ -680,17 +657,14 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_define_stream_order();
-        }
-      
+
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_define_stream_order();
+      }
     }
     return error_code;
   }
@@ -704,17 +678,13 @@ namespace hexwatershed
     long lWatershed;
 
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_define_subbasin();
-        }
-      
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_define_subbasin();
+      }
     }
     return error_code;
   }
@@ -730,17 +700,13 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+
     if (iFlag_global != 1)
     {
-      //if (iFlag_flowline == 1) //without flowline is the same
-      
-        for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-        {
-          vWatershed[lWatershed - 1].watershed_calculate_characteristics();
-        }
-      
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_calculate_characteristics();
+      }
     }
     return error_code;
   }
@@ -750,9 +716,7 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
-    // long lCellID1;
+
     long lCellIndex; //, lCellIndex1;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator2;
@@ -763,14 +727,9 @@ namespace hexwatershed
         watershed cWatershed = vWatershed[lWatershed - 1];
         for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
         {
-          // lCellID1 = (*iIterator1).lCellID;
-          // lCellIndex = compset_find_index_by_cell_id(lCellID1);
+
           lCellIndex = (*iIterator1).lCellIndex;
-          // if (lCellIndex != lCellIndex1)
-          //{
-          //     //print an error information
-          //     std::cout << " compset_transfer_watershed_to_domain error: lCellIndex != lCellIndex1" << std::endl;
-          // }
+
           if (lCellIndex != -1)
           {
             vCell_active[lCellIndex].lSubbasin = (*iIterator1).lSubbasin;

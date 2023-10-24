@@ -77,8 +77,8 @@ namespace hexwatershed
           // iterate through all neighbors
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+            // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
             dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
             // get distance
             iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), *iIterator_neighbor);
@@ -99,7 +99,7 @@ namespace hexwatershed
             }
             else
             {
-              // this should be a upslope
+              // this should be an upslope
               (vCell_active[lCellIndex_self]).vUpslope.push_back(*iIterator_neighbor);
               if (dSlope_new < dSlope_upslope)
               {
@@ -159,8 +159,8 @@ namespace hexwatershed
           iFlag_has_stream = 0;
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+            // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
             if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
             {
               iFlag_has_stream = 1;
@@ -173,8 +173,8 @@ namespace hexwatershed
             // iterate through all neighbors
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+              // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
               if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
               {
                 // it has a neighboring stream
@@ -200,7 +200,7 @@ namespace hexwatershed
                   // this is an upslope stream grid, but may not the steepest one, so we can skip the lowest
                   // the vUpslope may not be used since it does not guarantee this upstream is the burned upstream
                   (vCell_active[lCellIndex_self]).vUpslope.push_back(*iIterator_neighbor);
-                }    
+                }
               }
               else
               {
@@ -228,7 +228,6 @@ namespace hexwatershed
                     lCellIndex_neighbor_highest = lCellIndex_self;
                   }
                 }
-                
               }
             }
           }
@@ -237,8 +236,8 @@ namespace hexwatershed
             // iterate through all neighbors
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+              // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
               dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
               // get distance
               iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));
@@ -281,8 +280,8 @@ namespace hexwatershed
                    iIterator_neighbor++)
               {
 
-                //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+                // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
                 if (vCell_active[lCellIndex_neighbor].lCellID == lCellID_downstream) // this is the downstream
                 {
                   (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = *iIterator_neighbor;
@@ -317,8 +316,8 @@ namespace hexwatershed
                    iIterator_neighbor != vNeighbor_land.end();
                    iIterator_neighbor++)
               {
-                //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+                // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
                 if (vCell_active[lCellIndex_neighbor].lCellID_downstream_burned == lCellID) // reverse
                 {
                   //=====================================
@@ -355,7 +354,7 @@ namespace hexwatershed
           }
           else
           {
-            // normal land grid neighbor, this cell maybe on the edge, if so, we can set it mannually as beach
+            // normal land grid neighbor, this cell maybe on the edge, if so, we can set it manually as beach
             if (pMesh_type == eMesh_type::eM_hexagon || pMesh_type == eMesh_type::eM_mpas || pMesh_type == eMesh_type::eM_dggrid) // this only apply to mpas that does not consider the vertex neighbors
             {
               if ((vCell_active[lCellIndex_self]).nNeighbor_land == (vCell_active[lCellIndex_self]).nVertex)
@@ -364,7 +363,7 @@ namespace hexwatershed
                 if (lCellID_lowest != -1)
                 {
                   (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
-                  // before define stream, we cannot establish upslope relationship                 
+                  // before define stream, we cannot establish upslope relationship
                   (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
                   (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
 
@@ -383,7 +382,7 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!"  << std::endl;     
+                  std::cout << "It should have one downslope!" << std::endl;
                 }
               }
               else
@@ -407,10 +406,6 @@ namespace hexwatershed
                 else
                 {
                   (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
-                  // if (dSlope_upslope > 0.0)
-                  //{
-                  //   std::cout << "Upslope should be negative!" << std::endl;
-                  // }
                   (vCell_active[lCellIndex_self]).dSlope_max_downslope = -1.0 * dSlope_upslope;
                   (vCell_active[lCellIndex_self]).dDistance_to_downslope = (vCell_active[lCellIndex_self]).dLength_edge_mean;
 
@@ -456,7 +451,6 @@ namespace hexwatershed
               }
             }
           }
-        
         }
       }
     }
@@ -478,8 +472,8 @@ namespace hexwatershed
         // iterate through all neighbors
         for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
         {
-          //lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
-          lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+          // lCellIndex_neighbor = compset_find_index_by_cell_id(*iIterator_neighbor);
+          lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
           dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
           // get distance
           iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));

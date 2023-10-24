@@ -9,7 +9,7 @@ namespace hexwatershed
 
   subbasin::subbasin()
   {
-    lSubbasinIndex=-1;
+    lSubbasinIndex = -1;
   }
   subbasin::~subbasin()
   {
@@ -78,34 +78,31 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_travel_distance()
   {
     int error_code = 1;
-    long lCellID_current;     
+    long lCellID_current;
     long lCellIndex;
-    float dDistance_to_subbasin_outlet;
+    float dDistance_to_subbasin_outlet_temp = 0.0;
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       lCellID_current = (*iIterator).lCellID;
-      if (lCellID_current !=lCellID_outlet)
+      if (lCellID_current != lCellID_outlet)
       {
-        dDistance_to_subbasin_outlet = (*iIterator).dDistance_to_downslope;         
-        lCellID_current =  (*iIterator).lCellID_downslope_dominant;   
+        dDistance_to_subbasin_outlet_temp = (*iIterator).dDistance_to_downslope;
+        lCellID_current = (*iIterator).lCellID_downslope_dominant;
         while (lCellID_current != lCellID_outlet)
         {
           lCellIndex = subbasin_find_index_by_cellid(lCellID_current);
-          lCellID_current = vCell[lCellIndex].lCellID_downslope_dominant;       
-          dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet + vCell[lCellIndex].dDistance_to_downslope;  
+          lCellID_current = vCell[lCellIndex].lCellID_downslope_dominant;
+          dDistance_to_subbasin_outlet_temp = dDistance_to_subbasin_outlet_temp + vCell[lCellIndex].dDistance_to_downslope;
         }
 
-        (*iIterator).dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet;
+        (*iIterator).dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet_temp;
       }
       else
       {
         (*iIterator).dDistance_to_subbasin_outlet = 0.0;
       }
-
-      
     }
-
     return error_code;
   }
   long subbasin::subbasin_find_index_by_cellid(long lCellID_in)

@@ -5,18 +5,18 @@
  * @brief Conversion between data types
  * @version 0.1
  * @date 2019-06-11
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include "conversion.h"
 
 /**
- * @brief it is used to convert integer to string 
- * 
+ * @brief it is used to convert integer to string
+ *
  * @param iNumber_in : the integer number
- * @return std::string 
+ * @return std::string
  */
 std::string convert_integer_to_string(int iNumber_in)
 {
@@ -38,10 +38,10 @@ std::string convert_long_to_string(long iNumber_in)
 
 /**
  * @brief convert an integer to a string with fixed length
- * 
- * @param iNumber_in 
- * @param iWidth_in 
- * @return std::string 
+ *
+ * @param iNumber_in
+ * @param iWidth_in
+ * @return std::string
  */
 std::string convert_integer_to_string(int iNumber_in, int iWidth_in)
 {
@@ -52,11 +52,20 @@ std::string convert_integer_to_string(int iNumber_in, int iWidth_in)
 	return str_out;
 }
 
+std::string convert_long_to_string(long lNumber_in, int iWidth_in)
+{
+	std::string str_out;
+	std::stringstream ss;
+	ss << setfill('0') << setw(iWidth_in) << lNumber_in;
+	str_out = ss.str();
+	return str_out;
+}
+
 /**
  * @brief convert a float data type to string
- * 
- * @param dNumber_in 
- * @return std::string 
+ *
+ * @param dNumber_in
+ * @return std::string
  */
 std::string convert_double_to_string(double dNumber_in)
 {
@@ -77,11 +86,11 @@ std::string convert_float_to_string(float dNumber_in)
 
 /**
  * @brief convert a float data type to a string with fixed length
- * 
- * @param iPrecision_in 
- * @param iWidth_in 
- * @param dNumber_in 
- * @return std::string 
+ *
+ * @param iPrecision_in
+ * @param iWidth_in
+ * @param dNumber_in
+ * @return std::string
  */
 std::string convert_double_to_string(int iPrecision_in,
 									 int iWidth_in,
@@ -94,8 +103,8 @@ std::string convert_double_to_string(int iPrecision_in,
 	return str_out;
 }
 std::string convert_float_to_string(int iPrecision_in,
-									 int iWidth_in,
-									 float dNumber_in)
+									int iWidth_in,
+									float dNumber_in)
 {
 	std::string str_out;
 	std::stringstream ss;
@@ -106,9 +115,9 @@ std::string convert_float_to_string(int iPrecision_in,
 
 /**
  * @brief convert temperature from kelvin to fahrenheit
- * 
- * @param dTemperature_kelvin_in 
- * @return float 
+ *
+ * @param dTemperature_kelvin_in
+ * @return float
  */
 float convert_from_kelvin_to_fahrenheit(float dTemperature_kelvin_in)
 {
@@ -118,9 +127,9 @@ float convert_from_kelvin_to_fahrenheit(float dTemperature_kelvin_in)
 }
 /**
  * @brief convert temperature from fahrenheit to kelvin
- * 
- * @param dTemperature_fahrenheit_in 
- * @return float 
+ *
+ * @param dTemperature_fahrenheit_in
+ * @return float
  */
 float convert_from_fahrenheit_to_kelvin(float dTemperature_fahrenheit_in)
 {
@@ -130,9 +139,9 @@ float convert_from_fahrenheit_to_kelvin(float dTemperature_fahrenheit_in)
 }
 /**
  * @brief convert energy unit
- * 
- * @param dJoule_per_meter_in 
- * @return float 
+ *
+ * @param dJoule_per_meter_in
+ * @return float
  */
 float convert_from_joule_per_meter_to_calorie_per_centimeter(float dJoule_per_meter_in)
 {
@@ -142,9 +151,9 @@ float convert_from_joule_per_meter_to_calorie_per_centimeter(float dJoule_per_me
 }
 /**
  * @brief conver energy units
- * 
- * @param dCalorie_per_centimeter_in 
- * @return float 
+ *
+ * @param dCalorie_per_centimeter_in
+ * @return float
  */
 float convert_from_calorie_per_centimeter_to_joule_per_meter(float dCalorie_per_centimeter_in)
 {
@@ -155,15 +164,15 @@ float convert_from_calorie_per_centimeter_to_joule_per_meter(float dCalorie_per_
 
 float convert_degree_to_radian(const float dAngle_degree)
 {
-	 const float dAngle_radian =  dAngle_degree / 180.0 * pi;
-	 return dAngle_radian;
+	const float dAngle_radian = dAngle_degree / 180.0 * pi;
+	return dAngle_radian;
 }
 
 /**
  * @brief split a string using space
- * 
- * @param sString_in 
- * @return std::vector<std::string> 
+ *
+ * @param sString_in
+ * @return std::vector<std::string>
  */
 std::vector<std::string> split_string_by_space(std::string sString_in)
 {
@@ -182,14 +191,12 @@ std::vector<std::string> split_string_by_space(std::string sString_in)
 	}
 }
 
-
-
 /**
  * @brief split a string using user provide delimiter
- * 
- * @param sString_in 
- * @param cDelimiter 
- * @return std::vector<std::string> 
+ *
+ * @param sString_in
+ * @param cDelimiter
+ * @return std::vector<std::string>
  */
 std::vector<std::string> split_string_by_delimiter(std::string sString_in,
 												   char cDelimiter)
@@ -212,19 +219,19 @@ std::vector<std::string> split_string_by_delimiter(std::string sString_in,
 	return vTokens_out;
 }
 
-std::string ltrim(const std::string& s)
+std::string ltrim(const std::string &s)
 {
 	size_t start = s.find_first_not_of(WHITESPACE);
 	return (start == std::string::npos) ? "" : s.substr(start);
 }
 
-std::string rtrim(const std::string& s)
+std::string rtrim(const std::string &s)
 {
 	size_t end = s.find_last_not_of(WHITESPACE);
 	return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
 
-std::string trim(const std::string& s)
+std::string trim(const std::string &s)
 {
 	return rtrim(ltrim(s));
 }

@@ -69,7 +69,7 @@ namespace hexwatershed
      * @param pVertex_end 
      * @return int 
      */
-    int edge::check_overlap(vertex pVertex_start, vertex pVertex_end)
+    int edge::check_overlap(vertex pVertex_start, const vertex &pVertex_end)
     {
         int error_code = 1;
         int overlap = 0;
@@ -121,7 +121,7 @@ namespace hexwatershed
      * @param pEdge_in 
      * @return int 
      */
-    int edge::check_shared(edge pEdge_in)
+    int edge::check_shared(const edge &pEdge_in)
     {
         int iFlag_shared = 0;
 

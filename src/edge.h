@@ -36,8 +36,8 @@ namespace hexwatershed
 
       int check_point_overlap (vertex pt);
 
-      int check_overlap (vertex pt_start, vertex pt_end);
+      int check_overlap (vertex pt_start, const vertex &pt_end);
 
-      int check_shared (edge ed);
+      int check_shared (const edge &ed);
     };
 } // namespace hexwatershed

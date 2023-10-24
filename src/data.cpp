@@ -24,7 +24,7 @@ data::~data()
  * @param sFilename_in 
  * @return float* 
  */
-float * data::read_binary(std::string sFilename_in)
+float * data::read_binary(const std::string sFilename_in)
 {
 	float * pData_out = nullptr;
 	long lLength1, lLength2;
@@ -74,7 +74,7 @@ float * data::read_binary(std::string sFilename_in)
  * @param lRow_in 
  * @return float** 
  */
-float ** data::read_binary(string sFilename_in,
+float ** data::read_binary(const std::string sFilename_in,
 	long lColumn_in,
 	long lRow_in
 )
@@ -124,7 +124,7 @@ float ** data::read_binary(string sFilename_in,
  * @param sFilename_in 
  * @return vector<float> 
  */
-vector<float> data::read_binary_vector(std::string sFilename_in)
+vector<float> data::read_binary_vector(const std::string sFilename_in)
 {
 	long lLength1, lLength2;
 	float dummy;
@@ -171,7 +171,7 @@ vector<float> data::read_binary_vector(std::string sFilename_in)
  * @param vData_in 
  * @return int 
  */
-int data::write_binary_vector(std::string sFilename_out, std::vector <float> vData_in)
+int data::write_binary_vector(const std::string sFilename_out, std::vector <float> vData_in)
 {
 	int error_code = 1;
 	float dDummy0, dDummy1;

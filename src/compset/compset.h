@@ -120,7 +120,7 @@ namespace hexwatershed
     int compset_define_watershed_boundary ();
     int compset_define_stream_confluence ();
     int compset_define_stream_segment ();
-    int compset_tag_confluence_upstream (long lWatershed, long lCellID_confluence);
+    //int compset_tag_confluence_upstream (long lWatershed, long lCellID_confluence);
 
     int compset_build_stream_topology();
     int compset_define_stream_order();
@@ -134,9 +134,9 @@ namespace hexwatershed
 
     int compset_transfer_watershed_to_domain();
 
-    int compset_export_watershed_vtk (std::string sFilename_in); //only for watershed?
-    int compset_export_domain_json(std::string sFilename_in);
-    int compset_export_watershed_animation_json(std::string sFilename_in);
+    int compset_export_watershed_vtk (const std::string &sFilename_in); //only for watershed?
+    int compset_export_domain_json(const std::string &sFilename_in);
+    int compset_export_watershed_animation_json(const std::string &sFilename_in);
     std::vector <hexagon> compset_obtain_boundary (std::vector <hexagon> vCell_in);
     inline long compset_find_index_by_cell_id(long lCellID);
     
