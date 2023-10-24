@@ -19,15 +19,16 @@ namespace hexwatershed
    */
   int domain::domain_read()
   {
-    int error_code = 1;
+    int error_code = 1;    
     domain_read_configuration_file();
     domain_retrieve_user_input();
     domain_read_input_data();
 
     cCompset.sFilename_mesh_info = this->sFilename_mesh_info;
     cCompset.compset_read_model();
-
-    std::cout << "Finished reading data!" << std::endl;
+    sTime = get_current_time();        
+    sLog = "Finished reading data at " + sTime;
+    std::cout << sLog << std::endl;   
     std::flush(std::cout);
     return error_code;
   }
@@ -71,7 +72,8 @@ namespace hexwatershed
   int domain::domain_retrieve_user_input()
   {
     int error_code = 1;
-    int iMesh_type;
+    
+    eMesh_type pMesh_type;
     std::string sMesh_type;
     std::string sKey = "sMesh_type";
     std::string sWorkspace_output_hexwatershed;
@@ -79,45 +81,15 @@ namespace hexwatershed
     {
       sMesh_type = pConfigDoc[sKey.c_str()].GetString();
     }
-    if (sMesh_type == "hexagon")
-    {
-      iMesh_type = 1;
-    }
-    else
-    {
-      if (sMesh_type == "square")
-      {
-        iMesh_type = 2;
-      }
-      else
-      {
-        if (sMesh_type == "latlon")
-        {
-          iMesh_type = 3;
-        }
-        else
-        {
-          if (sMesh_type == "mpas")
-          {
-            iMesh_type = 4;
-          }
-          else
-          {
-            if (sMesh_type == "tin")
-            {
-              iMesh_type = 5;
-            }
-            else
-            {
-              std::cout << "Unsupported mesh type" << std::endl;
-            }
-          }
-        }
-      }
-    }
+    //use the enum to define mesh type
+
+    pMesh_type = cCompset.cParameter.define_mesh_type(sMesh_type);
+
+    
 
     cCompset.cParameter.sMesh_type = sMesh_type;
-    cCompset.cParameter.iMesh_type = iMesh_type;
+    
+    cCompset.cParameter.pMesh_type = pMesh_type;
 
     sKey = "iFlag_resample_method";
 
@@ -266,15 +238,14 @@ namespace hexwatershed
     cCompset.sWorkspace_output_hexwatershed = sWorkspace_output_hexwatershed;
 
     // vtk
-    cCompset.sFilename_vtk = sWorkspace_output_hexwatershed + slash + "hexwatershed.vtk";
+    cCompset.sFilename_domain_vtk = sWorkspace_output_hexwatershed + slash + "hexwatershed.vtk";
 
     // json
 
-    cCompset.sFilename_json = sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
     // others
-    cCompset.sFilename_domain_json= sWorkspace_output_hexwatershed + slash + "domain.json";
+    cCompset.sFilename_domain_json= sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
 
-    cCompset.sFilename_animation_json = sWorkspace_output_hexwatershed + slash + "animation.json";
+    cCompset.sFilename_domain_animation_json = sWorkspace_output_hexwatershed + slash + "animation.json";
 
     sFilename_log = sWorkspace_output_hexwatershed + slash + "starlog" + sExtension_text;
     ofs_log.open(sFilename_log.c_str(), ios::out);
@@ -300,22 +271,15 @@ namespace hexwatershed
   int domain::domain_read_input_data()
   {
     int error_code = 1;
-    int iMesh_type = cCompset.cParameter.iMesh_type;
+    
+    eMesh_type pMesh_type = cCompset.cParameter.pMesh_type;
+
     int iFlag_flowline = cCompset.cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cCompset.cParameter.iFlag_stream_burning_topology;
     std::vector<hexagon>::iterator iIterator;
-    switch (iMesh_type)
+    switch (pMesh_type)
     {
-    case 1: // hexagon
-    {
-      domain_read_elevation_json(sFilename_mesh_info);
-      for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
-      {
-        cCompset.aCell.push_back((*it));
-      }
-    }
-    break;
-    case 2:
+    case eMesh_type::eM_hexagon: // hexagon
     {
       domain_read_elevation_json(sFilename_mesh_info);
       for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
@@ -324,7 +288,7 @@ namespace hexwatershed
       }
     }
     break;
-    case 3:
+    case eMesh_type::eM_square:
     {
       domain_read_elevation_json(sFilename_mesh_info);
       for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
@@ -333,7 +297,7 @@ namespace hexwatershed
       }
     }
     break;
-    case 4: // mpas
+    case eMesh_type::eM_latlon:
     {
       domain_read_elevation_json(sFilename_mesh_info);
       for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
@@ -342,7 +306,25 @@ namespace hexwatershed
       }
     }
     break;
-    case 5:
+    case eMesh_type::eM_mpas: // mpas
+    {
+      domain_read_elevation_json(sFilename_mesh_info);
+      for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
+      {
+        cCompset.aCell.push_back((*it));
+      }
+    }
+    break;
+    case eMesh_type::eM_dggrid: //dggrid
+    {
+      domain_read_elevation_json(sFilename_mesh_info);
+      for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)
+      {
+        cCompset.aCell.push_back((*it));
+      }
+    }
+    break;
+    case eMesh_type::eM_tin: //tin
     {
       domain_read_elevation_json(sFilename_mesh_info);
       for (std::list<cell>::iterator it = cMesh.aCell.begin(); it != cMesh.aCell.end(); ++it)

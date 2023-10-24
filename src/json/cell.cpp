@@ -5,7 +5,7 @@ namespace jsonmodel
 {
 	cell::cell()
 	{
-		iStream_segment_burned = -1;
+		lStream_segment_burned = -1;
 		iStream_order_burned = -1;
 
 		dAccumulation = 0.0;
@@ -89,10 +89,10 @@ namespace jsonmodel
 		{
 			this->lCellID_downstream_burned = obj[sKey.c_str()].GetInt64();
 		}
-		sKey = "iStream_segment_burned";
+		sKey = "iStream_segment_burned"; //temporary, will covnert to long if needed
 		if (obj.HasMember(sKey.c_str()))
 		{
-			this->iStream_segment_burned = obj[sKey.c_str()].GetInt();
+			this->lStream_segment_burned = obj[sKey.c_str()].GetInt64();
 		}
 		sKey = "iStream_order_burned";
 		if (obj.HasMember(sKey.c_str()))
@@ -143,12 +143,13 @@ namespace jsonmodel
 		for (int i = 0; i < this->nVertex; i++)
 		{
 			vertex pVertex;
+			//pVertex.lVertexID = rVertex[i]["lVertexID"].GetInt64(); //how about ID?
 			pVertex.dLongitude_degree = rVertex[i]["dLongitude_degree"].GetFloat();
 			pVertex.dLatitude_degree = rVertex[i]["dLatitude_degree"].GetFloat();
 			pVertex.dLongitude_radian = convert_degree_to_radian(pVertex.dLongitude_degree);
 			pVertex.dLatitude_radian = convert_degree_to_radian(pVertex.dLatitude_degree);
 			pVertex.dElevation = this->dElevation_raw;
-			pVertex.update_location();
+			pVertex.update_location();				
 			this->vVertex.push_back(pVertex);
 		}
 
@@ -169,23 +170,23 @@ namespace jsonmodel
 		writer->String("lCellID_downslope");
 		writer->Int64(lCellID_downslope);
 
-		writer->String("iSegment");
-		writer->Int(iStream_segment);
+		writer->String("lStream_segment");
+		writer->Int64(lStream_segment);
 
-		writer->String("iSubbasin");
-		writer->Int(iSubbasin);
+		writer->String("lSubbasin");
+		writer->Int64(lSubbasin);
 
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);
 		writer->String("dLatitude_center_degree");
 		writer->Double(dLatitude_center_degree);
-		writer->String("Area");
+		writer->String("dArea");
 		writer->Double(dArea);
-		writer->String("Elevation_raw");
+		writer->String("dElevation_raw");
 		writer->Double(dElevation_raw);
-		writer->String("Elevation");
+		writer->String("dElevation");
 		writer->Double(dElevation_mean);
-		writer->String("Elevation_profile");
+		writer->String("dElevation_profile");
 		writer->Double(dElevation_profile0);
 		writer->String("dSlope_between");
 		writer->Double(dSlope_between);
@@ -200,7 +201,7 @@ namespace jsonmodel
 		writer->String("dLength_flowline");
 		writer->Double(dLength_flowline);
 
-		writer->String("DrainageArea");
+		writer->String("dDrainage_area");
 		writer->Double(dAccumulation);
 		writer->String("dDistance_to_downslope");
 		writer->Double(dDistance_to_downslope);

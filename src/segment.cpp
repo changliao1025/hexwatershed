@@ -16,10 +16,10 @@ namespace hexwatershed
   segment::segment()
   {
     iFlag_headwater = 0;
-    iSegment = 0;
-    iSegmentIndex = -1;
+    lSegment = 0;
+    lSegmentIndex = -1;
     iSegment_order = -1;
-    iSegment_downstream = -1;
+    lSegment_downstream = -1;
 
     iFlag_has_upstream = -1;
     iFlag_has_downstream = -1;
@@ -33,7 +33,7 @@ namespace hexwatershed
 
   bool segment::operator<(const segment &cSegment)
   {
-    return (this->iSegment < cSegment.iSegment);
+    return (this->lSegment < cSegment.lSegment);
   }
 
   /**
@@ -41,11 +41,11 @@ namespace hexwatershed
    *
    * @return int
    */
-  int segment::calculate_stream_segment_characteristics()
+  int segment::segment_calculate_stream_segment_characteristics()
   {
     int error_code = 1;
-    calculate_stream_segment_length();
-    calculate_stream_segment_slope();
+    segment_calculate_stream_segment_length();
+    segment_calculate_stream_segment_slope();
     return error_code;
   }
 
@@ -54,7 +54,7 @@ namespace hexwatershed
    *
    * @return int
    */
-  int segment::calculate_stream_segment_length()
+  int segment::segment_calculate_stream_segment_length()
   {
     int error_code = 1;
     float dLength_total = 0.0;
@@ -70,7 +70,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int segment::calculate_stream_segment_slope()
+  int segment::segment_calculate_stream_segment_slope()
   {
     int error_code = 1;
     float dElevation_diff;
@@ -93,7 +93,7 @@ namespace hexwatershed
 
     return error_code;
   }
-  int segment::calculate_travel_distance()
+  int segment::segment_calculate_travel_distance()
   {
     int error_code = 1;
     return error_code;

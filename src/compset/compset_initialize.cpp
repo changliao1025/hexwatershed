@@ -19,181 +19,131 @@ namespace hexwatershed
    */
   int compset::compset_initialize_model()
   {
-    int error_code = 1;   
-
-    //get informaiton from the domain pass variable
-    long lVertexIndex = 0;
-    long lCellIndex=0;
+    int error_code = 1;
+    int iFlag_vtk = cParameter.iFlag_vtk;
+    long lCellIndex = 0;
     long lCellIndex_outlet;
+    long lVertexIndex = 0;
     long ncell = this->aCell.size();
-  
-    std::vector<cell>::iterator iIterator1;
-    std::vector<vertex>::iterator iIterator2;
-    
-    vVertex_active.clear();
     vCell_active.clear();
-    lVertexIndex =0;
-    //vCell_active.reserve(ncell); 
-    
-    for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
+    vCell_active.reserve(ncell); // CL: dont remember that this does but it speeds up the code
+    // for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
+    for (const cell &pCell : aCell)
+    {
+      hexagon pHexagon;
+      pHexagon.lCellIndex = lCellIndex;
+      pHexagon.lCellID = pCell.lCellID;
+      pHexagon.dElevation_mean = pCell.dElevation_mean;
+      pHexagon.dElevation_raw = pCell.dElevation_raw;
+      pHexagon.dElevation_profile0 = pCell.dElevation_profile0;
+      pHexagon.dLength_stream_burned = pCell.dLength_flowline;
+      pHexagon.dArea = pCell.dArea;
+      pHexagon.dAccumulation = pHexagon.dArea;
+      pHexagon.dLongitude_center_degree = pCell.dLongitude_center_degree;
+      pHexagon.dLatitude_center_degree = pCell.dLatitude_center_degree;
+      pHexagon.dLongitude_center_radian = convert_degree_to_radian(pHexagon.dLongitude_center_degree);
+      pHexagon.dLatitude_center_radian = convert_degree_to_radian(pHexagon.dLatitude_center_degree);
+      pHexagon.vNeighbor = pCell.aNeighbor;
+      pHexagon.vNeighbor_distance = pCell.aNeighbor_distance;
+      pHexagon.vNeighbor_land = pCell.aNeighbor_land;
+      // pHexagon.vNeighbor_ocean = pCell.aNeighbor_ocean;
+      // edge and vertex coordinates are not yet used
+      pHexagon.nNeighbor = pCell.nNeighbor;
+      pHexagon.nNeighbor_land = pCell.nNeighbor_land;
+      // pHexagon.nNeighbor_ocean = pCell.nNeighbor_ocean;
+      pHexagon.nEdge = pCell.nEdge;
+      pHexagon.nVertex = pCell.nVertex;
+      // define the bounding box
+      pHexagon.vVertex.clear();
+      pHexagon.vVertex.reserve(pHexagon.nVertex);
+      // for (int i = 0; i < pHexagon.nVertex; i++)
+      for (const vertex &pV : pCell.vVertex)
       {
-        hexagon pHexagon;
-        pHexagon.lCellIndex = lCellIndex;
-        pHexagon.lCellID = (*iIterator1).lCellID;
-        pHexagon.dElevation_mean = (*iIterator1).dElevation_mean;
-        pHexagon.dElevation_raw = (*iIterator1).dElevation_raw;
-        pHexagon.dElevation_profile0 = (*iIterator1).dElevation_profile0;     
-        pHexagon.dLength_stream_burned = (*iIterator1).dLength_flowline;
-        pHexagon.dArea = (*iIterator1).dArea;
-        pHexagon.dAccumulation = pHexagon.dArea;
-        pHexagon.dLongitude_center_degree=(*iIterator1).dLongitude_center_degree;
-        pHexagon.dLatitude_center_degree=(*iIterator1).dLatitude_center_degree;
-        pHexagon.dLongitude_center_radian = convert_degree_to_radian(pHexagon.dLongitude_center_degree);
-        pHexagon.dLatitude_center_radian = convert_degree_to_radian(pHexagon.dLatitude_center_degree);
-        pHexagon.vNeighbor = (*iIterator1).aNeighbor;
-        pHexagon.vNeighbor_distance = (*iIterator1).aNeighbor_distance;
-        pHexagon.vNeighbor_land = (*iIterator1).aNeighbor_land;
-        //pHexagon.vNeighbor_ocean = (*iIterator1).aNeighbor_ocean;
-        //edge and vertex coordinates are not yet used
-        pHexagon.nNeighbor = (*iIterator1).nNeighbor;
-        pHexagon.nNeighbor_land = (*iIterator1).nNeighbor_land;
-        //pHexagon.nNeighbor_ocean = (*iIterator1).nNeighbor_ocean;
-        pHexagon.nEdge = (*iIterator1).nEdge;
-        pHexagon.nVertex = (*iIterator1).nVertex;
-        pHexagon.vVertex.clear();
-        for (int i=0; i< pHexagon.nVertex; i++)
-        {
-          vertex pVertex = (*iIterator1).vVertex.at(i);        
-          pVertex.dElevation = pHexagon.dElevation_mean; //this needs to be updated          
-          iIterator2 = std::find(vVertex_active.begin(), vVertex_active.end(), pVertex);
-            if (iIterator2 != vVertex_active.end())
-            {
-              //it is already indexed
-              pVertex.lVertexIndex = (*iIterator2).lVertexIndex;
-            }
-            else
-            {
-              pVertex.lVertexIndex = lVertexIndex;
-              lVertexIndex = lVertexIndex + 1;
-              vVertex_active.push_back(pVertex);
-            }      
-          pHexagon.vVertex.push_back(pVertex);
-
-        }
-
-        pHexagon.iStream_segment_burned = (*iIterator1).iStream_segment_burned;
-        pHexagon.iStream_order_burned = (*iIterator1).iStream_order_burned;
-        pHexagon.lCellID_downstream_burned = (*iIterator1).lCellID_downstream_burned;
-
-        if (pHexagon.iStream_segment_burned > 0) //check it starts with 1
-          {
-            pHexagon.iFlag_stream_burned = 1;
-          }
-
-        pHexagon.calculate_effective_resolution();
-        //we require the 
-        if (pHexagon.dLength_stream_burned  < pHexagon.dLength_stream_conceptual)
-        {
-          pHexagon.dLength_stream_burned  = pHexagon.dLength_stream_conceptual;
-        }
-
-        vCell_active.push_back(pHexagon);
-        lCellIndex = lCellIndex +1 ;
+        vertex pVertex = pV;
+        pVertex.dElevation = pHexagon.dElevation_mean; // this needs to be updated
+        // the mesh generation should also include vertex ID
+        pHexagon.vVertex.push_back(pVertex);
       }
 
-    std::cout << "Finished initialization!" << std::endl;
+      // define the bounding box using the vertex info, no longer needed for spatial index
+      // pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
+
+      pHexagon.lStream_segment_burned = pCell.lStream_segment_burned;
+      pHexagon.iStream_order_burned = pCell.iStream_order_burned;
+      pHexagon.lCellID_downstream_burned = pCell.lCellID_downstream_burned;
+
+      if (pHexagon.lStream_segment_burned > 0) // check it starts with 1
+      {
+        pHexagon.iFlag_stream_burned = 1;
+      }
+
+      pHexagon.calculate_effective_resolution();
+      // we require the
+      if (pHexagon.dLength_stream_burned < pHexagon.dLength_stream_conceptual)
+      {
+        pHexagon.dLength_stream_burned = pHexagon.dLength_stream_conceptual;
+      }
+
+      vCell_active.push_back(pHexagon);
+      // build the unordered map from cellid to index
+      mCellIdToIndex[pHexagon.lCellID] = lCellIndex;
+      lCellIndex++;
+    }
+
+    if (iFlag_vtk == 1)
+    {
+      // if vtk is needed, we need to prepare the vertex index
+      vVertex_active.clear();      
+      // Collect unique vertex IDs and build mVertexIdToIndex
+      lVertexIndex = 0;
+      for (const hexagon &pHexagon : vCell_active)
+      {
+        for (const vertex &pVertex : pHexagon.vVertex)
+        {
+          long lVertexID = pVertex.lVertexID;
+          auto it = mVertexIdToIndex.find(lVertexID);
+          if (it == mVertexIdToIndex.end())
+          {
+            mVertexIdToIndex[lVertexID] = lVertexIndex++;
+            vVertex_active.push_back(pVertex); // Add only unique vertices to vVertex_active
+          }
+        }
+      }
+
+      // Update vertex index for each cell and vVertex_active
+      for (hexagon &pHexagon : vCell_active)
+      {
+        for (vertex &pVertex : pHexagon.vVertex)
+        {
+          pVertex.lVertexIndex = mVertexIdToIndex[pVertex.lVertexID];
+        }
+      }
+    }
+    // Convert the time_t object to a string representation
+    sTime = get_current_time();
+    sLog = "Finished initialization at " + sTime;
+    std::cout << sLog << std::endl;
     std::flush(std::cout);
     return error_code;
   }
 
-  int compset::compset_assign_stream_burning_cell()
-  {
-    int error_code = 1;
-    int iFlag_stream_burning_topology= cParameter.iFlag_stream_burning_topology;
-    int iMeshStrseg;
-    int iMeshStrord;
-    int iFlag_merged;
-    int iFlag_active;
-    long lCellID;
-    std::vector<flowline>::iterator iIterator;
-    std::vector<hexagon>::iterator iIterator2;
-
-    if (iFlag_stream_burning_topology == 0)
-      {
-        for (iIterator = vFlowline.begin(); iIterator != vFlowline.end(); iIterator++)
-          {
-
-            lCellID = (*iIterator).lCellID;
-            //find in vector
-            //at this time, we do not yet know whether a stream is within watershed or not
-            //a mesh may have multiple nhd within
-            for (iIterator2 = vCell_active.begin(); iIterator2 != vCell_active.end(); iIterator2++)
-              {
-                if ((*iIterator2).lCellID == lCellID)
-                  {
-                    (*iIterator2).iFlag_stream_burned = 1;
-                  }
-              }
-          }
-      }
-    else
-      {
-
-        for (iIterator = vFlowline.begin(); iIterator != vFlowline.end(); iIterator++)
-          {
-            iFlag_active = (*iIterator).iFlag_active;
-            lCellID = (*iIterator).lCellID;
-            iMeshStrseg = (*iIterator).iStream_segment;
-            iMeshStrord = (*iIterator).iStream_order;
-            if (iFlag_active == 1)
-              {
-                //find in vector
-                //at this time, we do not yet know whether a stream is within watershed or not
-                //a mesh may have multiple nhd within
-                for (iIterator2 = vCell_active.begin(); iIterator2 != vCell_active.end(); iIterator2++)
-                  {
-                    if ((*iIterator2).lCellID == lCellID)
-                      {
-                        (*iIterator2).iFlag_stream_burned = 1;
-                        //assign the stream order
-                        if (iMeshStrord > (*iIterator2).iStream_order_burned)
-                          {
-                            //this code will be run at least once because default value is negative
-                            (*iIterator2).iStream_order_burned = iMeshStrord;
-                            //because the stream order is changed, the stream segment must be updated as well
-                            (*iIterator2).iStream_segment_burned = iMeshStrseg;
-                          }
-                        else
-                          {
-                            /* code */
-                          }
-                      }
-                  }
-              }
-            else
-              {
-                //simplified
-              }
-          }
-      }
-
-    return error_code;
-  }
-
+  /**
+   * find the cell index by cell id, this requires the cell id is unique and the map is unchanged
+   * @param lCellID_in
+   * @return
+   */
   long compset::compset_find_index_by_cell_id(long lCellID_in)
   {
-    long lCellIndex=-1;
-
-    std::vector<hexagon>::iterator iIterator;
-    for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID == lCellID_in)
-          {
-            lCellIndex = (*iIterator).lCellIndex;
-            break;
-          }
-      }
-
-    return lCellIndex;
+    long lCellIndex = -1;
+    // the new method uses unordered map to speed up
+    auto iIterator = mCellIdToIndex.find(lCellID_in);
+    if (iIterator != mCellIdToIndex.end())
+    {
+      return iIterator->second;
+    }
+    else
+    {
+      return -1;
+    }
   }
 }

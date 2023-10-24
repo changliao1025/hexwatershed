@@ -17,8 +17,12 @@
 #include <limits.h>
 #include <stdio.h>
 #include <cstring>
-//c++ library
 
+#include <chrono>
+#include <ctime>
+//c++ library
+#include <vector>
+#include <unordered_set>
 #include <fstream>
 #include <iostream>
 
@@ -85,3 +89,7 @@ int path_test(std::string sPath);
 int run_command(std::string sCommand);
 
 long get_file_size(std::string sFilename);
+
+std::string get_current_time();
+
+void remove_duplicate_vector(std::vector<long> &vVector_in, std::vector<size_t> &vIndex_out);

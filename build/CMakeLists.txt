@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 project(hexwatershed CXX)
 
 set(CMAKE_CXX_STANDARD 11)
+# Set C and C++ compiler flags for profiling (-pg)
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 message("CMAKE_CURRENT_SOURCE_DIR is = ${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -12,7 +15,7 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_direction.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_initialize.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_run.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_save.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_export.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset_stream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/compset/compset.h

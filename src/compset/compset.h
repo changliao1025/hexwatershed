@@ -18,7 +18,9 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath> // abs, floor
-
+#include <unordered_map>
+#include <chrono>
+#include <ctime> //for timing recording
 #include "../system.h"
 #include "../hexagon.h"
 #include "../flowline.h"
@@ -37,28 +39,6 @@ using namespace std;
 using namespace rapidjson;
 using namespace jsonmodel;
 
-enum eMesh_type {
-                 eM_hexagon,
-                 eM_square,
-                 eM_latlon,
-                 eM_triangle,
-                 eM_mpas,
-};
-
-enum eVariable {
-                eV_elevation,
-                eV_flow_direction,
-                eV_flow_accumulation,
-                eV_stream_grid,
-                eV_confluence,
-                eV_watershed,
-                eV_subbasin,
-                eV_segment,
-                eV_slope_between,
-                eV_slope_within,
-                eV_stream_order,
-                eV_wetness_index,
-};
 
 namespace hexwatershed
 {
@@ -87,27 +67,29 @@ namespace hexwatershed
     std::string sFilename_mesh_info;    
 
     std::string sFilename_domain_json;
-    std::string sFilename_json;
-    std::string sFilename_animation_json;
+
+    std::string sFilename_domain_animation_json;
 
     //vtk support
-    std::string sFilename_vtk;
-    std::string sFilename_vtk_debug;
+    std::string sFilename_domain_vtk;
+    std::string sFilename_domain_vtk_debug;
 
     //others
     std::string sDate_default;
     std::string sDate;
+    std::string sTime;
   
     std::ofstream ofs_log; // used for IO starlog file
 
-    //std::map <std::string, std::string> mParameter; //for input data and parameters
-    std::vector <hexagon> vCell;                    //all the cells based on shapefile
+    //std::vector <hexagon> vCell;                    //all the cells based on shapefile, no longer used as pyflowline deals with the dem already
     std::vector <hexagon> vCell_active;             //all calls has elevation (not missing value)
+    std::unordered_map<long, long> mCellIdToIndex; //a map for fast search
+    std::unordered_map<long, long> mVertexIdToIndex;
     std::vector <hexagon> vCell_priority_flood;             //all calls has elevation (not missing value)
     //watershed cWatershed;
     std::vector <watershed> vWatershed;
     std::vector<float> vElevation; //vector to store the DEM raster data
-    std::vector <flowline> vFlowline;
+    //std::vector <flowline> vFlowline; //no longer used
     // this may be merged with global id
     std::vector <vertex> vVertex_active; //for vtk support, it store all the vertex in 3D
 
@@ -124,10 +106,10 @@ namespace hexwatershed
     int compset_setup_model ();
     int compset_read_model();
     int compset_run_model ();
-    int compset_save_model ();
+    int compset_export_model ();
     int compset_cleanup_model ();
 
-    int compset_assign_stream_burning_cell();
+    //int compset_assign_stream_burning_cell(); //no longer needed
     int compset_priority_flood_depression_filling ();
     int compset_stream_burning_with_topology (long lCellID_center);
     int compset_stream_burning_without_topology (long lCellID_center);
@@ -138,28 +120,29 @@ namespace hexwatershed
     int compset_define_watershed_boundary ();
     int compset_define_stream_confluence ();
     int compset_define_stream_segment ();
-    int compset_tag_confluence_upstream (int iWatershed, long lCellID_confluence);
+    int compset_tag_confluence_upstream (long lWatershed, long lCellID_confluence);
 
     int compset_build_stream_topology();
     int compset_define_stream_order();
     int compset_define_subbasin ();
+
     int compset_calculate_watershed_characteristics ();
 
-    int compset_save_watershed_characteristics ();
+    int compset_export_watershed_json ();
+    int compset_export_watershed_characteristics ();
   
 
     int compset_transfer_watershed_to_domain();
 
-    int compset_save_vtk (std::string sFilename_in);
-    int compset_save_json(std::string sFilename_in);
-    int compset_save_domain_json(std::string sFilename_in);
-    int compset_save_animation_json(std::string sFilename_in);
+    int compset_export_watershed_vtk (std::string sFilename_in); //only for watershed?
+    int compset_export_domain_json(std::string sFilename_in);
+    int compset_export_watershed_animation_json(std::string sFilename_in);
     std::vector <hexagon> compset_obtain_boundary (std::vector <hexagon> vCell_in);
     long compset_find_index_by_cell_id(long lCellID);
     
 
-    int find_continent_boundary(long lCellID_in);
-    int find_land_ocean_interface_neighbors(long lCellID_in);
+    int compset_find_continent_boundary(long lCellID_in);
+    int compset_find_land_ocean_interface_neighbors(long lCellID_in);
 
     int priority_flood_depression_filling(std::vector <hexagon> vCell_in);
     int compset_update_cell_elevation();

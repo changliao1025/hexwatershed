@@ -34,7 +34,7 @@ namespace hexwatershed
 
     long lCellIndex;       //it includes cell outside of watershed
     long lCellIndex_watershed;  //only in the designed watershed
-    long lCellIndex_subbasin; 
+    long lCellIndex_subbasin; //index in a subbasin
 
     /*! \brief Brief description.
     *   this is the mesh id from the json, it might be the same with Global ID,      
@@ -53,7 +53,6 @@ namespace hexwatershed
     int iFlag_stream_burning_treated;
     int iFlag_depression_filling_treated;//flag to indicate whether a cell is treated for elevation
 
-    int iStream_segment_burned;
     int iStream_order_burned;
     int nFlowline_burned;
     int iFlag_confluence_burned;
@@ -65,11 +64,11 @@ namespace hexwatershed
     int iFlag_neighbor;    //this flag is used to check whether a hexagon is neighbor to another hexagon
     int iFlag_outlet;      //whether this hexagon is an outlet or not
     int iFlag_confluence;  //whether this hexagon is a stream confluence or not, confluence is where stream meets.
-
-    int iSegment;       //the stream segment index
     int iSegment_order; //the stream order of segment, there are different type of definition
-    int iSubbasin;      //the subbasin index, should be the same with the segment
-    int iWatershed;
+    long lStream_segment_burned;
+    long lSegment;       //the stream segment id    
+    long lSubbasin;      //the subbasin id, should be the same with the segment
+    long lWatershed; 
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge
     int nNeighbor_land;
@@ -77,7 +76,7 @@ namespace hexwatershed
     int nUpslope;  //all upslope including stream
     int nDownslope;
     int nUpstream;           //only consider stream upslope
-    int iSegment_downstream; //if a hexagon is a stream, this is the downstream index, -1 for outlet
+    long lSegment_downstream; //if a hexagon is a stream, this is the downstream index, -1 for outlet
 
     int nVertex; //the vertex number from polygon, should always be constant for uniform resolution, for MPAS, this can be 5, 6, 7
     int nEdge; //total number of edge
@@ -124,6 +123,9 @@ namespace hexwatershed
     float dDistance_to_downslope;
     float dDistance_to_subbasin_outlet;
     float dDistance_to_watershed_outlet; 
+    
+    //a 4 element array to define the bounding box, which will use used by rtree spatial index
+    //std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
     
 
     std::vector<long> vNeighbor;  //list of neighbor local id

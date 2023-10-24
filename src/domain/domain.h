@@ -25,6 +25,7 @@
 #include <numeric>
 #include <utility>
 
+#include "../system.h"
 #include "../compset/compset.h"
 
 
@@ -60,6 +61,7 @@ namespace hexwatershed
     
     std::string sFilename_log;
     std::string sLog;
+    std::string sTime;
 
     std::string sFilename_mesh_info;
     std::string sFilename_flowline_info;
@@ -111,9 +113,7 @@ namespace hexwatershed
     std::string sExtension_json;
 
     std::ofstream ofs_log; // used for IO starlog file
-
-    //std::map <std::string, std::string> mParameter; //for input data and parameters
-
+ 
     //rapidjson object
     jsonmodel::mesh cMesh;
     jsonmodel::multibasin cBasin;
@@ -137,7 +137,7 @@ namespace hexwatershed
     int domain_initialize ();
     int domain_retrieve_user_input();
     int domain_run ();
-    int domain_save ();
+    int domain_export ();
     int domain_cleanup ();
     int domain_setup();
 

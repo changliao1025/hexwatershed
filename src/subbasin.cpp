@@ -9,22 +9,22 @@ namespace hexwatershed
 
   subbasin::subbasin()
   {
-    iSubbasinIndex=-1;
+    lSubbasinIndex=-1;
   }
   subbasin::~subbasin()
   {
   }
 
-  int subbasin::calculate_subbasin_characteristics(float dLength_stream_conceptual)
+  int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;
-    calculate_subbasin_total_area();
-    calculate_subbasin_slope();
-    calculate_subbasin_drainage_density(dLength_stream_conceptual);
+    subbasin_calculate_total_area();
+    subbasin_calculate_slope();
+    subbasin_calculate_drainage_density(dLength_stream_conceptual);
     return error_code;
   }
 
-  int subbasin::calculate_subbasin_total_area()
+  int subbasin::subbasin_calculate_total_area()
   {
     int error_code = 1;
     float dArea_total = 0.0;
@@ -48,7 +48,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  int subbasin::calculate_subbasin_slope()
+  int subbasin::subbasin_calculate_slope()
   {
     int error_code = 1;
     int iOption = 1;
@@ -65,7 +65,7 @@ namespace hexwatershed
     dSlope_mean = dSlope;
     return error_code;
   }
-  int subbasin::calculate_subbasin_drainage_density(float dLength_stream_conceptual)
+  int subbasin::subbasin_calculate_drainage_density(float dLength_stream_conceptual)
   {
     int error_code = 1;
     dArea_2_stream_ratio = dArea / dLength_stream_conceptual;
@@ -75,7 +75,7 @@ namespace hexwatershed
 
     return error_code;
   }
-  int subbasin::calculate_travel_distance()
+  int subbasin::subbasin_calculate_travel_distance()
   {
     int error_code = 1;
     long lCellID_current;     
@@ -110,17 +110,14 @@ namespace hexwatershed
   }
   long subbasin::subbasin_find_index_by_cellid(long lCellID_in)
   {
-    long lCellIndex_subbasin = -1;
-    std::vector<hexagon>::iterator iIterator;
-    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    auto iIterator = mCellIdToIndex.find(lCellID_in);
+    if (iIterator != mCellIdToIndex.end())
     {
-      if ((*iIterator).lCellID == lCellID_in)
-      {
-        lCellIndex_subbasin = (*iIterator).lCellIndex_subbasin;
-        break;
-      }
+      return iIterator->second;
     }
-
-    return lCellIndex_subbasin;
+    else
+    {
+      return -1;
+    }
   }
 } // namespace hexwatershed

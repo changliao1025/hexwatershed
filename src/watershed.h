@@ -17,6 +17,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <unordered_map>
 #include "conversion.h"
 #include "hexagon.h"
 #include "segment.h"
@@ -39,11 +40,8 @@ namespace hexwatershed
 
     ~watershed();
 
-    int iWatershed; // id
-
-    
-
-    int iSegment_current;
+    long lWatershed; // id of watershed 
+    long lSegment_current;
     float dArea;
     float dSlope;
     float dSlope_mean;
@@ -62,7 +60,6 @@ namespace hexwatershed
     float dLongest_length_stream;    // the length of longest stream segment
     float dLength_stream_conceptual; // total stream length
 
-
     std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
@@ -77,6 +74,11 @@ namespace hexwatershed
     std::vector<subbasin> vSubbasin;
     std::vector<hexagon> vConfluence;
 
+    //add an unordered map for index searching
+    std::unordered_map<long, long> mCellIdToIndex;
+    std::unordered_map<long, long> mSegmentIdToIndex;
+    std::unordered_map<long, long> mSubbasinIdToIndex;
+
     // function
 
     int watershed_define_stream_confluence();
@@ -84,33 +86,31 @@ namespace hexwatershed
     int watershed_tag_confluence_upstream( long lCellID_confluence);
 
     int watershed_build_stream_topology();
-    int watershed_define_stream_order();
-    int watershed_define_subbasin_old();
+    int watershed_define_stream_order();    
     int watershed_define_subbasin();
     int watershed_update_attribute();
 
     // the watershed characteristics for comparison
-    int calculate_watershed_characteristics();
-    int calculate_watershed_drainage_area();
-    int calculate_watershed_total_stream_length();
-    int calculate_watershed_longest_stream_length();
-    int calculate_watershed_drainage_density();
-    int calculate_watershed_average_slope();
-    int calculate_topographic_wetness_index();
-    int calculate_travel_distance();
+    int watershed_calculate_characteristics();
+    int watershed_calculate_drainage_area();
+    int watershed_calculate_total_stream_length();
+    int watershed_calculate_longest_stream_length();
+    int watershed_calculate_drainage_density();
+    int watershed_calculate_average_slope();
+    int watershed_calculate_topographic_wetness_index();
+    int watershed_calculate_travel_distance();
 
-    int save_watershed_characteristics();
-    int save_segment_characteristics();
-    int save_subbasin_characteristics();
 
-    int watershed_save_json();
+    int watershed_export_characteristics();
+    int watershed_export_segment_characteristics();
+    int watershed_export_subbasin_characteristics();
 
-    int watershed_save_stream_edge_json();
-
+    int watershed_export_json();
+    int watershed_export_stream_edge_json();
 
     long watershed_find_index_by_cell_id(long lCellID);
-    int watershed_find_index_by_segment_id(int iSegment);
-    int watershed_find_index_by_subbasin_id(int iSubbasin);
+    long watershed_find_index_by_segment_id(long lSegment);
+    long watershed_find_index_by_subbasin_id(long lSubbasin);
 
   };
 }

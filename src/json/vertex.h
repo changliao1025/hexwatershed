@@ -27,14 +27,14 @@ namespace jsonmodel
           vertex();
           ~vertex();
 
-          long lVertexIndex; //reserved
+          long lVertexIndex; //reserved for vtk
+          long lVertexID; //reserved for unsorted map?
           float dx; //3d sphere (unit: m)
           float dy; //3d (unit: m)
           float dz; // (unit: m)
           float dElevation; // (unit: m)
           float dLongitude_degree;
-          float dLatitude_degree;
-          
+          float dLatitude_degree;          
           float dLongitude_radian;
           float dLatitude_radian;
 

@@ -49,20 +49,20 @@ namespace hexwatershed
           }
       }
 
+    sTime = get_current_time();        
+    sLog = "Finished set up  model at " + sTime;
+    std::cout << sLog << std::endl;
+    std::flush(std::cout);
+
+    //this part may be improved
     time_t now = time(0);
     tm *ltm = localtime(&now);
-
-
-
-
     int iYear = 1900 + ltm->tm_year;
     int iMonth = 1 + ltm->tm_mon;
     int iDay = ltm->tm_mday;
     sDate_default = convert_integer_to_string(iYear, 4) + convert_integer_to_string(iMonth, 2) + convert_integer_to_string(iDay, 2);
     sDate = "20200101";
-
-    std::cout << "Finished set up model" << std::endl;
-    std::flush(std::cout);
+    sDate = sDate_default;
   }
 
   int domain::domain_setup()
@@ -95,10 +95,10 @@ namespace hexwatershed
     return error_code;
   }
 
-  int domain::domain_save ()
+  int domain::domain_export ()
   {
     int error_code=1;
-    cCompset.compset_save_model();
+    cCompset.compset_export_model();
     return  error_code;
   }
 

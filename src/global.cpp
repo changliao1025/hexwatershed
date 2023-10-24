@@ -21,7 +21,7 @@ const float small_value = 1.0E-4; //lai, denominator, etc,
 const float tiny_value = 1.0E-8; //intermediate
 const float near_zero = 1.0E-12;  //for result
 
-const float pi = 3.141592654;
+const float pi = M_PI ; //3.141592654;
 //const float missing_value = -9999.0;
 // time
 const float day_2_second = 3600 * 24;
@@ -118,9 +118,9 @@ std::string sError_data_missing = "Failed to read some data from: ";
 std::string sLog_data_quality = "Data quality is low. ";
 std::string sLog_open_success = "Succeed to open file: ";
 
-      std::string sExtension_header      = ".hdr";
-      std::string sExtension_envi      = ".dat";
-      std::string sExtension_text      = ".txt";
+std::string sExtension_header      = ".hdr";
+std::string sExtension_envi      = ".dat";
+std::string sExtension_text      = ".txt";
 
 
 
