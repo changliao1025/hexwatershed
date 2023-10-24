@@ -29,65 +29,255 @@ namespace hexwatershed
     int iNeighbor;
     int nNeighbor_land;
     int nEdge;
+    int nVertex;
     long lCellID_neighbor;
-    //long lCellIndex_neighbor;
+    // long lCellIndex_neighbor;
     long lCellIndex_self, lCelllIndex_search;
     float dElevation_min;
     float dElevation_self;
+    eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator;
-    std::vector<float> vElevation_neighbor;    
-
-    //#pragma omp parallel for private(lCellIndex_self, iIterator, iNeighbor, vNeighbor_land, \
+    std::vector<float> vElevation_neighbor;
+    switch (pMesh_type)
+    {
+    case eMesh_type::eM_hexagon:
+      //#pragma omp parallel for private(lCellIndex_self, iIterator, iNeighbor, vNeighbor_land, \
     dElevation_self, vElevation_neighbor,  \
     lCellID_neighbor, dElevation_min, lCelllIndex_search)
-    for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
-    {
-      if (error_code == 1)
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
       {
-        nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;
-        nEdge = vCell_in.at(lCellIndex_self).nEdge;
-        if (nNeighbor_land == nEdge)
+        if (error_code == 1)
         {
-          vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
-          dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
-          vElevation_neighbor.clear();
-          for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;      
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == nVertex)
           {
-            lCellID_neighbor = vNeighbor_land[iNeighbor];
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
 
-            lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
-            vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
-            //find it
-            //for (lCelllIndex_search = 0; lCelllIndex_search < vCell_in.size(); lCelllIndex_search++)
-            //{
-            //  if (vCell_in.at(lCelllIndex_search).lCellID == lCellID_neighbor)
-            //  {
-            //    vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
-            //  }
-            //  else
-            //  {
-            //    // continue;
-            //  }
-            //}
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
           }
-          // if it is the lowest?
-          dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
-          if (dElevation_self < dElevation_min)
+          else
           {
-            error_code = 0;
+            // edge do nothing
           }
         }
         else
         {
-          // edge do nothing
+          // continue;
         }
       }
-      else
+      break;
+    case eMesh_type::eM_square:
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
       {
-        // continue;
+        if (error_code == 1)
+        {
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == 8) //we consider the diagonal as neighbors
+          {
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
+
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
+          }
+          else
+          {
+            // edge do nothing
+          }
+        }
+        else
+        {
+          // continue;
+        }
       }
+      break;
+
+    case eMesh_type::eM_latlon:
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
+      {
+        if (error_code == 1)
+        {
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;
+          nEdge = vCell_in.at(lCellIndex_self).nEdge;
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == 8)
+          {
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
+
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
+          }
+          else
+          {
+            // edge do nothing
+          }
+        }
+        else
+        {
+          // continue;
+        }
+      }
+      break;
+
+    case eMesh_type::eM_mpas:
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
+      {
+        if (error_code == 1)
+        {
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;         
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == nVertex)
+          {
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
+
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
+          }
+          else
+          {
+            // edge do nothing
+          }
+        }
+        else
+        {
+          // continue;
+        }
+      }
+      break;
+
+    case eMesh_type::eM_dggrid:
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
+      {
+        if (error_code == 1)
+        {
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;      
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == nVertex)
+          {
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
+
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
+          }
+          else
+          {
+            // edge do nothing
+          }
+        }
+        else
+        {
+          // continue;
+        }
+      }
+      break;
+
+    case eMesh_type::eM_tin:
+      for (lCellIndex_self = 0; lCellIndex_self < vCell_in.size(); lCellIndex_self++)
+      {
+        if (error_code == 1)
+        {
+          nNeighbor_land = vCell_in.at(lCellIndex_self).nNeighbor_land;
+          nEdge = vCell_in.at(lCellIndex_self).nEdge;
+          nVertex = vCell_in.at(lCellIndex_self).nVertex;
+          if (nNeighbor_land == nVertex)
+          {
+            vNeighbor_land = vCell_in.at(lCellIndex_self).vNeighbor_land;
+            dElevation_self = vCell_in.at(lCellIndex_self).dElevation_mean;
+            vElevation_neighbor.clear();
+            for (iNeighbor = 0; iNeighbor < nNeighbor_land; iNeighbor++)
+            {
+              lCellID_neighbor = vNeighbor_land[iNeighbor];
+
+              lCelllIndex_search = compset_find_index_by_cell_id(lCellID_neighbor);
+              vElevation_neighbor.push_back(vCell_in.at(lCelllIndex_search).dElevation_mean);
+            }
+            // if it is the lowest?
+            dElevation_min = *(std::min_element(vElevation_neighbor.begin(), vElevation_neighbor.end()));
+            if (dElevation_self < dElevation_min)
+            {
+              error_code = 0;
+            }
+          }
+          else
+          {
+            // edge do nothing
+          }
+        }
+        else
+        {
+          // continue;
+        }
+      }
+      break;
+
+    default:
+      // this is likely an error
+      break;
     }
+
     return error_code;
   }
 
@@ -100,7 +290,7 @@ namespace hexwatershed
   std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon> vCell_in)
   {
     int error_code = 1;
-    
+
     eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<hexagon>::iterator iIterator1;
 
@@ -115,7 +305,7 @@ namespace hexwatershed
         {
           vCell_out.push_back(*iIterator1);
         }
-      }      
+      }
       break;
 
     case eMesh_type::eM_square:
@@ -145,7 +335,7 @@ namespace hexwatershed
         {
           vCell_out.push_back(*iIterator1);
         }
-      }  
+      }
       break;
 
     case eMesh_type::eM_dggrid:
@@ -155,13 +345,13 @@ namespace hexwatershed
         {
           vCell_out.push_back(*iIterator1);
         }
-      }  
+      }
       break;
 
     case eMesh_type::eM_tin:
       for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
       {
-        if ((*iIterator1).nNeighbor_land < 3) //be careful, since we haven't defined the tin neighbor clearly yet
+        if ((*iIterator1).nNeighbor_land < 3) // be careful, since we haven't defined the tin neighbor clearly yet
         {
           vCell_out.push_back(*iIterator1);
         }
@@ -614,7 +804,7 @@ namespace hexwatershed
       if (iNeighbor < iVertex)
       {
         if (iFlag_depression_filling_treated != 1)
-        {          
+        {
           vCell_active.at(lCellIndex_neighbor).iFlag_depression_filling_treated = 1;
           vContinent_boundary.push_back(vCell_active.at(lCellIndex_neighbor));
           compset_find_land_ocean_interface_neighbors(lCellID_neighbor);
@@ -645,7 +835,6 @@ namespace hexwatershed
     compset_find_land_ocean_interface_neighbors(lCellID_current);
 
     return error_code;
-    
   }
 
   int compset::priority_flood_depression_filling(std::vector<hexagon> vCell_boundary_in)
