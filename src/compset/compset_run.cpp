@@ -23,7 +23,7 @@ namespace hexwatershed
     int iFlag_has_upslope = 0;
     int iFlag_all_upslope_done; // assume all are done
     long lFlag_total = 0;
-    long lCelllIndex_neighbor;
+    long lCellIndex_neighbor;
     long lCellID_downslope_neighbor;
     long lCellID_neighbor;
 
@@ -33,6 +33,8 @@ namespace hexwatershed
     std::vector<int> vFinished(vCell_active.size());
     std::fill(vFlag.begin(), vFlag.end(), 0);
     std::fill(vFinished.begin(), vFinished.end(), 0);
+       std::vector<long> vNeighbor_land;
+           std::vector<long>::iterator iIterator_neighbor;
 
     // the initial run
 
@@ -43,7 +45,7 @@ namespace hexwatershed
       for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
       {
 
-        if (vFlag.at((*iIterator_self).lCellIndex) == 1)
+        if (vFlag[(*iIterator_self).lCellIndex] == 1)
         {
           // this hexagon is finished
           continue;
@@ -53,21 +55,23 @@ namespace hexwatershed
           // check whether one or more of the neighbors flow to itself
           iFlag_has_upslope = 0;
           iFlag_all_upslope_done = 1;
-          for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
+          vNeighbor_land = (*iIterator_self).vNeighbor_land;
+          //for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
+          for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            lCellID_neighbor = (*iIterator_self).vNeighbor_land.at(i);
+            //lCellID_neighbor = (*iIterator_self).vNeighbor_land[i;
+            //lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
+            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
 
-            lCelllIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
-
-            lCellID_downslope_neighbor = (vCell_active.at(lCelllIndex_neighbor)).lCellID_downslope_dominant;
+            lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
             if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
             {
               // there is one upslope neighbor found
               iFlag_has_upslope = 1;
-              if (vFlag.at(lCelllIndex_neighbor) == 1)
+              if (vFlag[lCellIndex_neighbor] == 1)
               {
-                // std::cout << "==" << lCelllIndex_neighbor << std::endl;
+                // std::cout << "==" << lCellIndex_neighbor << std::endl;
               }
               else
               {
@@ -83,7 +87,7 @@ namespace hexwatershed
 
           if (iFlag_has_upslope == 0)
           {
-            vFlag.at((*iIterator_self).lCellIndex) = 1;
+            vFlag[(*iIterator_self).lCellIndex] = 1;
           }
           else
           {
@@ -91,26 +95,28 @@ namespace hexwatershed
             if (iFlag_all_upslope_done == 1)
             {
               // and they are finished scanning
-              for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
+              //for (int i = 0; i < (*iIterator_self).nNeighbor_land; i++)
+              for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                lCellID_neighbor = (*iIterator_self).vNeighbor_land.at(i);
-                lCelllIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
-                lCellID_downslope_neighbor = (vCell_active.at(lCelllIndex_neighbor)).lCellID_downslope_dominant;
+                //lCellID_neighbor = (*iIterator_self).vNeighbor_land[i];
+                //lCellIndex_neighbor = compset_find_index_by_cell_id(lCellID_neighbor);
+                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second; 
+                lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
                 if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
                 {
-                  // std::cout << "===" << lCelllIndex_neighbor << std::endl;
+                  // std::cout << "===" << lCellIndex_neighbor << std::endl;
                   // std::cout << "====" << lCellID_downslope_neighbor << std::endl;
                   // this one accepts upslope and the upslope is done
                   (*iIterator_self).dAccumulation =
-                      (*iIterator_self).dAccumulation + vCell_active.at(lCelllIndex_neighbor).dAccumulation;
+                      (*iIterator_self).dAccumulation + vCell_active[lCellIndex_neighbor].dAccumulation;
                 }
                 else
                 {
                   // this neighbor does not flow here, sorry
                 }
               }
-              vFlag.at((*iIterator_self).lCellIndex) = 1;
+              vFlag[(*iIterator_self).lCellIndex] = 1;
             }
             else
             {
@@ -153,43 +159,44 @@ namespace hexwatershed
         if (iFlag_multiple_outlet == 0)
         {
           // use outlet id as largest
-          lCellID_outlet = aBasin.at(0).lCellID_outlet;
-          lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
-          dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
+          lCellID_outlet = aBasin[0].lCellID_outlet;
+          //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
+          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
+          dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
 
-          dAccumulation_min = vCell_active.at(lCellIndex_outlet).dAccumulation;
+          dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
           switch (iFlag_stream_grid_option)
           {
           case 1: // only burnt-in
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
               // should we set burnt in stream here? i think so
-              if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
               else
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                 // we still need its length for MOSART model.
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
             }
             break;
           case 2: // only threshold
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
-              if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
               else
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                 // we still need its length for MOSART model.
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
             }
             break;
@@ -197,24 +204,24 @@ namespace hexwatershed
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
 
-              if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
               else
               {
                 // should we set burnt in stream here? i think so
-                if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                   // we still need its length for MOSART model.
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
               }
             }
@@ -222,10 +229,10 @@ namespace hexwatershed
           case 4:
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
-              if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                dAccumulation = vCell_active.at(lCellIndex_self).dAccumulation;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                dAccumulation = vCell_active[lCellIndex_self].dAccumulation;
                 if (dAccumulation < dAccumulation_min)
                 {
                   dAccumulation_min = dAccumulation;
@@ -237,16 +244,16 @@ namespace hexwatershed
             dAccumulation_threshold = dAccumulation_min;
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
-              if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
               else
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                 // we still need its length for MOSART model.
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
             }
             break;
@@ -255,16 +262,16 @@ namespace hexwatershed
             for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
             {
               // should we set burnt in stream here? i think so
-              if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
               else
               {
-                (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                 // we still need its length for MOSART model.
-                (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
               }
             }
             break;
@@ -277,42 +284,43 @@ namespace hexwatershed
           // define pre-define first
           for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
           {
-            lCellID_outlet = aBasin.at(lWatershed - 1).lCellID_outlet;
-            lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
-            dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
-            dAccumulation_min = vCell_active.at(lCellIndex_outlet).dAccumulation;
+            lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+            //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
+            lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
+            dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
+            dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
             switch (iFlag_stream_grid_option)
             {
             case 1: // only burnt-in
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
                 // should we set burnt in stream here? i think so
-                if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                   // we still need its length for MOSART model.
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
               }
               break;
             case 2: // only threshold
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
-                if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                   // we still need its length for MOSART model.
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
               }
               break;
@@ -320,24 +328,24 @@ namespace hexwatershed
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
 
-                if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
                   // should we set burnt in stream here? i think so
-                  if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+                  if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
                   {
-                    (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                    (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                    (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                    (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                   }
                   else
                   {
-                    (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                    (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                     // we still need its length for MOSART model.
-                    (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                    (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                   }
                 }
               }
@@ -345,10 +353,10 @@ namespace hexwatershed
             case 4:
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
-                if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  dAccumulation = vCell_active.at(lCellIndex_self).dAccumulation;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  dAccumulation = vCell_active[lCellIndex_self].dAccumulation;
                   if (dAccumulation < dAccumulation_min)
                   {
                     dAccumulation_min = dAccumulation;
@@ -360,16 +368,16 @@ namespace hexwatershed
               dAccumulation_threshold = dAccumulation_min;
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
-                if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                   // we still need its length for MOSART model.
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
               }
               break;
@@ -378,16 +386,16 @@ namespace hexwatershed
               for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
               {
                 // should we set burnt in stream here? i think so
-                if ((vCell_active.at(lCellIndex_self)).iFlag_stream_burned == 1)
+                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
                 else
                 {
-                  (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
                   // we still need its length for MOSART model.
-                  (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
                 }
               }
               break;
@@ -402,29 +410,29 @@ namespace hexwatershed
         dAccumulation_max = 0.0;
         for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
         {
-          if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_max)
+          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
           {
-            dAccumulation_max = (vCell_active.at(lCellIndex_self)).dAccumulation;
-            lCellIndex_outlet = (vCell_active.at(lCellIndex_self)).lCellIndex;
+            dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+            lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
           }
         }
         
-        dAccumulation_threshold = 0.05 * vCell_active.at(lCellIndex_outlet).dAccumulation;
+        dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
         //also set the outlet id
-        lCellID_outlet = vCell_active.at(lCellIndex_outlet).lCellID;
+        lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
 
         for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
         {
-          if ((vCell_active.at(lCellIndex_self)).dAccumulation >= dAccumulation_threshold)
+          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
           {
-            (vCell_active.at(lCellIndex_self)).iFlag_stream = 1;
-            (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+            (vCell_active[lCellIndex_self]).iFlag_stream = 1;
+            (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
           }
           else
           {
-            (vCell_active.at(lCellIndex_self)).iFlag_stream = 0;
+            (vCell_active[lCellIndex_self]).iFlag_stream = 0;
             // we still need its length for MOSART model.
-            (vCell_active.at(lCellIndex_self)).dLength_stream_conceptual = (vCell_active.at(lCellIndex_self)).dResolution_effective;
+            (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
           }
         }
 
@@ -432,7 +440,7 @@ namespace hexwatershed
         basin pBasin;
         aBasin.clear();
         aBasin.push_back(pBasin);
-        aBasin.at(0).lCellID_outlet = lCellID_outlet;
+        aBasin[0].lCellID_outlet = lCellID_outlet;
         //we also need to update the nOutlet?
         cParameter.nOutlet = 1;
 
@@ -478,8 +486,10 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          lCellID_outlet = aBasin.at(lWatershed - 1).lCellID_outlet;
-          lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
+          lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+          
+          //lCellIndex_outlet = compset_find_index_by_cell_id(lCellID_outlet);
+          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second; 
           watershed cWatershed;
           sWatershed = convert_integer_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
           cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
@@ -498,16 +508,16 @@ namespace hexwatershed
           cWatershed.lCellID_outlet = lCellID_outlet;
           lCellIndex_watershed = 0;
           // we may check the mesh id as well
-          vCell_active.at(lCellIndex_outlet).iFlag_outlet = 1;
+          vCell_active[lCellIndex_outlet].iFlag_outlet = 1;
           for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
             // if it is already in another watershed, skip it
-            if ((vCell_active.at(lCellIndex_self)).iFlag_watershed == 1)
+            if ((vCell_active[lCellIndex_self]).iFlag_watershed == 1)
             {
               continue;
             }
 
-            lCellID_downslope = (vCell_active.at(lCellIndex_self)).lCellID_downslope_dominant;
+            lCellID_downslope = (vCell_active[lCellIndex_self]).lCellID_downslope_dominant;
             if (lCellID_downslope != -1)
             {
               iFound_outlet = 0;
@@ -519,34 +529,35 @@ namespace hexwatershed
             lCellIndex_current = lCellIndex_self;
             while (iFound_outlet != 1)
             {
-              lCellID_downslope = (vCell_active.at(lCellIndex_current)).lCellID_downslope_dominant;
+              lCellID_downslope = (vCell_active[lCellIndex_current]).lCellID_downslope_dominant;
               if (lCellID_outlet == lCellID_downslope)
               {
                 iFound_outlet = 1;
-                (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
-                (vCell_active.at(lCellIndex_self)).lWatershed = lWatershed;
-                (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
+                (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
+                (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
+                (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
                 // only push the cell, not the outlet
-                cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
-                cWatershed.mCellIdToIndex[(vCell_active.at(lCellIndex_self)).lCellID] = lCellIndex_watershed;
+                cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
+                cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
                 lCellIndex_watershed = lCellIndex_watershed + 1;
               }
               else
               {
                 if (lCellID_downslope != -1)
                 {
-                  lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
+                  //lCellIndex_current = compset_find_index_by_cell_id(lCellID_downslope);
+                  lCellIndex_current = (mCellIdToIndex.find(lCellID_downslope))->second; 
                   if (lCellIndex_current >= 0)
                   {
-                    if (vCell_active.at(lCellIndex_current).lWatershed == lWatershed) // the downslope is already finished
+                    if (vCell_active[lCellIndex_current].lWatershed == lWatershed) // the downslope is already finished
                     {
 
-                      (vCell_active.at(lCellIndex_self)).iFlag_watershed = 1;
+                      (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
 
-                      (vCell_active.at(lCellIndex_self)).lWatershed = lWatershed;
-                      (vCell_active.at(lCellIndex_self)).lCellIndex_watershed = lCellIndex_watershed;
-                      cWatershed.vCell.push_back(vCell_active.at(lCellIndex_self));
-                      cWatershed.mCellIdToIndex[(vCell_active.at(lCellIndex_self)).lCellID] = lCellIndex_watershed;
+                      (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
+                      (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
+                      cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
+                      cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_self]).lCellID] = lCellIndex_watershed;
                       lCellIndex_watershed = lCellIndex_watershed + 1;
                       iFound_outlet = 1;
                     }
@@ -570,11 +581,11 @@ namespace hexwatershed
           }
 
           // in the last step, we then push in the outlet
-          vCell_active.at(lCellIndex_outlet).iFlag_watershed = 1;
-          vCell_active.at(lCellIndex_outlet).lWatershed = lWatershed;
-          vCell_active.at(lCellIndex_outlet).lCellIndex_watershed = lCellIndex_watershed;
-          cWatershed.vCell.push_back(vCell_active.at(lCellIndex_outlet));
-          cWatershed.mCellIdToIndex[(vCell_active.at(lCellIndex_outlet)).lCellID] = lCellIndex_watershed;
+          vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
+          vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
+          vCell_active[lCellIndex_outlet].lCellIndex_watershed = lCellIndex_watershed;
+          cWatershed.vCell.push_back(vCell_active[lCellIndex_outlet]);
+          cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
           vWatershed.push_back(cWatershed);
         }
         // how about other auto-defined watershed?
@@ -608,9 +619,9 @@ namespace hexwatershed
         nConfluence_total = 0;
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_define_stream_confluence();
-          nConfluence_total = nConfluence_total + vWatershed.at(lWatershed - 1).nConfluence;
-          nSegment_total = nSegment_total + vWatershed.at(lWatershed - 1).nSegment;
+          vWatershed[lWatershed - 1].watershed_define_stream_confluence();
+          nConfluence_total = nConfluence_total + vWatershed[lWatershed - 1].nConfluence;
+          nSegment_total = nSegment_total + vWatershed[lWatershed - 1].nSegment;
         }     
     }
     else
@@ -637,7 +648,7 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_define_stream_segment();
+          vWatershed[lWatershed - 1].watershed_define_stream_segment();
         }
       
     }
@@ -658,7 +669,7 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_build_stream_topology();
+          vWatershed[lWatershed - 1].watershed_build_stream_topology();
         }
       
     }
@@ -677,7 +688,7 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_define_stream_order();
+          vWatershed[lWatershed - 1].watershed_define_stream_order();
         }
       
     }
@@ -701,7 +712,7 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_define_subbasin();
+          vWatershed[lWatershed - 1].watershed_define_subbasin();
         }
       
     }
@@ -727,7 +738,7 @@ namespace hexwatershed
       
         for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          vWatershed.at(lWatershed - 1).watershed_calculate_characteristics();
+          vWatershed[lWatershed - 1].watershed_calculate_characteristics();
         }
       
     }
@@ -749,7 +760,7 @@ namespace hexwatershed
     {
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
-        watershed cWatershed = vWatershed.at(lWatershed - 1);
+        watershed cWatershed = vWatershed[lWatershed - 1];
         for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
         {
           // lCellID1 = (*iIterator1).lCellID;
@@ -762,9 +773,9 @@ namespace hexwatershed
           // }
           if (lCellIndex != -1)
           {
-            vCell_active.at(lCellIndex).lSubbasin = (*iIterator1).lSubbasin;
-            vCell_active.at(lCellIndex).lSegment = (*iIterator1).lSegment;
-            vCell_active.at(lCellIndex).dDistance_to_subbasin_outlet = (*iIterator1).dDistance_to_subbasin_outlet;
+            vCell_active[lCellIndex].lSubbasin = (*iIterator1).lSubbasin;
+            vCell_active[lCellIndex].lSegment = (*iIterator1).lSegment;
+            vCell_active[lCellIndex].dDistance_to_subbasin_outlet = (*iIterator1).dDistance_to_subbasin_outlet;
           }
         }
       }

@@ -92,8 +92,8 @@ namespace hexwatershed
         while (lCellID_current != lCellID_outlet)
         {
           lCellIndex = subbasin_find_index_by_cellid(lCellID_current);
-          lCellID_current = vCell.at(lCellIndex).lCellID_downslope_dominant;       
-          dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet + vCell.at(lCellIndex).dDistance_to_downslope;  
+          lCellID_current = vCell[lCellIndex].lCellID_downslope_dominant;       
+          dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet + vCell[lCellIndex].dDistance_to_downslope;  
         }
 
         (*iIterator).dDistance_to_subbasin_outlet = dDistance_to_subbasin_outlet;
