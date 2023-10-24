@@ -197,8 +197,8 @@ namespace hexwatershed
     
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
-        vWatershed.at(lWatershed - 1).watershed_export_json();
-        vWatershed.at(lWatershed - 1).watershed_export_stream_edge_json();
+        vWatershed[lWatershed - 1].watershed_export_json();
+        vWatershed[lWatershed - 1].watershed_export_stream_edge_json();
       }
     
 
@@ -216,9 +216,9 @@ namespace hexwatershed
     
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
-        vWatershed.at(lWatershed - 1).watershed_export_characteristics();
-        vWatershed.at(lWatershed - 1).watershed_export_segment_characteristics();
-        vWatershed.at(lWatershed - 1).watershed_export_subbasin_characteristics();
+        vWatershed[lWatershed - 1].watershed_export_characteristics();
+        vWatershed[lWatershed - 1].watershed_export_segment_characteristics();
+        vWatershed[lWatershed - 1].watershed_export_subbasin_characteristics();
       }
     
 

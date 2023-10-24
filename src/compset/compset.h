@@ -138,19 +138,19 @@ namespace hexwatershed
     int compset_export_domain_json(std::string sFilename_in);
     int compset_export_watershed_animation_json(std::string sFilename_in);
     std::vector <hexagon> compset_obtain_boundary (std::vector <hexagon> vCell_in);
-    long compset_find_index_by_cell_id(long lCellID);
+    inline long compset_find_index_by_cell_id(long lCellID);
     
 
     int compset_find_continent_boundary(long lCellID_in);
     int compset_find_land_ocean_interface_neighbors(long lCellID_in);
 
-    int priority_flood_depression_filling(std::vector <hexagon> vCell_in);
+    int priority_flood_depression_filling(std::vector <hexagon> &vCell_in);
     int compset_update_cell_elevation();
     int compset_update_vertex_elevation();
 
     int compset_check_digital_elevation_model_depression (std::vector <hexagon> vCell_in);
 
-    std::array<long, 3> compset_find_lowest_cell_in_priority_queue (std::vector <hexagon> vCell_in);
+    std::array<long, 3> compset_find_lowest_cell_in_priority_queue (const std::vector <hexagon> &vCell_in);
 
   };
 } // namespace hexwatershed

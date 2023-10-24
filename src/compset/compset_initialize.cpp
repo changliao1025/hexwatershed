@@ -132,7 +132,7 @@ namespace hexwatershed
    * @param lCellID_in
    * @return
    */
-  long compset::compset_find_index_by_cell_id(long lCellID_in)
+  inline long compset::compset_find_index_by_cell_id(long lCellID_in)
   {
     long lCellIndex = -1;
     // the new method uses unordered map to speed up
