@@ -1,5 +1,7 @@
 #include "geology.h"
 
+#include <array>
+
 /**
  * @brief calculate arc distance
  *
@@ -13,12 +15,17 @@ float calculate_distance_based_on_lon_lat_degree(const float dLongitude_degree0,
                                                  const float dLatitude_degree0,
                                                  const float dLongitude_degree1,
                                                  const float dLatitude_degree1)
+
+
 {
+
 
     // convert decimal degrees to radians
 
+
     const float dLongitude_radian0 = convert_degree_to_radian(dLongitude_degree0);
     const float dLatitude_radian0 = convert_degree_to_radian(dLatitude_degree0);
+
 
     const float dLongitude_radian1 = convert_degree_to_radian(dLongitude_degree1);
     const float dLatitude_radian1 = convert_degree_to_radian(dLatitude_degree1);
@@ -26,6 +33,7 @@ float calculate_distance_based_on_lon_lat_degree(const float dLongitude_degree0,
     // haversine formula
     const float dDelta_longitude_radian = dLongitude_radian1 - dLongitude_radian0;
     const float dDelta_latitude_radian = dLatitude_radian1 - dLatitude_radian0;
+
 
     const float a = sin(dDelta_latitude_radian / 2) * sin(dDelta_latitude_radian / 2) + cos(dLatitude_radian0) * cos(dLatitude_radian1) * sin(dDelta_longitude_radian / 2) * sin(dDelta_longitude_radian / 2);
     const float c = 2 * asin(sqrt(a));
@@ -53,9 +61,11 @@ std::array<float, 3> calculate_location_based_on_lon_lat_radian(float dLongitude
     float C = 1 / sqrt(cosLat * cosLat + FF * sinLat * sinLat);
     float S = C * FF;
 
-    float x = (dRadius_earth * C + dElevation) * cosLat * cos(dLongitude_radian);
-    float y = (dRadius_earth * C + dElevation) * cosLat * sin(dLongitude_radian);
-    float z = (dRadius_earth * S + dElevation) * sinLat;
+
+    const float x = (dRadius_earth * C + dElevation)*cosLat * cos(dLongitude_radian);
+    const float y = (dRadius_earth * C + dElevation)*cosLat * sin(dLongitude_radian);
+    const float z = (dRadius_earth * S + dElevation)*sinLat;
+
 
     aLocation[0] = x;
     aLocation[1] = y;
