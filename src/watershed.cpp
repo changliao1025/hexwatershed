@@ -37,10 +37,11 @@ namespace hexwatershed
       // we only consider cells within the watershed
       if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).lWatershed == lWatershed)
       {
-        lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
-        lCellIndex_downstream = watershed_find_index_by_cell_id(lCellID_downstream);        
-        if (lCellIndex_downstream != -1)
+        lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;     
+        auto iterator = mCellIdToIndex.find(lCellID_downstream);// use map to find index
+        if (iterator != mCellIdToIndex.end())
         {
+          lCellIndex_downstream = iterator->second;         
           (vCell[lCellIndex_downstream]).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
         }
         else
@@ -90,7 +91,7 @@ namespace hexwatershed
     long lCellID_current;
     long lCellID_upstream;
 
-    lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
+    lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
     iFlag_confluence = vCell[lCellIndex_outlet].iFlag_confluence;
     lCellIndex_current = vCell[lCellIndex_outlet].lCellIndex_watershed;
     lCellID_current = vCell[lCellIndex_outlet].lCellID;
@@ -111,7 +112,7 @@ namespace hexwatershed
         if (iUpstream == 1) //
         {
           lCellID_upstream = (vCell[lCellIndex_current]).vUpstream[0];
-          lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
+          lCellIndex_current = mCellIdToIndex[lCellID_upstream];
           vCell[lCellIndex_current].lSegment = lSegment_current;
           vReach_segment.push_back(vCell[lCellIndex_current]);
         }
@@ -168,7 +169,7 @@ namespace hexwatershed
           if (iUpstream == 1) //
           {
             lCellID_upstream = (vCell[lCellIndex_current]).vUpstream[0];
-            lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
+            lCellIndex_current = mCellIdToIndex[lCellID_upstream];
             vCell[lCellIndex_current].lSegment = lSegment_current;
             vReach_segment.push_back(vCell[lCellIndex_current]);
           }
@@ -224,7 +225,7 @@ namespace hexwatershed
     std::vector<long>::iterator iterator_upstream;
     std::vector<hexagon> vReach_segment;
 
-    long lCellIndex_confluence = watershed_find_index_by_cell_id(lCellID_confluence);
+    long lCellIndex_confluence = mCellIdToIndex[lCellID_confluence];
 
     // if may not be necessary to use these flags in this algorithm because it will only search for the segment
     vUpstream = vCell[lCellIndex_confluence].vUpstream;
@@ -234,7 +235,7 @@ namespace hexwatershed
          iterator_upstream++)
     {
       lCellID_upstream = *iterator_upstream;
-      lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
+      lCellIndex_upstream = mCellIdToIndex[lCellID_upstream];
       iFlag_first_reach = 0;
       // remember that it is possible a segment only has one reach
       iFlag_confluence = vCell[lCellIndex_upstream].iFlag_confluence;
@@ -249,10 +250,9 @@ namespace hexwatershed
       {
         // continuous confluence, in this case, we need to set only one reach and move on
         nUpstream = (vCell[lCellIndex_upstream]).nUpstream;
-        // we need to set 4 importnat attributes
+        // we need to set up importnat attributes
         vCell[lCellIndex_upstream].lSegment = lSegment_current;
-        (vCell[lCellIndex_upstream]).iFlag_first_reach = 1;
-        //(vCell[lCellIndex_upstream]).iFlag_last_reach = 1;
+        (vCell[lCellIndex_upstream]).iFlag_first_reach = 1;      
         (vCell[lCellIndex_upstream]).iFlag_headwater = 0;
 
         vReach_segment.push_back(vCell[lCellIndex_upstream]);
@@ -303,7 +303,7 @@ namespace hexwatershed
             // we are on the stream segment and there is only one upstream
             // move to upstream
             lCellID_upstream = (vCell[lCellIndex_upstream]).vUpstream[0];
-            lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
+            lCellIndex_upstream = mCellIdToIndex[lCellID_upstream];
             iFlag_confluence = vCell[lCellIndex_upstream].iFlag_confluence;
             // should not add now
           }
@@ -415,7 +415,6 @@ namespace hexwatershed
     }
     else
     {
-
       for (iIterator_segment = vSegment.begin();
            iIterator_segment != vSegment.end();
            iIterator_segment++)
@@ -532,7 +531,7 @@ namespace hexwatershed
         { // not found keep adding to path
           vSearchPath.push_back(lCellIndex_current);
           lCellID_downslope = vCell[lCellIndex_current].lCellID_downslope_dominant;
-          lCellIndex_current = watershed_find_index_by_cell_id(lCellID_downslope);
+          lCellIndex_current = mCellIdToIndex[lCellID_downslope];
           if (lCellIndex_current != -1)
           {
             iFlag_checked_downslope = vCell[lCellIndex_current].iFlag_checked;
