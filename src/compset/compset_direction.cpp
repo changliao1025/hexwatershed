@@ -73,7 +73,7 @@ namespace hexwatershed
           dDistance_downslope = dDistance_initial;
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+            lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
             dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
             // get distance
             iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), *iIterator_neighbor);
@@ -154,7 +154,7 @@ namespace hexwatershed
           iFlag_has_stream = 0;
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+            lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
             if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
             {
               iFlag_has_stream = 1;
@@ -167,7 +167,7 @@ namespace hexwatershed
             // iterate through all neighbors
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+              lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
               if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
               {
                 // it has a neighboring stream
@@ -229,7 +229,7 @@ namespace hexwatershed
             // iterate through all neighbors
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+              lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
               dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
               // get distance
               iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));
@@ -269,7 +269,7 @@ namespace hexwatershed
             {
               for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+                lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
                 if (vCell_active[lCellIndex_neighbor].lCellID == lCellID_downstream) // this is the downstream
                 {
                   (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = *iIterator_neighbor;
@@ -302,7 +302,7 @@ namespace hexwatershed
               // this is possibly outlet, and it has no downstream slope calculated
               for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+                lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
                 if (vCell_active[lCellIndex_neighbor].lCellID_downstream_burned == lCellID) // reverse
                 {
                   //=====================================
@@ -457,7 +457,7 @@ namespace hexwatershed
         // iterate through all neighbors
         for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
         {  
-          lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+          lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
           dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
           // get distance
           iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));

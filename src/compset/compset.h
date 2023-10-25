@@ -82,7 +82,7 @@ namespace hexwatershed
     
     std::vector<float> vElevation; // vector to store the DEM raster data
     std::vector<hexagon> vCell_active;         // all calls has elevation (not missing value)
-    std::vector<hexagon> vCell_priority_flood; // all calls has elevation (not missing value)
+    std::vector<hexagon> vCell_priority_flood; // animation purpose
     // watershed cWatershed;
     std::vector<watershed> vWatershed;
     std::vector<vertex> vVertex_active; // for vtk support, it store all the vertex in 3D

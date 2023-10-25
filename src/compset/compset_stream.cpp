@@ -27,7 +27,7 @@ namespace hexwatershed
     long lCellID_neighbor;
     long lCellIndex_neighbor;
     long lCellIndex_neighbor2;
-    long lCellIndex_center = (mCellIdToIndex.find(lCellID_center_in))->second;
+    long lCellIndex_center = mCellIdToIndex[lCellID_center_in];
     float dBreach_threshold = cParameter.dBreach_threshold;
     float dElevation_mean_center;
     float dElevation_mean_neighbor;
@@ -39,7 +39,7 @@ namespace hexwatershed
     // stream first
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+      lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       if (iFlag_stream_burned_neighbor == 1)
@@ -67,7 +67,7 @@ namespace hexwatershed
     // go to the next iteration
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+      lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       if (iFlag_stream_burned_neighbor == 1)
       {
@@ -78,7 +78,7 @@ namespace hexwatershed
         // for (int j = 0; j < vCell_active[lCellIndex_neighbor].nNeighbor_land; j++)
         for (iIterator_neighbor2 = vNeighbor_land2.begin(); iIterator_neighbor2 != vNeighbor_land2.end(); iIterator_neighbor2++)
         {
-          lCellIndex_neighbor2 = (mCellIdToIndex.find(*iIterator_neighbor2))->second;
+          lCellIndex_neighbor2 = mCellIdToIndex[*iIterator_neighbor2];
           if (vCell_active[lCellIndex_neighbor2].iFlag_stream_burned == 1)
           {
             if (vCell_active[lCellIndex_neighbor2].iFlag_stream_burning_treated != 1)
@@ -98,7 +98,7 @@ namespace hexwatershed
     dElevation_mean_center = vCell_active[lCellIndex_center].dElevation_mean;
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+      lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
       if (iFlag_stream_burned_neighbor != 1)
@@ -140,7 +140,7 @@ namespace hexwatershed
     long lIndex_center_next;
     long lCellID_current;
     long lCellID_downstream_burned;
-    long lCellIndex_center = (mCellIdToIndex.find(lCellID_center_in))->second;
+    long lCellIndex_center = mCellIdToIndex[lCellID_center_in];
     float dBreach_threshold = cParameter.dBreach_threshold;
     float dElevation_mean_center;
     float dElevation_mean_neighbor;
@@ -160,7 +160,7 @@ namespace hexwatershed
     // std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+      lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       lCellID_downstream_burned = vCell_active[lCellIndex_neighbor].lCellID_downstream_burned;
       if (lCellID_downstream_burned == lCellID_current)
       {
@@ -225,7 +225,7 @@ namespace hexwatershed
     // land second
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
     {
-      lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+      lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
 
@@ -233,11 +233,8 @@ namespace hexwatershed
       {
         if (iFlag_stream_burning_treated_neighbor != 1)
         {
-
           vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);
-
           dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-
           if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
           {
             vCell_active[lCellIndex_neighbor].dElevation_mean =
@@ -287,14 +284,14 @@ namespace hexwatershed
     float dElevation_upstream;
     float dElevation_downstream;        
     float dDifference_dummy;
-    lCellIndex_active = (mCellIdToIndex.find(lCellID_active_in))->second;
+    lCellIndex_active = mCellIdToIndex[lCellID_active_in];
     while (iFlag_finished != 1)
     {
       lCellID_downstream = vCell_active[lCellIndex_active].lCellID_downstream_burned;
       dElevation_upstream = vCell_active[lCellIndex_active].dElevation_mean;
       if (lCellID_downstream != -1)
       {
-        lCellIndex2 = (mCellIdToIndex.find(lCellID_downstream))->second;
+        lCellIndex2 = mCellIdToIndex[lCellID_downstream];
         dElevation_downstream = vCell_active[lCellIndex2].dElevation_mean;
         dDifference_dummy = dElevation_upstream - dElevation_downstream;
         if (dDifference_dummy <= 0.0) // how about equals to 0.0?
@@ -306,7 +303,7 @@ namespace hexwatershed
           lCellID_downstream2 = vCell_active[lCellIndex2].lCellID_downstream_burned;
           if (lCellID_downstream2 != -1)
           {
-            lCellIndex3 = (mCellIdToIndex.find(lCellID_downstream2))->second;
+            lCellIndex3 = mCellIdToIndex[lCellID_downstream2];
             dDifference_dummy = vCell_active[lCellIndex2].dElevation_mean - vCell_active[lCellIndex3].dElevation_mean;
             if (dDifference_dummy <= 0.0) // another depression
             {

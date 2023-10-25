@@ -57,10 +57,8 @@ namespace hexwatershed
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
 
-            lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
-
+            lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
             lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
-
             if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
             {
               // there is one upslope neighbor found
@@ -93,7 +91,7 @@ namespace hexwatershed
               // and they are finished scanning
               for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                lCellIndex_neighbor = (mCellIdToIndex.find(*iIterator_neighbor))->second;
+                lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
                 lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
                 if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
@@ -154,7 +152,7 @@ namespace hexwatershed
           // use outlet id as largest
           lCellID_outlet = aBasin[0].lCellID_outlet;
 
-          lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
+          lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
           dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
 
           dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
@@ -279,7 +277,7 @@ namespace hexwatershed
           {
             lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
 
-            lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
+            lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
             dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
             dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
             switch (iFlag_stream_grid_option)
@@ -476,8 +474,7 @@ namespace hexwatershed
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-
-        lCellIndex_outlet = (mCellIdToIndex.find(lCellID_outlet))->second;
+        lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
         watershed cWatershed;
         sWatershed = convert_long_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
         cWatershed.sWorkspace_output_watershed = sWorkspace_output_hexwatershed + slash + sWatershed;
@@ -538,9 +535,7 @@ namespace hexwatershed
                 {
                   if (vCell_active[lCellIndex_current].lWatershed == lWatershed) // the downslope is already finished
                   {
-
                     (vCell_active[lCellIndex_self]).iFlag_watershed = 1;
-
                     (vCell_active[lCellIndex_self]).lWatershed = lWatershed;
                     (vCell_active[lCellIndex_self]).lCellIndex_watershed = lCellIndex_watershed;
                     cWatershed.vCell.push_back(vCell_active[lCellIndex_self]);
