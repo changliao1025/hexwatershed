@@ -27,7 +27,7 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_total_area()
   {
     int error_code = 1;
-    float dArea_total = 0.0;
+    double dArea_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     nCell = vCell.size();
 

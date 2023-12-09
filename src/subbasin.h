@@ -25,7 +25,7 @@ namespace hexwatershed
           long lSubbasinIndex;
           long nCell;
           long lCellID_outlet; //the index of the subbasin outlet
-          float dArea;
+          double dArea;
           float dSlope;
           float dSlope_mean;
           float dSlope_max;

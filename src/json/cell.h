@@ -34,8 +34,8 @@ namespace jsonmodel
     //float dLongitude_center_radian;
     //float dz;
 
-    float dArea;  /*!<cell area*/
-    float dAccumulation; /*!<flow accumulation*/
+    double dArea;  /*!<cell area*/
+    double dAccumulation; /*!<flow accumulation*/
     float dSlope_between; /*!<slope between this cell and downslope cell*/
     float dSlope_within; /*!<slope based on high resolution DEM*/
     float dSlope_profile; /*!<slope based on elevation profile between downslope cell*/

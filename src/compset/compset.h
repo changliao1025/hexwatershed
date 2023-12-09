@@ -19,6 +19,7 @@
 #include <numeric>
 #include <cmath> // abs, floor
 #include <unordered_map>
+#include <queue>  
 #include <chrono>
 #include <ctime> //for timing recording
 #include "../system.h"
@@ -39,7 +40,7 @@ using namespace rapidjson;
 using namespace jsonmodel;
 
 namespace hexwatershed
-{
+{  
 
   class compset
   {

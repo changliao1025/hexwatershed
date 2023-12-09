@@ -76,7 +76,7 @@ namespace jsonmodel
 		sKey = "dArea";
 		if (obj.HasMember(sKey.c_str()))
 		{
-			this->dArea = obj[sKey.c_str()].GetFloat();
+			this->dArea = obj[sKey.c_str()].GetDouble();
 		}
 
 		sKey = "lCellID";

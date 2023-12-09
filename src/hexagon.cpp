@@ -139,4 +139,9 @@ namespace hexwatershed
     return error_code;
   }
 
+  bool hexagon::operator>(const hexagon& other) const 
+  {
+    return dElevation_mean > other.dElevation_mean;
+  }
+
 } // namespace hexwatershed

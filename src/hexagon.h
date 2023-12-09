@@ -84,7 +84,7 @@ namespace hexwatershed
     
     long lCellID_downstream_burned;//the downstream mesh ID
 
-    float dAccumulation;             //the flow accumulation value. it does not consider area of hexagon in this version
+    double dAccumulation;             //the flow accumulation value. it does not consider area of hexagon in this version
     float dAspect; //maybe used for radiation
     float dSlope;
 
@@ -115,7 +115,7 @@ namespace hexwatershed
     float dElevation_profile0;            //from DEM, (unit:m)
     float dElevation_raw;            //from DEM, (unit:m)
     float dElevation_downstream; //down stream elevation for breach algorithm
-    float dArea;                 //the area of hexagon,  (unit:m2)
+    double dArea;                 //the area of hexagon,  (unit:m2)
     float dTwi;                  //terrain wetness index
     float dLength_stream_conceptual;//conceptual length based on mesh
     float dLength_stream_burned; //the provided flowline length
@@ -146,6 +146,8 @@ namespace hexwatershed
     int calculate_average_edge_length();
     int calculate_effective_resolution();
     int update_location();
+
+    bool operator>(const hexagon& other) const;
   };
 
 } // namespace hexwatershed

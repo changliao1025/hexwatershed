@@ -428,10 +428,10 @@ namespace hexwatershed
           if (iFlag_found == 1)
           {
             // set the stream as the lowest if possible
-            aIndex = compset_find_lowest_cell_in_priority_queue(vCell_boundary);         
+            aIndex = compset_find_lowest_cell_in_priority_queue(vCell_boundary);
             lCellIndex_active = aIndex[1]; // local id
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
-            vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]);
+            // vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); //for animation only
 
             // new simplified approach
             if (iFlag_stream_burning_topology == 0)
@@ -457,7 +457,7 @@ namespace hexwatershed
               lCellIndex_active = (*iIterator).lCellIndex;
               if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
               {
-                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]);
+                // vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); //animation
               }
               vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
             }
@@ -632,7 +632,7 @@ namespace hexwatershed
         {
           if ((*iIterator_self).iFlag_depression_filling_treated != 1)
           {
-            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) //only works for mpas/dggrid/hexagon alike mesh
+            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) // only works for mpas/dggrid/hexagon alike mesh
             {
               vContinent_boundary.clear();
               compset_find_continent_boundary((*iIterator_self).lCellID);
@@ -659,7 +659,7 @@ namespace hexwatershed
         {
           if ((*iIterator_self).iFlag_depression_filling_treated != 1)
           {
-            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) //only works for mpas/dggrid/hexagon alike mesh
+            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) // only works for mpas/dggrid/hexagon alike mesh
             {
               vContinent_boundary.clear();
               compset_find_continent_boundary((*iIterator_self).lCellID);
@@ -697,16 +697,16 @@ namespace hexwatershed
     int iVertex;
     int iFlag_depression_filling_treated;
     long lCellIndex = mCellIdToIndex[lCellID_in];
-    long lCellIndex_neighbor; 
+    long lCellIndex_neighbor;
     std::vector<long> aNeighbor;
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator_neighbor;
     vNeighbor_land = vCell_active[lCellIndex].vNeighbor_land;
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
-    {     
+    {
       lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iNeighbor = vCell_active[lCellIndex_neighbor].nNeighbor_land;
-      iVertex = vCell_active[lCellIndex_neighbor].nVertex; //be careful, this is not right for some meshes
+      iVertex = vCell_active[lCellIndex_neighbor].nVertex; // be careful, this is not right for some meshes
       iFlag_depression_filling_treated = vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
       if (iNeighbor < iVertex)
       {
@@ -724,8 +724,8 @@ namespace hexwatershed
 
   int compset::compset_find_continent_boundary(long lCellID_in)
   {
-    int error_code = 1;     
-    long lCellIndex_neighbor; 
+    int error_code = 1;
+    long lCellIndex_neighbor;
     lCellIndex_neighbor = mCellIdToIndex[lCellID_in];
     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
     vContinent_boundary.push_back(vCell_active[lCellIndex_neighbor]);
@@ -745,6 +745,7 @@ namespace hexwatershed
     long lCellID_neighbor;
     long lCellIndex_boundary;
     long lCellIndex_active;
+    long lStep_count = 1;
     float dElevation_mean_center;
     float dElevation_mean_neighbor;
     float dElevation_profile0_center;
@@ -753,20 +754,42 @@ namespace hexwatershed
     std::array<long, 3> aIndex_search;
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator_neighbor;
-    while (vCell_boundary_in.size() > 3)
+    std::vector<hexagon>::iterator iIterator;
+
+    // push into the priority queue using std::priority_queue
+    //  Creating the priority queue with the custom comparator
+    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq;
+
+    // Adding elements to the priority queue
+    for (iIterator = vCell_boundary_in.begin(); iIterator != vCell_boundary_in.end(); iIterator++)
     {
-      aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
-      lCellIndex_boundary = aIndex_search[0]; // local index in boundary
-      lCellIndex_active = aIndex_search[1];
-      lCellID_lowest = aIndex_search[2];
+      pq.push(*iIterator);
+    }
+
+    while (pq.size() > 3)
+    {
+      //std::cout << "Depression filling step: " << lStep_count << std::endl;
+
+      // the old method with manually priority queue
+      // aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
+      // lCellIndex_boundary = aIndex_search[0]; // local index in boundary
+      // lCellIndex_active = aIndex_search[1];
+      // lCellID_lowest = aIndex_search[2];
+      hexagon pCell_min = pq.top();
+      // get Cell id
+      lCellID_lowest = pCell_min.lCellID;
+      lCellIndex_active = pCell_min.lCellIndex;
       dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
       dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
       vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
-      // remove it from the table
-      vCell_boundary_in.erase(vCell_boundary_in.begin() + lCellIndex_boundary);  
-      std::cout << "Depression filling removed: " << lCellID_lowest <<std::endl;
+
+      // remove it from the queue
+      // vCell_boundary_in.erase(vCell_boundary_in.begin() + lCellIndex_boundary);
+      pq.pop();
+
+      //std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
       for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
-      {       
+      {
         lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
         iFlag_depression_filling_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
         iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
@@ -776,12 +799,15 @@ namespace hexwatershed
           if (iFlag_stream_burning_treated_neighbor == 1)
           {
             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-            vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
-            std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) <<std::endl;
+            // replace with pq
+            // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
+            pq.push(vCell_active[lCellIndex_neighbor]);
+
+            //std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) << std::endl;
           }
           else
           {
-            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);
+            // vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
             if (dElevation_mean_neighbor <= dElevation_mean_center)
             {
               vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
@@ -797,8 +823,10 @@ namespace hexwatershed
               }
             }
             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-            vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
-            std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) <<std::endl;
+            // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
+            pq.push(vCell_active[lCellIndex_neighbor]);
+
+            //std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
           }
         }
         else
@@ -806,6 +834,7 @@ namespace hexwatershed
           (vCell_active[lCellIndex_neighbor]).iFlag_depression_filling_treated = 1;
         }
       }
+      lStep_count = lStep_count + 1;
       std::flush(std::cout);
     }
     return error_code;

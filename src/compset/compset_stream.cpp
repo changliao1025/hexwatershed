@@ -166,7 +166,7 @@ namespace hexwatershed
       {
         iStream_order_neighbor = vCell_active[lCellIndex_neighbor].iStream_order_burned;
         dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-        vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);
+        //vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  //animation
         vCell_active[lCellIndex_neighbor].dElevation_downstream = dElevation_mean_center; // need update after modification
         dDifference_dummy = dElevation_mean_neighbor - dElevation_mean_center;
         if (dDifference_dummy > 0) // should not be equally to 0.0
@@ -233,7 +233,7 @@ namespace hexwatershed
       {
         if (iFlag_stream_burning_treated_neighbor != 1)
         {
-          vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);
+          //vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
           dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
           if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
           {

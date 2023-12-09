@@ -42,7 +42,7 @@ namespace hexwatershed
 
     long lWatershed; // id of watershed 
     long lSegment_current;
-    float dArea;
+    double dArea;
     float dSlope;
     float dSlope_mean;
     float dSlope_max;

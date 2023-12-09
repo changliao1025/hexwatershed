@@ -659,7 +659,7 @@ namespace hexwatershed
   int watershed::watershed_calculate_drainage_area()
   {
     int error_code = 1;
-    float dArea_total = 0.0;
+    double dArea_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     std::vector<subbasin>::iterator iIterator1;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
@@ -678,7 +678,6 @@ namespace hexwatershed
   int watershed::watershed_calculate_total_stream_length()
   {
     int error_code = 1;
-
 
     float dLength_total = 0.0;
 
