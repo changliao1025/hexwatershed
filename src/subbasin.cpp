@@ -19,10 +19,12 @@ namespace hexwatershed
   {
     int error_code = 1;
     long lCellID_downslope;
+    long lCellIndex_downstream
     float dLongitude_start, dLatitude_start;
     float dLongitude_channel_center, dLatitude_channel_center;
     float dLongitude_channel_upstream, dLatitude_channel_upstream;
     float dLongitude_channel_downstream, dLatitude_channel_downstream;
+    float dAngle;
     std::vector<hexagon>::iterator iIterator;
     //each subbasin have two or three hillslopes
     std::vector<long> vCellID_channel;
@@ -50,16 +52,44 @@ namespace hexwatershed
     //find the left and right hillslope from the buffer
     for (iIterator = vCell_buffer.begin(); iIterator != vCell_buffer.end(); iIterator++)
     {
+      dLongitude_start = (*iIterator).dLongitude_center_radian;
+      dLatitude_start = (*iIterator).dLatitude_center_radian;
+
       //find the channel cell
       lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
       lCellIndex = mCellIdToIndex[lCellID_downslope];
 
-      dLongitude_channel_center = vCell[lCellIndex].dLongitude;
-      dLatitude_channel_center = vCell[lCellIndex].dLatitude;
+      dLongitude_channel_center = vCell[lCellIndex].dLongitude_center_radian;
+      dLatitude_channel_center = vCell[lCellIndex].dLatitude_center_radian;
       //find upstream and downstream cells
       if (lCellID == lCellID_start)
       {
         //the first cell
+        //find the downstream cell
+        lCellID_downslope = vCell[lCellIndex].lCellID_downslope_dominant;
+        lCellIndex_downstream = mCellIdToIndex[lCellID_downslope];
+        dLongitude_channel_downstream = vCell[lCellIndex_downstream].dLongitude_center_radian;
+        dLatitude_channel_downstream = vCell[lCellIndex_downstream].dLatitude_center_radian;
+        //convert to radian
+
+        //now calculate the angle
+
+        dAngle = calculate_angle_between_lon_lat_radian(dLongitude_start, dLatitude_start,
+         dLongitude_channel_center, dLatitude_channel_center, 
+         dLongitude_channel_downstream, dLatitude_channel_downstream);
+         if (dAngle < 180.0)
+         {
+           //left hillslope
+           (*iIterator).iFlag_left_hill = 1;
+           (*iIterator).iFlag_right_hill = 0;
+           vCell_left.push_back((*iIterator));
+         }
+         else
+         {
+           (*iIterator).iFlag_left_hill = 0;
+           (*iIterator).iFlag_right_hill = 1;
+           vCell_right.push_back((*iIterator));
+         }
       }
       else
       {
@@ -69,7 +99,7 @@ namespace hexwatershed
         }
         else
         {
-          
+
         }
       }
 
