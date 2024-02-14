@@ -58,6 +58,9 @@ namespace hexwatershed
     int iFlag_confluence_burned;
     int iFlag_headwater_burned;
 
+    int iFlag_left_hill;
+    int iFlag_right_hill;
+
     int iFlag_first_reach; //whether it is the first reach of a stream
     int iFlag_last_reach;  //whether it is the last reach of a stream
     int iFlag_headwater;   //whether the stream segment is headwater, but we should set it to segment level?

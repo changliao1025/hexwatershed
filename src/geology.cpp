@@ -72,3 +72,47 @@ std::array<float, 3> calculate_location_based_on_lon_lat_radian(float dLongitude
     aLocation[2] = z;
     return aLocation;
 }
+
+float calculate_angle_between_lon_lat_radian( float dLongitude_radian0,float dLatitude_radian0, 
+float dLongitude_radian1,float dLatitude_radian1, 
+float dLongitude_radian2,float dLatitude_radian2 )
+{
+    float dAngle = 0.0;
+  
+    std::array<float, 3> a3 = calculate_location_based_on_lon_lat_radian(dLongitude_radian0, dLatitude_radian0);
+    std::array<float, 3> b3 = calculate_location_based_on_lon_lat_radian(dLongitude_radian0, dLatitude_radian1);
+    std::array<float, 3> c3 = calculate_location_based_on_lon_lat_radian(dLongitude_radian2, dLatitude_radian2);
+
+    double a3vec[3], c3vec[3];
+    for (int i = 0; i < 3; ++i) 
+    {
+        a3vec[i] = a3[i] - b3[i];
+        c3vec[i] = c3[i] - b3[i];
+    }
+
+    double dot = 0.0;
+    for (int i = 0; i < 3; ++i) 
+    {
+        dot += a3vec[i] * c3vec[i];
+    }
+
+    double g[3];
+    g[0] = a3vec[1] * c3vec[2] - a3vec[2] * c3vec[1];
+    g[1] = a3vec[2] * c3vec[0] - a3vec[0] * c3vec[2];
+    g[2] = a3vec[0] * c3vec[1] - a3vec[1] * c3vec[0];
+
+    double det = 0.0;
+    for (int i = 0; i < 3; ++i) {
+        det += b3[i] * g[i];
+    }
+
+    double angle = atan2(det, dot);
+    double f = angle * 180.0 / M_PI;
+    if (f < 0) {
+        f += 360.0;
+    }
+    dAngle = f;
+   
+    return dAngle;
+
+}

@@ -36,7 +36,8 @@ namespace hexwatershed
           float dDistance_to_subbasin_outlet;
           float dDrainage_density;
           hexagon cCell_outlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
-          std::vector <hexagon> vCell;
+          std::vector <hexagon> vCell; //all the cells
+          std::vector <hexagon> vCell_segment; //all the cells on the channel (upstream to downstream)
           std::unordered_map<long, long> mCellIdToIndex;
           
 

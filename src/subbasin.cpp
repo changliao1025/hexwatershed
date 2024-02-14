@@ -18,11 +18,66 @@ namespace hexwatershed
   int subbasin::subbasin_define_hillslope()
   {
     int error_code = 1;
+    long lCellID_downslope;
+    float dLongitude_start, dLatitude_start;
+    float dLongitude_channel_center, dLatitude_channel_center;
+    float dLongitude_channel_upstream, dLatitude_channel_upstream;
+    float dLongitude_channel_downstream, dLatitude_channel_downstream;
     std::vector<hexagon>::iterator iIterator;
     //each subbasin have two or three hillslopes
+    std::vector<long> vCellID_channel;
+    std::vector<hexagon> vCell_buffer;
     std::vector<hexagon> vCell_left;
     std::vector<hexagon> vCell_right;
     std::vector<hexagon> vCell_head;
+    //define the list of segment cells in the upstream to downstream order?
+    //can this be passed by?
+    
+    for (iIterator = vCell_segment.begin(); iIterator != vCell_segment.end(); iIterator++)
+    {
+      vCellID_channel.push_back((*iIterator).lCellID);      
+    }
+    //find the buffer zone
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+      //check if this downstream cell is in the channel      
+      if (std::find(vCellID_channel.begin(), vCellID_channel.end(), lCellID_downslope) != vCellID_channel.end())
+      {
+        vCell_buffer.push_back((*iIterator));
+      }
+    }
+    //find the left and right hillslope from the buffer
+    for (iIterator = vCell_buffer.begin(); iIterator != vCell_buffer.end(); iIterator++)
+    {
+      //find the channel cell
+      lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+      lCellIndex = mCellIdToIndex[lCellID_downslope];
+
+      dLongitude_channel_center = vCell[lCellIndex].dLongitude;
+      dLatitude_channel_center = vCell[lCellIndex].dLatitude;
+      //find upstream and downstream cells
+      if (lCellID == lCellID_start)
+      {
+        //the first cell
+      }
+      else
+      {
+        if (lCellID != lCellID_outlet)
+        {
+          //the last cell
+        }
+        else
+        {
+          
+        }
+      }
+
+
+    }
+
+
+
     if (iFlag_headwater ==1) //3 hillslope: left, right, head
     {
       
