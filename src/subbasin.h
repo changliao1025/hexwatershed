@@ -20,6 +20,7 @@ namespace hexwatershed
           subbasin();
 
           ~subbasin();
+          int iFlag_headwater; // 1: headwater, 0: not headwater
 
           long lSubbasin; //each subbasin should have the same index with its segment
           long lSubbasinIndex;
@@ -40,6 +41,7 @@ namespace hexwatershed
           
 
           //function
+          int subbasin_define_hillslope();
           int subbasin_calculate_characteristics(float dLength_stream_conceptual);
           int subbasin_calculate_total_area();
           int subbasin_calculate_slope();

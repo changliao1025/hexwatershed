@@ -555,6 +555,17 @@ namespace hexwatershed
     }
     return error_code;
   }
+  
+  int watershed::watershed_define_hillslope()
+  {
+    int error_code = 1;
+    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    {
+      
+      vSubbasin[lSubbasin - 1].subbasin_define_hillslope();
+    }
+    return error_code;
+  }
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
@@ -629,11 +640,16 @@ namespace hexwatershed
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       lSegment = lSubbasin;
+      vSubbasin[lSubbasin - 1].cCell_start = vSegment[lSegment - 1].cReach_start;
+      vSubbasin[lSubbasin - 1].lCellID_start = vSegment[lSegment - 1].cReach_start.lCellID;
       vSubbasin[lSubbasin - 1].cCell_outlet = vSegment[lSegment - 1].cReach_end;
       vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;
         dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
       vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual_basin);
+      vSubbasin[lSubbasin - 1].iFlag_headwater = vSegment[lSegment - 1].iFlag_headwater;
     }
+
+    watershed_define_hillslope();
 
     watershed_calculate_travel_distance();
     watershed_update_attribute();

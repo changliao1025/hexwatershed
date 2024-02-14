@@ -10,11 +10,32 @@ namespace hexwatershed
   subbasin::subbasin()
   {
     lSubbasinIndex = -1;
+    iFlag_headwater = 0;
   }
   subbasin::~subbasin()
   {
   }
-
+  int subbasin::subbasin_define_hillslope()
+  {
+    int error_code = 1;
+    std::vector<hexagon>::iterator iIterator;
+    //each subbasin have two or three hillslopes
+    std::vector<hexagon> vCell_left;
+    std::vector<hexagon> vCell_right;
+    std::vector<hexagon> vCell_head;
+    if (iFlag_headwater ==1) //3 hillslope: left, right, head
+    {
+      
+    }
+    else //2 hillslopes, left and right
+    {
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      
+    }
+    }
+    return error_code;
+  }
   int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;

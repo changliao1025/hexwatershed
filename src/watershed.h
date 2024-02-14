@@ -88,6 +88,7 @@ namespace hexwatershed
     int watershed_build_stream_topology();
     int watershed_define_stream_order();    
     int watershed_define_subbasin();
+    int watershed_define_hillslope();
     int watershed_update_attribute();
 
     // the watershed characteristics for comparison
