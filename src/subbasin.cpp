@@ -9,6 +9,7 @@ namespace hexwatershed
 
   subbasin::subbasin()
   {
+    iFlag_outlet = 0;
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
   }
@@ -165,22 +166,68 @@ namespace hexwatershed
             dLongitude_channel_upstream = vCell[lCellIndex_upslope].dLongitude_center_radian;
             dLatitude_channel_upstream = vCell[lCellIndex_upslope].dLatitude_center_radian;
 
-            // now calculate the angle
-            dAngle = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
-                                                            dLongitude_channel_center, dLatitude_channel_center,
-                                                            dLongitude_channel_upstream, dLatitude_channel_upstream);
-            if (dAngle <= 180.0)
+            // downstream cell
+            if (iFlag_outlet == 1)
             {
-              // left hillslope
-              vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-              vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-              vCellID_left.push_back((*iIterator1));
+              dAngle = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
+                                                              dLongitude_channel_center, dLatitude_channel_center,
+                                                              dLongitude_channel_downstream, dLatitude_channel_downstream);
+
+              if (dAngle <= 180)
+              {
+
+                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                vCellID_left.push_back((*iIterator1));
+              }
+              else
+              {
+                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                vCellID_right.push_back((*iIterator1));
+              }
             }
             else
             {
-              vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-              vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-              vCellID_right.push_back((*iIterator1));
+              lCellID_downslope = cCell_outlet_downslope.lCellID;
+
+              // we dont have information about a cell that is downslope of the outlet cell. unless we pass it
+              dLongitude_channel_downstream = cCell_outlet_downslope.dLongitude_center_radian;
+              dLatitude_channel_downstream = cCell_outlet_downslope.dLatitude_center_radian;
+              // now calculate the angles
+              dAngle1 = calculate_angle_between_lon_lat_radian(1, dLongitude_channel_upstream, dLatitude_channel_upstream,
+                                                               dLongitude_channel_center, dLatitude_channel_center,
+                                                               dLongitude_channel_downstream, dLatitude_channel_downstream);
+
+              dAngle2 = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
+                                                               dLongitude_channel_center, dLatitude_channel_center,
+                                                               dLongitude_channel_downstream, dLatitude_channel_downstream);
+
+              if (dAngle1 <= 180)
+              {
+                if (dAngle2 <= 180)
+                {
+                  // left hillslope
+                  if (dAngle2 >= dAngle1)
+                  {
+                    vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                    vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                    vCellID_left.push_back((*iIterator1));
+                  }
+                  else
+                  {
+                    vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                    vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                    vCellID_right.push_back((*iIterator1));
+                  }
+                }
+                else
+                {
+                  vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                  vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                  vCellID_right.push_back((*iIterator1));
+                }
+              }
             }
           }
         }
@@ -195,7 +242,7 @@ namespace hexwatershed
           {
             if ((*iIterator_segment).lCellID_downslope_dominant == lCellID_downslope)
             {
-              lCellID_upslope = (*(iIterator_segment - 1)).lCellID;
+              lCellID_upslope = (*(iIterator_segment)).lCellID;
               lCellIndex_upslope = mCellIdToIndex[lCellID_upslope];
               dLongitude_channel_upstream = vCell[lCellIndex_upslope].dLongitude_center_radian;
               dLatitude_channel_upstream = vCell[lCellIndex_upslope].dLatitude_center_radian;
@@ -273,7 +320,7 @@ namespace hexwatershed
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       iFlag_checked = (*iIterator).iFlag_checked;
-      lCellIndex_current = (*iIterator).lCellIndex;
+      lCellIndex_current = (*iIterator).lCellIndex_subbasin;
       if (iFlag_checked == 0)
       {
         vSearchPath.clear();
@@ -305,7 +352,7 @@ namespace hexwatershed
         }
       }
     }
-    
+
     hillslope cHillslope_left;
     hillslope cHillslope_right;
     hillslope cHillslope_headwater;
@@ -328,16 +375,16 @@ namespace hexwatershed
     vHillslope.push_back(cHillslope_left);
     vHillslope.push_back(cHillslope_right);
     if (iFlag_headwater == 1)
-    {      
+    {
       cHillslope_headwater.iFlag_headwater = 1;
       vHillslope.push_back(cHillslope_headwater);
-    }    
+    }
     return error_code;
   }
   int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;
-    subbasin_calculate_total_area();    
+    subbasin_calculate_total_area();
     subbasin_calculate_slope();
     subbasin_calculate_drainage_density(dLength_stream_conceptual);
     subbasin_calculate_hillslope_characteristics();
@@ -385,7 +432,7 @@ namespace hexwatershed
     dSlope_mean = dSlope;
     return error_code;
   }
-  
+
   int subbasin::subbasin_calculate_drainage_density(float dLength_stream_conceptual)
   {
     int error_code = 1;
@@ -396,7 +443,7 @@ namespace hexwatershed
 
     return error_code;
   }
-  
+
   int subbasin::subbasin_calculate_travel_distance()
   {
     int error_code = 1;
@@ -427,8 +474,8 @@ namespace hexwatershed
     }
     return error_code;
   }
-  
-  //in the next version, we will use the hillslope class to calculate the hillslope characteristics
+
+  // in the next version, we will use the hillslope class to calculate the hillslope characteristics
   int subbasin::subbasin_calculate_hillslope_characteristics()
   {
     int error_code = 1;
@@ -437,11 +484,10 @@ namespace hexwatershed
     {
       (*iIterator).hillslope_calculate_characteristics();
     }
-    
-    
+
     return error_code;
   }
-  
+
   long subbasin::subbasin_find_index_by_cellid(long lCellID_in)
   {
     auto iIterator = mCellIdToIndex.find(lCellID_in);

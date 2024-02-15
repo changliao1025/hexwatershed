@@ -499,6 +499,8 @@ namespace hexwatershed
       vSubbasin.push_back(cSubbasin);
       mSubbasinIdToIndex[cSubbasin.lSubbasin] = cSubbasin.lSubbasin; //setup unordered map 
     }
+    //set the last subbasin as the outlet basin
+    vSubbasin[nSubbasin - 1].iFlag_outlet = 1;
     // the whole watershed first
 
     // reset flag, we set all segment cell as
@@ -570,14 +572,13 @@ namespace hexwatershed
         //update hillslope id
         for (long j=0; j<vSubbasin[lSubbasin - 1].vHillslope[i].vCell.size(); j++)
         {
-          vSubbasin[lSubbasin - 1].vHillslope[i].vCell[j].lHillslope = lHillslope;
+          vSubbasin[lSubbasin - 1].vHillslope[i].vCell[j].lHillslope = lHillslope;          
         }
         //update cell hillslope id
         for (long j=0; j<vSubbasin[lSubbasin - 1].vCell.size(); j++)
         {
           vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope;
         }
-
         lHillslope++;
       }
     }
@@ -670,6 +671,15 @@ namespace hexwatershed
 
       //set the whole channel to the subbasin
       vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1].vReach_segment;
+      //we also need the downslope cell of the subbasin outlet cell
+      if (lSubbasin != nSubbasin) //.watershed outlet has no downslope cell
+      {          
+          //find the next segment 
+          lSegment_downstream = vSegment[lSegment - 1].lSegment_downstream;
+          //get the first cell of the next segment
+          vSubbasin[lSubbasin - 1].cCell_outlet_downslope = vSegment[lSegment_downstream - 1].cReach_start;      
+      }
+
     }
 
     watershed_define_hillslope();

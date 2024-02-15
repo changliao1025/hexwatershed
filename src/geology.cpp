@@ -68,8 +68,8 @@ std::array<float, 3> calculate_location_based_on_lon_lat_radian(float dLongitude
     return aLocation;
 }
 
-std::array<float ,3>  convert_longitude_latitude_to_sphere_3d(float dLongitude_radian,
-float dLatitude_radian)
+std::array<float, 3> convert_longitude_latitude_to_sphere_3d(float dLongitude_radian,
+                                                             float dLatitude_radian)
 {
     float a = cos(dLatitude_radian) * cos(dLongitude_radian);
     float b = cos(dLatitude_radian) * sin(dLongitude_radian);
@@ -105,12 +105,23 @@ float calculate_angle_between_lon_lat_radian(int iFlag_reverse, float dLongitude
             c3vec[i] = c3[i] - b3[i];
         }
     }
-    else // this is the case when A is the start point
+    else 
     {
-        for (int i = 0; i < 3; ++i)
+        if (iFlag_reverse == 1) // this is the case when A is the start point
         {
-            a3vec[i] = b3[i] - a3[i];
-            c3vec[i] = c3[i] - b3[i];
+            for (int i = 0; i < 3; ++i)
+            {
+                a3vec[i] = b3[i] - a3[i];
+                c3vec[i] = c3[i] - b3[i];
+            }
+        }
+        else 
+        {
+            for (int i = 0; i < 3; ++i) //both A and C are end points
+            {
+                a3vec[i] = b3[i] - a3[i];
+                c3vec[i] = b3[i] - c3[i];
+            }
         }
     }
 
