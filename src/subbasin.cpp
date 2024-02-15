@@ -12,7 +12,7 @@ namespace hexwatershed
     iFlag_outlet = 0;
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
-    nHillslope=2;
+    nHillslope = 2;
     // vHillslope.clear();
   }
   subbasin::~subbasin()
@@ -228,6 +228,32 @@ namespace hexwatershed
                   vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                   vCell[lCellIndex_buffer].iFlag_right_hill = 1;
                   vCellID_right.push_back((*iIterator1));
+                }
+              }
+              else
+              {
+                if (dAngle2 <= 180)
+                {
+                  // left hillslope
+                  vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                  vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                  vCellID_left.push_back((*iIterator1));
+                }
+                else
+                {
+                  if (dAngle2 > dAngle1)
+                  {
+                    // left hillslope
+                    vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                    vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                    vCellID_left.push_back((*iIterator1));
+                  }
+                  else
+                  {
+                    vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                    vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                    vCellID_right.push_back((*iIterator1));
+                  }
                 }
               }
             }
