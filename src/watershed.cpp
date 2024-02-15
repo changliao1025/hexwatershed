@@ -559,10 +559,19 @@ namespace hexwatershed
   int watershed::watershed_define_hillslope()
   {
     int error_code = 1;
+    long lHillslopeID = 1;
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {      
       vSubbasin[lSubbasin - 1].subbasin_define_hillslope();
+      for (int i=0; i<vSubbasin[lSubbasin - 1].vHillslope.size(); i++)
+      {
+        vSubbasin[lSubbasin - 1].vHillslope[i].lSubbasin = lSubbasin;
+        vSubbasin[lSubbasin - 1].vHillslope[i].lHillslopeID = lHillslopeID;
+        lHillslopeID++;
+      }
     }
+    //then define the hillslope id
+
     return error_code;
   }
   int watershed::watershed_update_attribute()

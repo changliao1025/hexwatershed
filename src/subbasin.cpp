@@ -305,14 +305,42 @@ namespace hexwatershed
         }
       }
     }
+    
+    hillslope cHillslope_left;
+    hillslope cHillslope_right;
+    hillslope cHillslope_headwater;
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      if ((*iIterator).iFlag_left_hill == 1)
+      {
+        cHillslope_left.vCell.push_back((*iIterator));
+      }
+      if ((*iIterator).iFlag_right_hill == 1)
+      {
+        cHillslope_right.vCell.push_back((*iIterator));
+      }
+      if ((*iIterator).iFlag_headwater_hill == 1)
+      {
+        cHillslope_headwater.vCell.push_back((*iIterator));
+      }
+    }
+    vHillslope.clear();
+    vHillslope.push_back(cHillslope_left);
+    vHillslope.push_back(cHillslope_right);
+    if (iFlag_headwater == 1)
+    {      
+      cHillslope_headwater.iFlag_headwater = 1;
+      vHillslope.push_back(cHillslope_headwater);
+    }    
     return error_code;
   }
   int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;
-    subbasin_calculate_total_area();
+    subbasin_calculate_total_area();    
     subbasin_calculate_slope();
     subbasin_calculate_drainage_density(dLength_stream_conceptual);
+    subbasin_calculate_hillslope_characteristics();
     return error_code;
   }
 
@@ -357,6 +385,7 @@ namespace hexwatershed
     dSlope_mean = dSlope;
     return error_code;
   }
+  
   int subbasin::subbasin_calculate_drainage_density(float dLength_stream_conceptual)
   {
     int error_code = 1;
@@ -367,6 +396,7 @@ namespace hexwatershed
 
     return error_code;
   }
+  
   int subbasin::subbasin_calculate_travel_distance()
   {
     int error_code = 1;
@@ -397,6 +427,21 @@ namespace hexwatershed
     }
     return error_code;
   }
+  
+  //in the next version, we will use the hillslope class to calculate the hillslope characteristics
+  int subbasin::subbasin_calculate_hillslope_characteristics()
+  {
+    int error_code = 1;
+    std::vector<hillslope>::iterator iIterator;
+    for (iIterator = vHillslope.begin(); iIterator != vHillslope.end(); iIterator++)
+    {
+      (*iIterator).hillslope_calculate_characteristics();
+    }
+    
+    
+    return error_code;
+  }
+  
   long subbasin::subbasin_find_index_by_cellid(long lCellID_in)
   {
     auto iIterator = mCellIdToIndex.find(lCellID_in);

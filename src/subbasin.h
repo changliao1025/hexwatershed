@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "hexagon.h"
+#include "hillslope.h"
 #include "./json/JSONBase.h"
 #include "./json/mesh.h"
 #include "./json/cell.h"
@@ -40,12 +41,15 @@ namespace hexwatershed
           hexagon cCell_outlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
           std::vector <hexagon> vCell; //all the cells
           std::vector <hexagon> vCell_segment; //all the cells on the channel (upstream to downstream)
+
+          std::vector <hillslope> vHillslope; //all the hillslopes, max 3
           std::unordered_map<long, long> mCellIdToIndex;
           
 
           //function
           int subbasin_define_hillslope();
           int subbasin_calculate_characteristics(float dLength_stream_conceptual);
+          int subbasin_calculate_hillslope_characteristics();
           int subbasin_calculate_total_area();
           int subbasin_calculate_slope();
           int subbasin_calculate_drainage_density(float dLength_stream_conceptual);
