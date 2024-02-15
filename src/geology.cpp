@@ -73,7 +73,15 @@ std::array<float, 3> calculate_location_based_on_lon_lat_radian(float dLongitude
     return aLocation;
 }
 
-float calculate_angle_between_lon_lat_radian( float dLongitude_radian0,float dLatitude_radian0, 
+/**
+    * @brief calculate angle using lat/lon
+    *
+    * @param dLongitude_radian
+    * @param dLatitude_radian
+    * @return std::array<float ,3>
+    
+*/
+float calculate_angle_between_lon_lat_radian(int iFlag_reverse, float dLongitude_radian0,float dLatitude_radian0, 
 float dLongitude_radian1,float dLatitude_radian1, 
 float dLongitude_radian2,float dLatitude_radian2 )
 {
@@ -84,11 +92,23 @@ float dLongitude_radian2,float dLatitude_radian2 )
     std::array<float, 3> c3 = calculate_location_based_on_lon_lat_radian(dLongitude_radian2, dLatitude_radian2);
 
     double a3vec[3], c3vec[3];
-    for (int i = 0; i < 3; ++i) 
+    if (iFlag_reverse == 0) //this is the case when A is the end point
+    {
+       for (int i = 0; i < 3; ++i) 
     {
         a3vec[i] = a3[i] - b3[i];
         c3vec[i] = c3[i] - b3[i];
     }
+    }    
+    else //this is the case when A is the start point
+    {
+    for (int i = 0; i < 3; ++i) 
+    {
+        a3vec[i] = b3[i] - a3[i];
+        c3vec[i] = c3[i] - b3[i];
+    }
+    }
+    
 
     double dot = 0.0;
     for (int i = 0; i < 3; ++i) 
@@ -97,9 +117,11 @@ float dLongitude_radian2,float dLatitude_radian2 )
     }
 
     double g[3];
+   
     g[0] = a3vec[1] * c3vec[2] - a3vec[2] * c3vec[1];
     g[1] = a3vec[2] * c3vec[0] - a3vec[0] * c3vec[2];
     g[2] = a3vec[0] * c3vec[1] - a3vec[1] * c3vec[0];
+   
 
     double det = 0.0;
     for (int i = 0; i < 3; ++i) {

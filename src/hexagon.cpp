@@ -29,6 +29,10 @@ namespace hexwatershed
     iFlag_stream_burning_treated = 0;
     iFlag_depression_filling_treated = 0;
 
+    iFlag_headwater_hill=0;
+    iFlag_left_hill=0;
+    iFlag_right_hill=0;
+    
     iFlag_confluence_burned = 0;
     iFlag_headwater_burned =0;
     lStream_segment_burned = -1;

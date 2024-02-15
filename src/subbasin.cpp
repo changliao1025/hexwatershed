@@ -18,106 +18,292 @@ namespace hexwatershed
   int subbasin::subbasin_define_hillslope()
   {
     int error_code = 1;
-    long lCellID_downslope;
-    long lCellIndex_downstream
+    int iFlag_checked;
+    int iFlag_left_hill, iFlag_right_hill, iFlag_headwater_hill;
+    int iFlag_checked_downslope;
+    long lCellID_upslope, lCellID_downslope;
+    long lCellIndex_buffer;
+    long lCellIndex_upslope, lCellIndex_downslope;
+    long lCellIndex_current;
     float dLongitude_start, dLatitude_start;
     float dLongitude_channel_center, dLatitude_channel_center;
     float dLongitude_channel_upstream, dLatitude_channel_upstream;
     float dLongitude_channel_downstream, dLatitude_channel_downstream;
-    float dAngle;
+    float dAngle, dAngle1, dAngle2;
+    std::vector<long>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator;
-    //each subbasin have two or three hillslopes
+    // each subbasin have two or three hillslopes
     std::vector<long> vCellID_channel;
-    std::vector<hexagon> vCell_buffer;
-    std::vector<hexagon> vCell_left;
-    std::vector<hexagon> vCell_right;
-    std::vector<hexagon> vCell_head;
-    //define the list of segment cells in the upstream to downstream order?
-    //can this be passed by?
-    
-    for (iIterator = vCell_segment.begin(); iIterator != vCell_segment.end(); iIterator++)
+    std::vector<long> vCellID_left;
+    std::vector<long> vCellID_right;
+    std::vector<long> vCellID_buffer_hill;
+    std::vector<long> vSearchPath;
+    std::vector<long>::iterator iIterator_path;
+    // define the list of segment cells in the upstream to downstream order?
+    // can this be passed by?
+
+    // find the buffer zone, but also be careful about the headwater
+    if (iFlag_headwater == 1)
     {
-      vCellID_channel.push_back((*iIterator).lCellID);      
-    }
-    //find the buffer zone
-    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-    {
-      lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-      //check if this downstream cell is in the channel      
-      if (std::find(vCellID_channel.begin(), vCellID_channel.end(), lCellID_downslope) != vCellID_channel.end())
+      // set the headwater as checked
+      lCellIndex_current = mCellIdToIndex[lCellID_headwater];
+      vCell[lCellIndex_current].iFlag_checked = 1;
+      vCell[lCellIndex_current].iFlag_headwater_hill = 1;
+
+      for (iIterator = vCell_segment.begin() + 1; iIterator != vCell_segment.end(); iIterator++) // skip the first one because it is the headwater
       {
-        vCell_buffer.push_back((*iIterator));
+        vCellID_channel.push_back((*iIterator).lCellID);
       }
-    }
-    //find the left and right hillslope from the buffer
-    for (iIterator = vCell_buffer.begin(); iIterator != vCell_buffer.end(); iIterator++)
-    {
-      dLongitude_start = (*iIterator).dLongitude_center_radian;
-      dLatitude_start = (*iIterator).dLatitude_center_radian;
-
-      //find the channel cell
-      lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-      lCellIndex = mCellIdToIndex[lCellID_downslope];
-
-      dLongitude_channel_center = vCell[lCellIndex].dLongitude_center_radian;
-      dLatitude_channel_center = vCell[lCellIndex].dLatitude_center_radian;
-      //find upstream and downstream cells
-      if (lCellID == lCellID_start)
+      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
       {
-        //the first cell
-        //find the downstream cell
-        lCellID_downslope = vCell[lCellIndex].lCellID_downslope_dominant;
-        lCellIndex_downstream = mCellIdToIndex[lCellID_downslope];
-        dLongitude_channel_downstream = vCell[lCellIndex_downstream].dLongitude_center_radian;
-        dLatitude_channel_downstream = vCell[lCellIndex_downstream].dLatitude_center_radian;
-        //convert to radian
-
-        //now calculate the angle
-
-        dAngle = calculate_angle_between_lon_lat_radian(dLongitude_start, dLatitude_start,
-         dLongitude_channel_center, dLatitude_channel_center, 
-         dLongitude_channel_downstream, dLatitude_channel_downstream);
-         if (dAngle < 180.0)
-         {
-           //left hillslope
-           (*iIterator).iFlag_left_hill = 1;
-           (*iIterator).iFlag_right_hill = 0;
-           vCell_left.push_back((*iIterator));
-         }
-         else
-         {
-           (*iIterator).iFlag_left_hill = 0;
-           (*iIterator).iFlag_right_hill = 1;
-           vCell_right.push_back((*iIterator));
-         }
-      }
-      else
-      {
-        if (lCellID != lCellID_outlet)
+        lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+        // check if this downstream cell is in the channel
+        if ((*iIterator).iFlag_stream != 1) // it is not a channel cell
         {
-          //the last cell
+          if (std::find(vCellID_channel.begin(), vCellID_channel.end(), lCellID_downslope) != vCellID_channel.end())
+          {
+            // but its downslope is on the channel
+            vCellID_buffer_hill.push_back((*iIterator).lCellID);
+            (*iIterator).iFlag_checked = 1;
+          }
+          else //
+          {
+            (*iIterator).iFlag_checked = 0;
+          }
         }
         else
         {
-
+          (*iIterator).iFlag_checked = 1;
         }
       }
-
-
+    }
+    else
+    {
+      for (iIterator = vCell_segment.begin(); iIterator != vCell_segment.end(); iIterator++)
+      {
+        vCellID_channel.push_back((*iIterator).lCellID);
+      }
+      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+      {
+        lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+        // check if this downstream cell is in the channel
+        if ((*iIterator).iFlag_stream != 1) // it is not a channel cell
+        {
+          if (std::find(vCellID_channel.begin(), vCellID_channel.end(), lCellID_downslope) != vCellID_channel.end())
+          {
+            vCellID_buffer_hill.push_back((*iIterator).lCellID);
+            (*iIterator).iFlag_checked = 1;
+          }
+          else
+          {
+            (*iIterator).iFlag_checked = 0;
+          }
+        }
+        else
+        {
+          (*iIterator).iFlag_checked = 1;
+        }
+      }
     }
 
-
-
-    if (iFlag_headwater ==1) //3 hillslope: left, right, head
+    // find the left and right hillslope from the buffer
+    for (iIterator1 = vCellID_buffer_hill.begin(); iIterator1 != vCellID_buffer_hill.end(); iIterator1++)
     {
-      
+      lCellIndex_buffer = mCellIdToIndex[*iIterator1];
+      dLongitude_start = vCell[lCellIndex_buffer].dLongitude_center_radian;
+      dLatitude_start = vCell[lCellIndex_buffer].dLatitude_center_radian;
+      // find the channel cell
+      lCellID_downslope = vCell[lCellIndex_buffer].lCellID_downslope_dominant;
+      lCellIndex_downslope = mCellIdToIndex[lCellID_downslope];
+      dLongitude_channel_center = vCell[lCellIndex_downslope].dLongitude_center_radian;
+      dLatitude_channel_center = vCell[lCellIndex_downslope].dLatitude_center_radian;
+      // find upstream and downstream cells
+      if (lCellID_downslope == lCellID_headwater)
+      {
+        // the first cell
+        // find the downstream cell
+        lCellID_downslope = vCell[lCellIndex_downslope].lCellID_downslope_dominant;
+        lCellIndex_downslope = mCellIdToIndex[lCellID_downslope];
+        dLongitude_channel_downstream = vCell[lCellIndex_downslope].dLongitude_center_radian;
+        dLatitude_channel_downstream = vCell[lCellIndex_downslope].dLatitude_center_radian;
+        // convert to radian
+
+        // now calculate the angle
+        dAngle = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
+                                                        dLongitude_channel_center, dLatitude_channel_center,
+                                                        dLongitude_channel_downstream, dLatitude_channel_downstream);
+        if (dAngle <= 180.0)
+        {
+          // left hillslope
+
+          vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+          vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+          vCellID_left.push_back((*iIterator1));
+        }
+        else
+        {
+          vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+          vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+          vCellID_right.push_back((*iIterator1));
+        }
+      }
+      else
+      {
+        if (lCellID_downslope == lCellID_outlet)
+        {
+          // the last cell
+          // get location first
+
+          // find the upstream cell using the vSegment vector
+          // locate the last cell in the vSegment vector
+          if (vCell_segment.size() >= 2)
+          {
+            // Get the second-to-last element
+            lCellID_upslope = (*(vCell_segment.rbegin() + 1)).lCellID;
+            lCellIndex_upslope = mCellIdToIndex[lCellID_upslope];
+
+            dLongitude_channel_upstream = vCell[lCellIndex_upslope].dLongitude_center_radian;
+            dLatitude_channel_upstream = vCell[lCellIndex_upslope].dLatitude_center_radian;
+
+            // now calculate the angle
+            dAngle = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
+                                                            dLongitude_channel_center, dLatitude_channel_center,
+                                                            dLongitude_channel_upstream, dLatitude_channel_upstream);
+            if (dAngle <= 180.0)
+            {
+              // left hillslope
+              vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+              vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+              vCellID_left.push_back((*iIterator1));
+            }
+            else
+            {
+              vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+              vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+              vCellID_right.push_back((*iIterator1));
+            }
+          }
+        }
+        else // middle cell
+        {
+          // we need to calculate two angles
+
+          // the first angle is between upstream-downstream of the river course
+          // upstream cell
+          // use iterator to find the upstream cell
+          for (auto iIterator_segment = vCell_segment.begin(); iIterator_segment != vCell_segment.end(); iIterator_segment++)
+          {
+            if ((*iIterator_segment).lCellID_downslope_dominant == lCellID_downslope)
+            {
+              lCellID_upslope = (*(iIterator_segment - 1)).lCellID;
+              lCellIndex_upslope = mCellIdToIndex[lCellID_upslope];
+              dLongitude_channel_upstream = vCell[lCellIndex_upslope].dLongitude_center_radian;
+              dLatitude_channel_upstream = vCell[lCellIndex_upslope].dLatitude_center_radian;
+              break;
+            }
+          }
+          // downstream cell
+          lCellID_downslope = vCell[lCellIndex_downslope].lCellID_downslope_dominant;
+          lCellIndex_downslope = mCellIdToIndex[lCellID_downslope];
+          dLongitude_channel_downstream = vCell[lCellIndex_downslope].dLongitude_center_radian;
+          dLatitude_channel_downstream = vCell[lCellIndex_downslope].dLatitude_center_radian;
+          // now calculate the angle
+          dAngle1 = calculate_angle_between_lon_lat_radian(1, dLongitude_channel_upstream, dLatitude_channel_upstream,
+                                                           dLongitude_channel_center, dLatitude_channel_center,
+                                                           dLongitude_channel_downstream, dLatitude_channel_downstream);
+
+          dAngle2 = calculate_angle_between_lon_lat_radian(1, dLongitude_start, dLatitude_start,
+                                                           dLongitude_channel_center, dLatitude_channel_center,
+                                                           dLongitude_channel_downstream, dLatitude_channel_downstream);
+          if (dAngle1 <= 180)
+          {
+            if (dAngle2 <= 180)
+            {
+              // left hillslope
+              if (dAngle2 >= dAngle1)
+              {
+                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                vCellID_left.push_back((*iIterator1));
+              }
+              else
+              {
+                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                vCellID_right.push_back((*iIterator1));
+              }
+            }
+            else
+            {
+              vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+              vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+              vCellID_right.push_back((*iIterator1));
+            }
+          }
+          else
+          {
+            if (dAngle2 <= 180)
+            {
+              // left hillslope
+              (*iIterator).iFlag_left_hill = 1;
+              (*iIterator).iFlag_right_hill = 0;
+              vCellID_left.push_back((*iIterator1));
+            }
+            else
+            {
+              if (dAngle2 > dAngle1)
+              {
+                // left hillslope
+                (*iIterator).iFlag_left_hill = 1;
+                (*iIterator).iFlag_right_hill = 0;
+                vCellID_left.push_back((*iIterator1));
+              }
+              else
+              {
+                (*iIterator).iFlag_left_hill = 0;
+                (*iIterator).iFlag_right_hill = 1;
+                vCellID_right.push_back((*iIterator1));
+              }
+            }
+          }
+        }
+      }
     }
-    else //2 hillslopes, left and right
-    {
+
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      
-    }
+      iFlag_checked = (*iIterator).iFlag_checked;
+      lCellIndex_current = (*iIterator).lCellIndex;
+      if (iFlag_checked == 0)
+      {
+        vSearchPath.clear();
+        iFlag_checked_downslope = 0;
+        while (iFlag_checked_downslope == 0)
+        { // not found keep adding to path
+          vSearchPath.push_back(lCellIndex_current);
+          lCellID_downslope = vCell[lCellIndex_current].lCellID_downslope_dominant;
+          lCellIndex_current = mCellIdToIndex[lCellID_downslope];
+          if (lCellIndex_current != -1)
+          {
+            iFlag_checked_downslope = vCell[lCellIndex_current].iFlag_checked;
+          }
+          else
+          {
+            std::cout << "This shouldn't happen!" << std::endl;
+          }
+        }
+        // now set the flag
+        iFlag_left_hill = vCell[lCellIndex_current].iFlag_left_hill;
+        iFlag_right_hill = vCell[lCellIndex_current].iFlag_right_hill;
+        iFlag_headwater_hill = vCell[lCellIndex_current].iFlag_headwater_hill;
+        for (iIterator_path = vSearchPath.begin(); iIterator_path != vSearchPath.end(); iIterator_path++)
+        {
+          vCell[*iIterator_path].iFlag_left_hill = iFlag_left_hill;
+          vCell[*iIterator_path].iFlag_right_hill = iFlag_right_hill;
+          vCell[*iIterator_path].iFlag_headwater_hill = iFlag_headwater_hill;
+          vCell[*iIterator_path].iFlag_checked = 1;
+        }
+      }
     }
     return error_code;
   }

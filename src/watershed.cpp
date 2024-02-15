@@ -639,8 +639,8 @@ namespace hexwatershed
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       lSegment = lSubbasin;
-      vSubbasin[lSubbasin - 1].cCell_start = vSegment[lSegment - 1].cReach_start;
-      vSubbasin[lSubbasin - 1].lCellID_start = vSegment[lSegment - 1].cReach_start.lCellID;
+      vSubbasin[lSubbasin - 1].cCell_headwater = vSegment[lSegment - 1].cReach_start;
+      vSubbasin[lSubbasin - 1].lCellID_headwater = vSegment[lSegment - 1].cReach_start.lCellID;
       vSubbasin[lSubbasin - 1].cCell_outlet = vSegment[lSegment - 1].cReach_end;
       vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;
       dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
@@ -648,7 +648,7 @@ namespace hexwatershed
       vSubbasin[lSubbasin - 1].iFlag_headwater = vSegment[lSegment - 1].iFlag_headwater;
 
       //set the whole channel to the subbasin
-      vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1];
+      vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1].vReach_segment;
     }
 
     watershed_define_hillslope();
