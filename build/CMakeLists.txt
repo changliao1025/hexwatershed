@@ -46,6 +46,8 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/global.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/hexagon.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/hexagon.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hillslope.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hillslope.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/parameter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/parameter.h

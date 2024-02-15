@@ -15,6 +15,9 @@ std::array<float ,3>  calculate_location_based_on_lon_lat_radian(float dLongitud
 float dLatitude_radian,  
 float dElevation);
 
+std::array<float ,3>  convert_longitude_latitude_to_sphere_3d(float dLongitude_radian,
+float dLatitude_radian);
+
 float calculate_angle_between_lon_lat_radian( int iFlag_reverse,float dLongitude_radian0,float dLatitude_radian0, 
 float dLongitude_radian1,float dLatitude_radian1, 
 float dLongitude_radian2,float dLatitude_radian2 );
