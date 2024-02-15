@@ -19,6 +19,7 @@ namespace hexwatershed
       public:
           hillslope();
           ~hillslope();
+          std::vector <hexagon> vCell; //all the cells   
           int iFlag_headwater; // 1: headwater, 0: not headwater
           int nHillslope; 
           long lSubbasin; //each subbasin should have the same index with its segment      
@@ -30,8 +31,8 @@ namespace hexwatershed
           float dSlope_max;
           float dSlope_min;        
           float dDrainage_density;
-          std::vector <hexagon> vCell; //all the cells         
-          std::unordered_map<long, long> mCellIdToIndex;     
+               
+          
           int hillslope_calculate_characteristics();   
 
          

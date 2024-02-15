@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "hexagon.h"
-#include "hillslope.h"
+//#include "hillslope.h"
 #include "./json/JSONBase.h"
 #include "./json/mesh.h"
 #include "./json/cell.h"
@@ -21,8 +21,13 @@ namespace hexwatershed
           subbasin();
 
           ~subbasin();
+          std::vector <hexagon> vCell; //all the cells
+          std::vector <hexagon> vCell_segment; //all the cells on the channel (upstream to downstream)
+          //std::vector <hillslope> vHillslope; //all the hillslopes, max 3
+          std::unordered_map<long, long> mCellIdToIndex;
           int iFlag_headwater; // 1: headwater, 0: not headwater
           int iFlag_outlet; // 1: outlet, 0: not outlet
+          int nHillslope;
 
           long lSubbasin; //each subbasin should have the same index with its segment
           long lSubbasinIndex;
@@ -41,10 +46,7 @@ namespace hexwatershed
           hexagon cCell_headwater; //the first cell of its segment
           hexagon cCell_outlet; //the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin
           hexagon cCell_outlet_downslope;
-          std::vector <hexagon> vCell; //all the cells
-          std::vector <hexagon> vCell_segment; //all the cells on the channel (upstream to downstream)
-          std::vector <hillslope> vHillslope; //all the hillslopes, max 3
-          std::unordered_map<long, long> mCellIdToIndex;
+          
           
 
           //function

@@ -11,6 +11,7 @@ namespace hexwatershed
   {
     
     iFlag_headwater = 0;
+    vCell.clear();
   }
   hillslope::~hillslope()
   {

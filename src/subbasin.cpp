@@ -12,6 +12,8 @@ namespace hexwatershed
     iFlag_outlet = 0;
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
+    nHillslope=2;
+    // vHillslope.clear();
   }
   subbasin::~subbasin()
   {
@@ -292,8 +294,8 @@ namespace hexwatershed
             if (dAngle2 <= 180)
             {
               // left hillslope
-              (*iIterator).iFlag_left_hill = 1;
-              (*iIterator).iFlag_right_hill = 0;
+              vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+              vCell[lCellIndex_buffer].iFlag_right_hill = 0;
               vCellID_left.push_back((*iIterator1));
             }
             else
@@ -301,14 +303,14 @@ namespace hexwatershed
               if (dAngle2 > dAngle1)
               {
                 // left hillslope
-                (*iIterator).iFlag_left_hill = 1;
-                (*iIterator).iFlag_right_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
                 vCellID_left.push_back((*iIterator1));
               }
               else
               {
-                (*iIterator).iFlag_left_hill = 0;
-                (*iIterator).iFlag_right_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
                 vCellID_right.push_back((*iIterator1));
               }
             }
@@ -353,6 +355,7 @@ namespace hexwatershed
       }
     }
 
+    /*
     hillslope cHillslope_left;
     hillslope cHillslope_right;
     hillslope cHillslope_headwater;
@@ -371,6 +374,7 @@ namespace hexwatershed
         cHillslope_headwater.vCell.push_back((*iIterator));
       }
     }
+
     vHillslope.clear();
     vHillslope.push_back(cHillslope_left);
     vHillslope.push_back(cHillslope_right);
@@ -378,6 +382,19 @@ namespace hexwatershed
     {
       cHillslope_headwater.iFlag_headwater = 1;
       vHillslope.push_back(cHillslope_headwater);
+    }
+    else
+    {
+
+    }
+    */
+    if (iFlag_headwater == 1)
+    {
+      nHillslope = 3;
+    }
+    else
+    {
+      nHillslope = 2;
     }
     return error_code;
   }
@@ -479,11 +496,12 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_hillslope_characteristics()
   {
     int error_code = 1;
-    std::vector<hillslope>::iterator iIterator;
+    // std::vector<hillslope>::iterator iIterator;
+    /*
     for (iIterator = vHillslope.begin(); iIterator != vHillslope.end(); iIterator++)
     {
       (*iIterator).hillslope_calculate_characteristics();
-    }
+    }*/
 
     return error_code;
   }
