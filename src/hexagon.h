@@ -72,6 +72,7 @@ namespace hexwatershed
     long lStream_segment_burned;
     long lSegment;       //the stream segment id    
     long lSubbasin;      //the subbasin id, should be the same with the segment
+    long lHillslope;
     long lWatershed; 
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge

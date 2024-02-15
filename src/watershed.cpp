@@ -559,15 +559,26 @@ namespace hexwatershed
   int watershed::watershed_define_hillslope()
   {
     int error_code = 1;
-    long lHillslopeID = 1;
+    long lHillslope = 1;
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {      
       vSubbasin[lSubbasin - 1].subbasin_define_hillslope();
       for (int i=0; i<vSubbasin[lSubbasin - 1].vHillslope.size(); i++)
       {
         vSubbasin[lSubbasin - 1].vHillslope[i].lSubbasin = lSubbasin;
-        vSubbasin[lSubbasin - 1].vHillslope[i].lHillslopeID = lHillslopeID;
-        lHillslopeID++;
+        vSubbasin[lSubbasin - 1].vHillslope[i].lHillslope = lHillslope;
+        //update hillslope id
+        for (long j=0; j<vSubbasin[lSubbasin - 1].vHillslope[i].vCell.size(); j++)
+        {
+          vSubbasin[lSubbasin - 1].vHillslope[i].vCell[j].lHillslope = lHillslope;
+        }
+        //update cell hillslope id
+        for (long j=0; j<vSubbasin[lSubbasin - 1].vCell.size(); j++)
+        {
+          vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope;
+        }
+
+        lHillslope++;
       }
     }
     //then define the hillslope id
@@ -589,6 +600,7 @@ namespace hexwatershed
         lCellIndex_watershed = (*iIterator2).lCellIndex_watershed;
         //may also use the map to find index
         vCell[lCellIndex_watershed].lSubbasin = (*iIterator2).lSubbasin;
+        vCell[lCellIndex_watershed].lHillslope = (*iIterator2).lHillslope;
         vCell[lCellIndex_watershed].dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
         vCell[lCellIndex_watershed].dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
       }
@@ -661,7 +673,6 @@ namespace hexwatershed
     }
 
     watershed_define_hillslope();
-
     watershed_calculate_travel_distance();
     watershed_update_attribute();
     watershed_calculate_drainage_area();
@@ -988,6 +999,7 @@ namespace hexwatershed
         pCell.lCellID = pHexagon.lCellID;
         pCell.lStream_segment = pHexagon.lSegment;
         pCell.lSubbasin = pHexagon.lSubbasin;
+        pCell.lHillslope = pHexagon.lHillslope;
         pCell.lStream_segment_burned = pHexagon.lStream_segment_burned; // flag for burned stream
         pCell.lCellID_downslope = pHexagon.lCellID_downslope_dominant;
         pCell.dAccumulation = pHexagon.dAccumulation;

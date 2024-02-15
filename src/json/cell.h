@@ -56,6 +56,7 @@ namespace jsonmodel
     
     long lStream_segment;
     long lSubbasin;
+    long lHillslope;
     long lCellID; /*!<global cell ID*/
     long lCellID_downstream_burned;/*!<pre-descibed global downstream cell ID*/
     long lCellID_downslope;/*!<global downslope cell ID*/

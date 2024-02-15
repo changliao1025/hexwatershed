@@ -22,7 +22,7 @@ namespace hexwatershed
           int iFlag_headwater; // 1: headwater, 0: not headwater
           int nHillslope; 
           long lSubbasin; //each subbasin should have the same index with its segment      
-          long lHillslopeID; 
+          long lHillslope; 
           long nCell;        
           double dArea;
           float dSlope;

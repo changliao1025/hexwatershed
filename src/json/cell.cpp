@@ -176,6 +176,9 @@ namespace jsonmodel
 		writer->String("lSubbasin");
 		writer->Int64(lSubbasin);
 
+		writer->String("lHillslope");
+		writer->Int64(lHillslope);
+
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);
 		writer->String("dLatitude_center_degree");
