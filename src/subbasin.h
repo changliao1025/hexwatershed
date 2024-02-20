@@ -47,6 +47,8 @@ namespace hexwatershed
         float dDrainage_density;
         float dLength_hillslope_left;
         float dLength_hillslope_right;
+        float dWidth_hillslope_left;
+        float dWidth_hillslope_right;
         // float dLength_hillslope_headwater;
         double dArea_hillslope_left;
         double dArea_hillslope_right;

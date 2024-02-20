@@ -383,20 +383,20 @@ namespace hexwatershed
     }
 
     // now calculate left and right hillslope width and count
-    dLength_hillslope_left = 0.0;
+    dWidth_hillslope_left = 0.0;
 
     for (iIterator1 = vCellID_buffer_left.begin(); iIterator1 != vCellID_buffer_left.end(); iIterator1++)
     {
       lCellIndex_buffer = mCellIdToIndex[*iIterator1];
-      dLength_hillslope_left = dLength_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
+      dWidth_hillslope_left = dWidth_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
     }
 
-    dLength_hillslope_right = 0.0;
-    nCell_hillslope_right = vCellID_buffer_right.size();
+    dWidth_hillslope_right = 0.0;
+    
     for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
     {
       lCellIndex_buffer = mCellIdToIndex[*iIterator1];
-      dLength_hillslope_right = dLength_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
+      dWidth_hillslope_right = dWidth_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
     }
     // for headwater, it is consider a convergence, a special method is needed
 
@@ -593,19 +593,14 @@ namespace hexwatershed
     }*/
     // list of characteristics needed: total area, mean slope, segment length, average width
 
-    std::vector<hexagon>::iterator iIterator;
-    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-    {
-      if ((*iIterator).iFlag_left_hill == 1)
-      {
-      }
-      if ((*iIterator).iFlag_right_hill == 1)
-      {
-      }
-      if ((*iIterator).iFlag_headwater_hill == 1)
-      {
-      }
-    }
+    //width is already calculated
+
+    //area is already calculated
+
+    //length 
+    dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
+
+    dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
 
     return error_code;
   }
