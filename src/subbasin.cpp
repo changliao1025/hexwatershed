@@ -22,7 +22,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_checked;
-    int iFlag_left_hill, iFlag_right_hill, iFlag_headwater_hill;
+    int iFlag_left_hillslope, iFlag_right_hillslope, iFlag_headwater_hill;
     int iFlag_checked_downslope;
     long lCellID_upslope, lCellID_downslope;
     long lCellIndex_buffer;
@@ -139,14 +139,14 @@ namespace hexwatershed
         {
           // left hillslope
 
-          vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-          vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+          vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+          vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
           vCellID_buffer_left.push_back((*iIterator1));
         }
         else
         {
-          vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-          vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+          vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+          vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
           vCellID_buffer_right.push_back((*iIterator1));
         }
       }
@@ -178,14 +178,14 @@ namespace hexwatershed
               if (dAngle <= 180)
               {
 
-                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                 vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
-                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                 vCellID_buffer_right.push_back((*iIterator1));
               }
             }
@@ -212,21 +212,21 @@ namespace hexwatershed
                   // left hillslope
                   if (dAngle2 >= dAngle1)
                   {
-                    vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                    vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                    vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                    vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                     vCellID_buffer_left.push_back((*iIterator1));
                   }
                   else
                   {
-                    vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                    vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                    vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                    vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                     vCellID_buffer_right.push_back((*iIterator1));
                   }
                 }
                 else
                 {
-                  vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                  vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                  vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                  vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                   vCellID_buffer_right.push_back((*iIterator1));
                 }
               }
@@ -235,8 +235,8 @@ namespace hexwatershed
                 if (dAngle2 <= 180)
                 {
                   // left hillslope
-                  vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                  vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                  vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                  vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                   vCellID_buffer_left.push_back((*iIterator1));
                 }
                 else
@@ -244,14 +244,14 @@ namespace hexwatershed
                   if (dAngle2 > dAngle1)
                   {
                     // left hillslope
-                    vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                    vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                    vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                    vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                     vCellID_buffer_left.push_back((*iIterator1));
                   }
                   else
                   {
-                    vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                    vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                    vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                    vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                     vCellID_buffer_right.push_back((*iIterator1));
                   }
                 }
@@ -297,21 +297,21 @@ namespace hexwatershed
               // left hillslope
               if (dAngle2 >= dAngle1)
               {
-                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                 vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
-                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                 vCellID_buffer_right.push_back((*iIterator1));
               }
             }
             else
             {
-              vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-              vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+              vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+              vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
               vCellID_buffer_right.push_back((*iIterator1));
             }
           }
@@ -320,8 +320,8 @@ namespace hexwatershed
             if (dAngle2 <= 180)
             {
               // left hillslope
-              vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-              vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+              vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+              vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
               vCellID_buffer_left.push_back((*iIterator1));
             }
             else
@@ -329,14 +329,14 @@ namespace hexwatershed
               if (dAngle2 > dAngle1)
               {
                 // left hillslope
-                vCell[lCellIndex_buffer].iFlag_left_hill = 1;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 0;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 1;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 0;
                 vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
-                vCell[lCellIndex_buffer].iFlag_left_hill = 0;
-                vCell[lCellIndex_buffer].iFlag_right_hill = 1;
+                vCell[lCellIndex_buffer].iFlag_left_hillslope = 0;
+                vCell[lCellIndex_buffer].iFlag_right_hillslope = 1;
                 vCellID_buffer_right.push_back((*iIterator1));
               }
             }
@@ -369,13 +369,13 @@ namespace hexwatershed
           }
         }
         // now set the flag
-        iFlag_left_hill = vCell[lCellIndex_current].iFlag_left_hill;
-        iFlag_right_hill = vCell[lCellIndex_current].iFlag_right_hill;
+        iFlag_left_hillslope = vCell[lCellIndex_current].iFlag_left_hillslope;
+        iFlag_right_hillslope = vCell[lCellIndex_current].iFlag_right_hillslope;
         iFlag_headwater_hill = vCell[lCellIndex_current].iFlag_headwater_hill;
         for (iIterator_path = vSearchPath.begin(); iIterator_path != vSearchPath.end(); iIterator_path++)
         {
-          vCell[*iIterator_path].iFlag_left_hill = iFlag_left_hill;
-          vCell[*iIterator_path].iFlag_right_hill = iFlag_right_hill;
+          vCell[*iIterator_path].iFlag_left_hillslope = iFlag_left_hillslope;
+          vCell[*iIterator_path].iFlag_right_hillslope = iFlag_right_hillslope;
           vCell[*iIterator_path].iFlag_headwater_hill = iFlag_headwater_hill;
           vCell[*iIterator_path].iFlag_checked = 1;
         }
@@ -405,13 +405,13 @@ namespace hexwatershed
     nCell_hillslope_right = 0;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      if ((*iIterator).iFlag_left_hill == 1)
+      if ((*iIterator).iFlag_left_hillslope == 1)
       {
         nCell_hillslope_left = nCell_hillslope_left + 1;
       }
       else
       {
-        if ((*iIterator).iFlag_right_hill == 1)
+        if ((*iIterator).iFlag_right_hillslope == 1)
         {
           nCell_hillslope_right = nCell_hillslope_right + 1;
         }
@@ -424,11 +424,11 @@ namespace hexwatershed
     hillslope cHillslope_headwater;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      if ((*iIterator).iFlag_left_hill == 1)
+      if ((*iIterator).iFlag_left_hillslope == 1)
       {
         cHillslope_left.vCell.push_back((*iIterator));
       }
-      if ((*iIterator).iFlag_right_hill == 1)
+      if ((*iIterator).iFlag_right_hillslope == 1)
       {
         cHillslope_right.vCell.push_back((*iIterator));
       }
@@ -488,11 +488,11 @@ namespace hexwatershed
       }
       else
       {
-        if ((*iIterator).iFlag_left_hill == 1)
+        if ((*iIterator).iFlag_left_hillslope == 1)
         {
           dArea_hillslope_left = dArea_hillslope_left + (*iIterator).dArea;
         }
-        if ((*iIterator).iFlag_right_hill == 1)
+        if ((*iIterator).iFlag_right_hillslope == 1)
         {
           dArea_hillslope_right = dArea_hillslope_right + (*iIterator).dArea;
         }
@@ -521,11 +521,11 @@ namespace hexwatershed
       for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
       {
         dSlope_total = dSlope_total + (*iIterator).dSlope_max_downslope; // should mean slope?
-        if ((*iIterator).iFlag_left_hill == 1)
+        if ((*iIterator).iFlag_left_hillslope == 1)
         {
           dSlope_left = dSlope_left + (*iIterator).dSlope_max_downslope;
         }
-        if ((*iIterator).iFlag_right_hill == 1)
+        if ((*iIterator).iFlag_right_hillslope == 1)
         {
           dSlope_right = dSlope_right + (*iIterator).dSlope_max_downslope;
         }
@@ -534,8 +534,8 @@ namespace hexwatershed
     dSlope = dSlope_total / nCell;
 
     dSlope_mean = dSlope;
-    dSlope_hillslope_left = dSlope_left / nCell_hillslope_left;
-    dSlope_hillslope_right = dSlope_right / nCell_hillslope_right;
+    dSlope_hillslope_left_mean = dSlope_left / nCell_hillslope_left;
+    dSlope_hillslope_right_mean = dSlope_right / nCell_hillslope_right;
     return error_code;
   }
 

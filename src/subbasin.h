@@ -53,8 +53,8 @@ namespace hexwatershed
         double dArea_hillslope_left;
         double dArea_hillslope_right;
         // float dArea_hillslope_headwater;
-        float dSlope_hillslope_left;
-        float dSlope_hillslope_right;
+        float dSlope_hillslope_left_mean;
+        float dSlope_hillslope_right_mean;
         // float dSlope_hillslope_headwater;
 
         hexagon cCell_headwater; // the first cell of its segment

@@ -58,8 +58,8 @@ namespace hexwatershed
     int iFlag_confluence_burned;
     int iFlag_headwater_burned;
 
-    int iFlag_left_hill;
-    int iFlag_right_hill;
+    int iFlag_left_hillslope;
+    int iFlag_right_hillslope;
     int iFlag_headwater_hill;
 
     int iFlag_first_reach; //whether it is the first reach of a stream

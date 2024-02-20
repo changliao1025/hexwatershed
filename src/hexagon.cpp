@@ -30,8 +30,8 @@ namespace hexwatershed
     iFlag_depression_filling_treated = 0;
 
     iFlag_headwater_hill=0;
-    iFlag_left_hill=0;
-    iFlag_right_hill=0;
+    iFlag_left_hillslope=0;
+    iFlag_right_hillslope=0;
     lHillslope = 0;
     
     iFlag_confluence_burned = 0;

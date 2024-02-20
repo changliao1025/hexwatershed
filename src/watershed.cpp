@@ -587,13 +587,13 @@ namespace hexwatershed
       nHillslope = vSubbasin[lSubbasin - 1].nHillslope;
       for (long j = 0; j < vSubbasin[lSubbasin - 1].vCell.size(); j++)
       {
-        if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_left_hill == 1)
+        if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_left_hillslope == 1)
         {
           vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current;
         }
         else
         {
-          if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_right_hill == 1)
+          if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_right_hillslope == 1)
           {
             vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 1;
           }
