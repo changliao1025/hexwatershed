@@ -689,17 +689,15 @@ namespace hexwatershed
       }
     }
 
+    //pass segment information to subbasin
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       lSegment = lSubbasin;
       vSubbasin[lSubbasin - 1].cCell_headwater = vSegment[lSegment - 1].cReach_start;
       vSubbasin[lSubbasin - 1].lCellID_headwater = vSegment[lSegment - 1].cReach_start.lCellID;
       vSubbasin[lSubbasin - 1].cCell_outlet = vSegment[lSegment - 1].cReach_end;
-      vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;
-      dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
-      vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual_basin);
+      vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;   
       vSubbasin[lSubbasin - 1].iFlag_headwater = vSegment[lSegment - 1].iFlag_headwater;
-
       // set the whole channel to the subbasin
       vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1].vReach_segment;
       // we also need the downslope cell of the subbasin outlet cell
@@ -712,7 +710,15 @@ namespace hexwatershed
       }
     }
 
-    watershed_define_hillslope();
+    //now we can define the hillslope
+    watershed_define_hillslope(); 
+    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    {
+      lSegment = lSubbasin;
+      dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
+      vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual_basin);
+    }
+
     watershed_calculate_travel_distance();
     watershed_update_attribute();
     watershed_calculate_drainage_area();

@@ -37,8 +37,8 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
     // each subbasin have two or three hillslopes
     std::vector<long> vCellID_channel;
-    std::vector<long> vCellID_left;
-    std::vector<long> vCellID_right;
+    std::vector<long> vCellID_buffer_left;
+    std::vector<long> vCellID_buffer_right;
     std::vector<long> vCellID_buffer_hill;
     std::vector<long> vSearchPath;
     std::vector<long>::iterator iIterator_path;
@@ -141,13 +141,13 @@ namespace hexwatershed
 
           vCell[lCellIndex_buffer].iFlag_left_hill = 1;
           vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-          vCellID_left.push_back((*iIterator1));
+          vCellID_buffer_left.push_back((*iIterator1));
         }
         else
         {
           vCell[lCellIndex_buffer].iFlag_left_hill = 0;
           vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-          vCellID_right.push_back((*iIterator1));
+          vCellID_buffer_right.push_back((*iIterator1));
         }
       }
       else
@@ -180,13 +180,13 @@ namespace hexwatershed
 
                 vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                vCellID_left.push_back((*iIterator1));
+                vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
                 vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                vCellID_right.push_back((*iIterator1));
+                vCellID_buffer_right.push_back((*iIterator1));
               }
             }
             else
@@ -214,20 +214,20 @@ namespace hexwatershed
                   {
                     vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                     vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                    vCellID_left.push_back((*iIterator1));
+                    vCellID_buffer_left.push_back((*iIterator1));
                   }
                   else
                   {
                     vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                     vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                    vCellID_right.push_back((*iIterator1));
+                    vCellID_buffer_right.push_back((*iIterator1));
                   }
                 }
                 else
                 {
                   vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                   vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                  vCellID_right.push_back((*iIterator1));
+                  vCellID_buffer_right.push_back((*iIterator1));
                 }
               }
               else
@@ -237,7 +237,7 @@ namespace hexwatershed
                   // left hillslope
                   vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                   vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                  vCellID_left.push_back((*iIterator1));
+                  vCellID_buffer_left.push_back((*iIterator1));
                 }
                 else
                 {
@@ -246,13 +246,13 @@ namespace hexwatershed
                     // left hillslope
                     vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                     vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                    vCellID_left.push_back((*iIterator1));
+                    vCellID_buffer_left.push_back((*iIterator1));
                   }
                   else
                   {
                     vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                     vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                    vCellID_right.push_back((*iIterator1));
+                    vCellID_buffer_right.push_back((*iIterator1));
                   }
                 }
               }
@@ -299,20 +299,20 @@ namespace hexwatershed
               {
                 vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                vCellID_left.push_back((*iIterator1));
+                vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
                 vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                vCellID_right.push_back((*iIterator1));
+                vCellID_buffer_right.push_back((*iIterator1));
               }
             }
             else
             {
               vCell[lCellIndex_buffer].iFlag_left_hill = 0;
               vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-              vCellID_right.push_back((*iIterator1));
+              vCellID_buffer_right.push_back((*iIterator1));
             }
           }
           else
@@ -322,7 +322,7 @@ namespace hexwatershed
               // left hillslope
               vCell[lCellIndex_buffer].iFlag_left_hill = 1;
               vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-              vCellID_left.push_back((*iIterator1));
+              vCellID_buffer_left.push_back((*iIterator1));
             }
             else
             {
@@ -331,13 +331,13 @@ namespace hexwatershed
                 // left hillslope
                 vCell[lCellIndex_buffer].iFlag_left_hill = 1;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 0;
-                vCellID_left.push_back((*iIterator1));
+                vCellID_buffer_left.push_back((*iIterator1));
               }
               else
               {
                 vCell[lCellIndex_buffer].iFlag_left_hill = 0;
                 vCell[lCellIndex_buffer].iFlag_right_hill = 1;
-                vCellID_right.push_back((*iIterator1));
+                vCellID_buffer_right.push_back((*iIterator1));
               }
             }
           }
@@ -345,6 +345,7 @@ namespace hexwatershed
       }
     }
 
+    // now screening the remaining cells
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       iFlag_checked = (*iIterator).iFlag_checked;
@@ -377,6 +378,42 @@ namespace hexwatershed
           vCell[*iIterator_path].iFlag_right_hill = iFlag_right_hill;
           vCell[*iIterator_path].iFlag_headwater_hill = iFlag_headwater_hill;
           vCell[*iIterator_path].iFlag_checked = 1;
+        }
+      }
+    }
+
+    // now calculate left and right hillslope width and count
+    dLength_hillslope_left = 0.0;
+
+    for (iIterator1 = vCellID_buffer_left.begin(); iIterator1 != vCellID_buffer_left.end(); iIterator1++)
+    {
+      lCellIndex_buffer = mCellIdToIndex[*iIterator1];
+      dLength_hillslope_left = dLength_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
+    }
+
+    dLength_hillslope_right = 0.0;
+    nCell_hillslope_right = vCellID_buffer_right.size();
+    for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
+    {
+      lCellIndex_buffer = mCellIdToIndex[*iIterator1];
+      dLength_hillslope_right = dLength_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
+    }
+    // for headwater, it is consider a convergence, a special method is needed
+
+    // calculate left and right cell count
+    nCell_hillslope_left = 0;
+    nCell_hillslope_right = 0;
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      if ((*iIterator).iFlag_left_hill == 1)
+      {
+        nCell_hillslope_left = nCell_hillslope_left + 1;
+      }
+      else
+      {
+        if ((*iIterator).iFlag_right_hill == 1)
+        {
+          nCell_hillslope_right = nCell_hillslope_right + 1;
         }
       }
     }
@@ -441,13 +478,26 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
     nCell = vCell.size();
 
+    dArea_hillslope_left = 0.0;
+    dArea_hillslope_right = 0.0;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       if ((*iIterator).dArea < 0.0)
       {
         std::cout << "Something is wrong" << std::endl;
       }
-      dArea_total = dArea_total + (*iIterator).dArea;
+      else
+      {
+        if ((*iIterator).iFlag_left_hill == 1)
+        {
+          dArea_hillslope_left = dArea_hillslope_left + (*iIterator).dArea;
+        }
+        if ((*iIterator).iFlag_right_hill == 1)
+        {
+          dArea_hillslope_right = dArea_hillslope_right + (*iIterator).dArea;
+        }
+        dArea_total = dArea_total + (*iIterator).dArea;
+      }
     }
     dArea = dArea_total;
     if (dArea < 0.0)
@@ -463,16 +513,29 @@ namespace hexwatershed
     int error_code = 1;
     int iOption = 1;
     float dSlope_total = 0.0;
+    float dSlope_left = 0.0;
+    float dSlope_right = 0.0;
     std::vector<hexagon>::iterator iIterator;
     if (iOption == 1) // by cell
     {
       for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
       {
         dSlope_total = dSlope_total + (*iIterator).dSlope_max_downslope; // should mean slope?
+        if ((*iIterator).iFlag_left_hill == 1)
+        {
+          dSlope_left = dSlope_left + (*iIterator).dSlope_max_downslope;
+        }
+        if ((*iIterator).iFlag_right_hill == 1)
+        {
+          dSlope_right = dSlope_right + (*iIterator).dSlope_max_downslope;
+        }
       }
     }
     dSlope = dSlope_total / nCell;
+
     dSlope_mean = dSlope;
+    dSlope_hillslope_left = dSlope_left / nCell_hillslope_left;
+    dSlope_hillslope_right = dSlope_right / nCell_hillslope_right;
     return error_code;
   }
 
@@ -528,6 +591,21 @@ namespace hexwatershed
     {
       (*iIterator).hillslope_calculate_characteristics();
     }*/
+    // list of characteristics needed: total area, mean slope, segment length, average width
+
+    std::vector<hexagon>::iterator iIterator;
+    for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      if ((*iIterator).iFlag_left_hill == 1)
+      {
+      }
+      if ((*iIterator).iFlag_right_hill == 1)
+      {
+      }
+      if ((*iIterator).iFlag_headwater_hill == 1)
+      {
+      }
+    }
 
     return error_code;
   }
