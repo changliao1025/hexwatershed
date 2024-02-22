@@ -617,6 +617,7 @@ namespace hexwatershed
 
     return error_code;
   }
+  
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
@@ -1008,10 +1009,18 @@ namespace hexwatershed
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
+        sLine = convert_long_to_string((*iIterator1).lSubbasin) + "," 
+        + convert_long_to_string((*iIterator1).lCellID_outlet) + "," 
+        + convert_long_to_string((*iIterator1).nCell) + "," 
+        + convert_float_to_string((*iIterator1).dArea) + "," 
+        + convert_float_to_string((*iIterator1).dSlope_mean) + "," 
+        + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," 
+        + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
         ofs << sLine << std::endl;
       }
       ofs.close();
+
+      //how to add the hillslope information in the export step?
     }
     return error_code;
   }

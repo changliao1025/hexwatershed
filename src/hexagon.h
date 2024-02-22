@@ -128,6 +128,7 @@ namespace hexwatershed
     float dDistance_to_downslope;
     float dDistance_to_subbasin_outlet;
     float dDistance_to_watershed_outlet; 
+    float dDistance_to_channel; //to the first downslope channel cell
     
     //a 4 element array to define the bounding box, which will use used by rtree spatial index
     //std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
