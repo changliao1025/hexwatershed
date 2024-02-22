@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 #include "hexagon.h"
+#include "data.h"
 // #include "hillslope.h"
 #include "./json/JSONBase.h"
 #include "./json/mesh.h"

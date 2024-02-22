@@ -222,3 +222,29 @@ int data::write_binary_vector(const std::string sFilename_out, std::vector <floa
 	}
 	return error_code;
 }
+
+float data::percentile(const std::vector<float>& data, float percentile)
+ {
+    // Make sure the data is sorted
+    std::vector<float> sorted_data = data;
+    std::sort(sorted_data.begin(), sorted_data.end());
+
+    // Calculate the rank (index) of the percentile
+    float rank = (percentile / 100.0) * (sorted_data.size() - 1);
+
+    // Get the floor and ceiling ranks
+    size_t floor_rank = std::floor(rank);
+    size_t ceil_rank = std::ceil(rank);
+
+    // If the rank is an integer, return the corresponding value
+    if (floor_rank == ceil_rank) {
+        return sorted_data[floor_rank];
+    }
+
+    // Otherwise, interpolate between the floor and ceiling values
+    float floor_value = sorted_data[floor_rank];
+    float ceil_value = sorted_data[ceil_rank];
+    float fraction = rank - floor_rank;
+    
+    return floor_value + fraction * (ceil_value - floor_value);
+}

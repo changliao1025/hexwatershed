@@ -392,7 +392,7 @@ namespace hexwatershed
     }
 
     dWidth_hillslope_right = 0.0;
-    
+
     for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
     {
       lCellIndex_buffer = mCellIdToIndex[*iIterator1];
@@ -593,14 +593,46 @@ namespace hexwatershed
     }*/
     // list of characteristics needed: total area, mean slope, segment length, average width
 
-    //width is already calculated
+    // width is already calculated
 
-    //area is already calculated
+    // area is already calculated
 
-    //length 
+    // length
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
 
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
+
+    // zonal statistics
+    // elevation profile
+
+    int nElevation_profile = 10;
+    std::vector<float> vElevation_left, vElevation_right;
+
+    // gather all the elevation data
+    for (auto iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    {
+      if ((*iIterator).iFlag_left_hillslope == 1)
+      {
+        vElevation_left.push_back((*iIterator).dElevation_mean);
+      }
+      else
+      {
+        if ((*iIterator).iFlag_right_hillslope == 1)
+        {
+          vElevation_right.push_back((*iIterator).dElevation_mean);
+        }
+      }
+    }
+    // create an array of 10 elements for both left and right hillslope
+    std::array<float, 10> aElevation_profile_left;
+    std::array<float, 10> aElevation_profile_right;
+
+    for (int i = 0; i < nElevation_profile; i++)
+    {
+      float p = (i + 1) * 10.0;
+      aElevation_profile_left[i] = data::percentile(vElevation_left, p);
+      aElevation_profile_right[i] = data::percentile(vElevation_right, p);
+    }
 
     return error_code;
   }

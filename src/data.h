@@ -43,6 +43,8 @@ class data
   static std::vector<float> read_binary_vector(const std::string sFilename_in);
   static int write_binary_vector(const std::string sFilename_in,
                                  vector <float> vData_in);
+
+  static float percentile(const std::vector<float>& data, float percentile);
   //50==================================================
   //advanced data io using MPI
   //dataIO using PETSc
