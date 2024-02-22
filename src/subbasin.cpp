@@ -585,6 +585,13 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_hillslope_characteristics()
   {
     int error_code = 1;
+    // zonal statistics
+    // elevation profile
+    int nElevation_profile = 11;
+    float p;
+    std::vector<float> vElevation_left, vElevation_right;
+    //std::array<float, 11> aElevation_profile_left;
+    //std::array<float, 11> aElevation_profile_right;
     // std::vector<hillslope>::iterator iIterator;
     /*
     for (iIterator = vHillslope.begin(); iIterator != vHillslope.end(); iIterator++)
@@ -599,15 +606,7 @@ namespace hexwatershed
 
     // length
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
-
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
-
-    // zonal statistics
-    // elevation profile
-
-    int nElevation_profile = 10;
-    std::vector<float> vElevation_left, vElevation_right;
-
     // gather all the elevation data
     for (auto iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
@@ -624,15 +623,17 @@ namespace hexwatershed
       }
     }
     // create an array of 10 elements for both left and right hillslope
-    std::array<float, 10> aElevation_profile_left;
-    std::array<float, 10> aElevation_profile_right;
-
-    for (int i = 0; i < nElevation_profile; i++)
+    // for first and last of the elevation profile are min and max
+    aElevation_profile_left[0] = *std::min_element(vElevation_left.begin(), vElevation_left.end());
+    aElevation_profile_left[10] = *std::max_element(vElevation_left.begin(), vElevation_left.end());
+    for (int i = 1; i < nElevation_profile; i++)
     {
-      float p = (i + 1) * 10.0;
+      p = i * 10.0;
       aElevation_profile_left[i] = data::percentile(vElevation_left, p);
       aElevation_profile_right[i] = data::percentile(vElevation_right, p);
     }
+    //how to save this data? maybe using the subbasin class.
+    //now calculate the hillslope slope using the elevation profile
 
     return error_code;
   }

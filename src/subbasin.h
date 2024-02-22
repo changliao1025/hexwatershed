@@ -56,6 +56,8 @@ namespace hexwatershed
         // float dArea_hillslope_headwater;
         float dSlope_hillslope_left_mean;
         float dSlope_hillslope_right_mean;
+        std::array<float, 11> aElevation_profile_left;
+        std::array<float, 11> aElevation_profile_right;
         // float dSlope_hillslope_headwater;
 
         hexagon cCell_headwater; // the first cell of its segment
