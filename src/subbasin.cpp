@@ -461,6 +461,7 @@ namespace hexwatershed
     }
     return error_code;
   }
+  
   int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;
@@ -634,6 +635,8 @@ namespace hexwatershed
     }
     //how to save this data? maybe using the subbasin class.
     //now calculate the hillslope slope using the elevation profile
+    dSlope_hillslope_left = ( aElevation_profile_left[10] - aElevation_profile_left[0]  )/dLength_hillslope_left;
+    dSlope_hillslope_right = ( aElevation_profile_right[10] - aElevation_profile_right[0]  )/dLength_hillslope_right;
 
     return error_code;
   }
