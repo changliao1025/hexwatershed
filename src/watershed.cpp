@@ -1045,6 +1045,7 @@ namespace hexwatershed
         pCell.dSlope_between = pHexagon.dSlope_max_downslope;
         pCell.dSlope_profile = pHexagon.dSlope_elevation_profile0;
         pCell.dDistance_to_downslope = pHexagon.dDistance_to_downslope;
+        pCell.dDistance_to_channel = pHexagon.dDistance_to_channel;
         pCell.dDistance_to_subbasin_outlet = pHexagon.dDistance_to_subbasin_outlet;
         pCell.dDistance_to_watershed_outlet = pHexagon.dDistance_to_watershed_outlet;
         pCell.dElevation_mean = pHexagon.dElevation_mean;

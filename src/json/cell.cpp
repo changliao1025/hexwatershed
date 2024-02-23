@@ -208,6 +208,8 @@ namespace jsonmodel
 		writer->Double(dAccumulation);
 		writer->String("dDistance_to_downslope");
 		writer->Double(dDistance_to_downslope);
+		writer->String("dDistance_to_channel");
+		writer->Double(dDistance_to_channel);
 		writer->String("dDistance_to_subbasin_outlet");
 		writer->Double(dDistance_to_subbasin_outlet);
 		writer->String("dDistance_to_watershed_outlet");

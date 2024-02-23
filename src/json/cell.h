@@ -45,6 +45,7 @@ namespace jsonmodel
     float dDistance_to_downslope; /*!<distance to downsloe*/
     float dDistance_to_subbasin_outlet; /*!< distance to subbasin outlet*/
     float dDistance_to_watershed_outlet; /*!< distance to watershed outlet*/
+    float dDistance_to_channel; /*!<distance to channel*/
    
     int nEdge;
     int nNeighbor;
