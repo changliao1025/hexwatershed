@@ -1016,9 +1016,12 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_headwater;
+    float dWidth_mean, dLength_mean; dSlope_mean;
     std::string sLine;
+    
     std::vector<subbasin>::iterator iIterator1;
     std::ofstream ofs;
+
     ofs.open(sFilename_subbasin_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
@@ -1032,14 +1035,22 @@ namespace hexwatershed
       ofs.close();
       // how to add the hillslope information in the export step?
     }
+
+    dWidth_mean = 0.0;
+    dLength_mean = 0.0;
+    dSlope_mean = 0.0;
     ofs.open(sFilename_hillslope_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-      sLine = "Hillslope ID, Subbasin ID, number of cell, total area, average slope, area_to_length, drainage density";
+      sLine = "Hillslope ID, Subbasin ID, number of cell, total area, hillslope slope, hillslope width, hillslope length";
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_left) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_left) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_left) + ",";
+        sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," 
+        + convert_float_to_string((*iIterator1).dArea_hillslope_left) + "," 
+        + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," 
+        + convert_float_to_string((*iIterator1).dWidth_hillslope_left) + "," 
+        + convert_float_to_string((*iIterator1).dLength_hillslope_left) + ",";
         ofs << sLine << std::endl;
 
         sLine = convert_long_to_string((*iIterator1).lHillslope_right) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_right) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_right) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_right) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_right) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_right) + ",";
