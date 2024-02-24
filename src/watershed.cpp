@@ -597,21 +597,27 @@ namespace hexwatershed
       nHillslope = vSubbasin[lSubbasin - 1].nHillslope;
       for (long j = 0; j < vSubbasin[lSubbasin - 1].vCell.size(); j++)
       {
+        vSubbasin[lSubbasin - 1].lHillslope_left = lHillslope_current; //not optimized
         if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_left_hillslope == 1)
         {
           vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current;
         }
         else
         {
+          vSubbasin[lSubbasin - 1].lHillslope_right = lHillslope_current + 1;
           if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_right_hillslope == 1)
           {
             vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 1;
           }
           else
           {
-            if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_headwater_hill == 1)
+            if (vSubbasin[lSubbasin - 1].iFlag_headwater == 1)
             {
-              vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 2;
+              vSubbasin[lSubbasin - 1].lHillslope_headwater = lHillslope_current + 2;
+              if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_headwater_hillslope == 1)
+              {
+                vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 2;
+              }
             }
             else
             {
@@ -1009,6 +1015,7 @@ namespace hexwatershed
   int watershed::watershed_export_subbasin_characteristics()
   {
     int error_code = 1;
+    int iFlag_headwater;
     std::string sLine;
     std::vector<subbasin>::iterator iIterator1;
     std::ofstream ofs;
@@ -1023,7 +1030,29 @@ namespace hexwatershed
         ofs << sLine << std::endl;
       }
       ofs.close();
+      // how to add the hillslope information in the export step?
+    }
+    ofs.open(sFilename_hillslope_characteristics.c_str(), ios::out);
+    if (ofs.good())
+    {
+      sLine = "Hillslope ID, Subbasin ID, number of cell, total area, average slope, area_to_length, drainage density";
+      ofs << sLine << std::endl;
+      for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+      {
+        sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_left) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_left) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_left) + ",";
+        ofs << sLine << std::endl;
 
+        sLine = convert_long_to_string((*iIterator1).lHillslope_right) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_right) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_right) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_right) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_right) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_right) + ",";
+        ofs << sLine << std::endl;
+
+        iFlag_headwater = (*iIterator1).iFlag_headwater;
+        if (iFlag_headwater == 1)
+        {
+          sLine = convert_long_to_string((*iIterator1).lHillslope_headwater) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_headwater) + ",";
+          ofs << sLine << std::endl;
+        }
+      }
+      ofs.close();
       // how to add the hillslope information in the export step?
     }
     return error_code;

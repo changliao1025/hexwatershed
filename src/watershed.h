@@ -64,6 +64,7 @@ namespace hexwatershed
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
     std::string sFilename_subbasin_characteristics;
+    std::string sFilename_hillslope_characteristics;
 
     std::string sFilename_watershed_json;
     std::string sFilename_watershed_stream_edge_json;

@@ -60,7 +60,7 @@ namespace hexwatershed
 
     int iFlag_left_hillslope;
     int iFlag_right_hillslope;
-    int iFlag_headwater_hill;
+    int iFlag_headwater_hillslope;
 
     int iFlag_first_reach; //whether it is the first reach of a stream
     int iFlag_last_reach;  //whether it is the last reach of a stream

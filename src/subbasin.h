@@ -35,8 +35,12 @@ namespace hexwatershed
         long nCell;
         long nCell_hillslope_left;
         long nCell_hillslope_right;
+        long nCell_hillslope_headwater;
         long lCellID_headwater; // the id of the headwater cell
         long lCellID_outlet;    // the id of the subbasin outlet
+        long lHillslope_left; //id for hillslope, the first cell of the hillslope
+        long lHillslope_right;
+        long lHillslope_headwater;
         double dArea;
         float dSlope;
         float dSlope_mean;
@@ -46,21 +50,27 @@ namespace hexwatershed
         float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
         float dDistance_to_subbasin_outlet;
         float dDrainage_density;
+
         float dLength_hillslope_left;
         float dLength_hillslope_right;
+        float dLength_hillslope_headwater;
+
         float dWidth_hillslope_left;
         float dWidth_hillslope_right;
-        // float dLength_hillslope_headwater;
+        float dWidth_hillslope_headwater;
+        
         double dArea_hillslope_left;
         double dArea_hillslope_right;
+        double dArea_hillslope_headwater;
         // float dArea_hillslope_headwater;
         float dSlope_hillslope_left_mean;  //mean slope of cell
         float dSlope_hillslope_right_mean;
         float dSlope_hillslope_left;  //slope of the hillslope
         float dSlope_hillslope_right;
+        float dSlope_hillslope_headwater;
         std::array<float, 11> aElevation_profile_left;
         std::array<float, 11> aElevation_profile_right;
-        // float dSlope_hillslope_headwater;
+   
 
         hexagon cCell_headwater; // the first cell of its segment
         hexagon cCell_outlet;    // the outlet of this subbasin, this cell is actually within the subbasin because it is shared by multiple subbasin

@@ -13,6 +13,10 @@ namespace hexwatershed
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
     nHillslope = 2;
+    lHillslope_headwater = -1;
+    dWidth_hillslope_headwater=0.0;
+    dLength_hillslope_headwater=0.0;
+    dSlope_hillslope_headwater=0.0;
     // vHillslope.clear();
   }
   subbasin::~subbasin()
@@ -22,7 +26,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_checked;
-    int iFlag_left_hillslope, iFlag_right_hillslope, iFlag_headwater_hill;
+    int iFlag_left_hillslope, iFlag_right_hillslope, iFlag_headwater_hillslope;
     int iFlag_checked_downslope;
     long lCellID_upslope, lCellID_downslope;
     long lCellIndex_buffer;
@@ -51,7 +55,7 @@ namespace hexwatershed
       // set the headwater as checked
       lCellIndex_current = mCellIdToIndex[lCellID_headwater];
       vCell[lCellIndex_current].iFlag_checked = 1;
-      vCell[lCellIndex_current].iFlag_headwater_hill = 1;
+      vCell[lCellIndex_current].iFlag_headwater_hillslope = 1;
 
       for (iIterator = vCell_segment.begin() + 1; iIterator != vCell_segment.end(); iIterator++) // skip the first one because it is the headwater
       {
@@ -371,12 +375,12 @@ namespace hexwatershed
         // now set the flag
         iFlag_left_hillslope = vCell[lCellIndex_current].iFlag_left_hillslope;
         iFlag_right_hillslope = vCell[lCellIndex_current].iFlag_right_hillslope;
-        iFlag_headwater_hill = vCell[lCellIndex_current].iFlag_headwater_hill;
+        iFlag_headwater_hillslope = vCell[lCellIndex_current].iFlag_headwater_hillslope;
         for (iIterator_path = vSearchPath.begin(); iIterator_path != vSearchPath.end(); iIterator_path++)
         {
           vCell[*iIterator_path].iFlag_left_hillslope = iFlag_left_hillslope;
           vCell[*iIterator_path].iFlag_right_hillslope = iFlag_right_hillslope;
-          vCell[*iIterator_path].iFlag_headwater_hill = iFlag_headwater_hill;
+          vCell[*iIterator_path].iFlag_headwater_hillslope = iFlag_headwater_hillslope;
           vCell[*iIterator_path].iFlag_checked = 1;
         }
       }
@@ -384,7 +388,6 @@ namespace hexwatershed
 
     // now calculate left and right hillslope width and count
     dWidth_hillslope_left = 0.0;
-
     for (iIterator1 = vCellID_buffer_left.begin(); iIterator1 != vCellID_buffer_left.end(); iIterator1++)
     {
       lCellIndex_buffer = mCellIdToIndex[*iIterator1];
@@ -392,7 +395,6 @@ namespace hexwatershed
     }
 
     dWidth_hillslope_right = 0.0;
-
     for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
     {
       lCellIndex_buffer = mCellIdToIndex[*iIterator1];
@@ -403,6 +405,7 @@ namespace hexwatershed
     // calculate left and right cell count
     nCell_hillslope_left = 0;
     nCell_hillslope_right = 0;
+    nCell_hillslope_headwater = 0;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       if ((*iIterator).iFlag_left_hillslope == 1)
@@ -414,6 +417,13 @@ namespace hexwatershed
         if ((*iIterator).iFlag_right_hillslope == 1)
         {
           nCell_hillslope_right = nCell_hillslope_right + 1;
+        }
+        else
+        {
+          if ((*iIterator).iFlag_headwater_hillslope == 1)
+          {
+            nCell_hillslope_headwater = nCell_hillslope_headwater + 1;
+          }
         }
       }
     }
@@ -432,7 +442,7 @@ namespace hexwatershed
       {
         cHillslope_right.vCell.push_back((*iIterator));
       }
-      if ((*iIterator).iFlag_headwater_hill == 1)
+      if ((*iIterator).iFlag_headwater_hillslope == 1)
       {
         cHillslope_headwater.vCell.push_back((*iIterator));
       }

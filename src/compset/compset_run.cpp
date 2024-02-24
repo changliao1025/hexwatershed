@@ -488,6 +488,7 @@ namespace hexwatershed
         cWatershed.sFilename_watershed_characteristics = cWatershed.sWorkspace_output_watershed + slash + "watershed.txt";
         cWatershed.sFilename_segment_characteristics = cWatershed.sWorkspace_output_watershed + slash + "segment.txt";
         cWatershed.sFilename_subbasin_characteristics = cWatershed.sWorkspace_output_watershed + slash + "subbasin.txt";
+        cWatershed.sFilename_hillslope_characteristics = cWatershed.sWorkspace_output_watershed + slash + "hillslope.txt";
         cWatershed.vCell.clear();
         cWatershed.lWatershed = lWatershed;
         cWatershed.lCellID_outlet = lCellID_outlet;
