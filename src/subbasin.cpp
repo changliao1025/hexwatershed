@@ -14,9 +14,9 @@ namespace hexwatershed
     iFlag_headwater = 0;
     nHillslope = 2;
     lHillslope_headwater = -1;
-    dWidth_hillslope_headwater=0.0;
-    dLength_hillslope_headwater=0.0;
-    dSlope_hillslope_headwater=0.0;
+    dWidth_hillslope_headwater = 0.0;
+    dLength_hillslope_headwater = 0.0;
+    dSlope_hillslope_headwater = 0.0;
     // vHillslope.clear();
   }
   subbasin::~subbasin()
@@ -47,7 +47,11 @@ namespace hexwatershed
     std::vector<long> vSearchPath;
     std::vector<long>::iterator iIterator_path;
     // define the list of segment cells in the upstream to downstream order?
-    // can this be passed by?
+    // this feature must be turned on
+    if (iFlag_hillslope != 1)
+    {
+      return error_code;
+    }
 
     // find the buffer zone, but also be careful about the headwater
     if (iFlag_headwater == 1)
@@ -447,7 +451,6 @@ namespace hexwatershed
         cHillslope_headwater.vCell.push_back((*iIterator));
       }
     }
-
     vHillslope.clear();
     vHillslope.push_back(cHillslope_left);
     vHillslope.push_back(cHillslope_right);
@@ -471,14 +474,17 @@ namespace hexwatershed
     }
     return error_code;
   }
-  
+
   int subbasin::subbasin_calculate_characteristics(float dLength_stream_conceptual)
   {
     int error_code = 1;
     subbasin_calculate_total_area();
     subbasin_calculate_slope();
     subbasin_calculate_drainage_density(dLength_stream_conceptual);
-    subbasin_calculate_hillslope_characteristics();
+    if (iFlag_hillslope == 1)
+    {
+      subbasin_calculate_hillslope_characteristics();
+    }
     return error_code;
   }
 
@@ -575,7 +581,7 @@ namespace hexwatershed
       lCellID_current = (*iIterator).lCellID;
       if (lCellID_current != lCellID_outlet)
       {
-        dDistance_to_subbasin_channel_temp = (*iIterator).dDistance_to_downslope;   
+        dDistance_to_subbasin_channel_temp = (*iIterator).dDistance_to_downslope;
         dDistance_to_subbasin_outlet_temp = (*iIterator).dDistance_to_downslope;
         lCellID_current = (*iIterator).lCellID_downslope_dominant;
         while (lCellID_current != lCellID_outlet)
@@ -584,7 +590,7 @@ namespace hexwatershed
           lCellID_current = vCell[lCellIndex].lCellID_downslope_dominant;
           iFlag_channel = vCell[lCellIndex].iFlag_stream;
           if (iFlag_channel != 1)
-          {        
+          {
             dDistance_to_subbasin_channel_temp = dDistance_to_subbasin_channel_temp + vCell[lCellIndex].dDistance_to_downslope;
           }
           dDistance_to_subbasin_outlet_temp = dDistance_to_subbasin_outlet_temp + vCell[lCellIndex].dDistance_to_downslope;
@@ -606,13 +612,12 @@ namespace hexwatershed
   {
     int error_code = 1;
     // zonal statistics
-    // elevation profile
     int nElevation_profile = 11;
     float p;
     std::vector<float> vElevation_left, vElevation_right;
-    //std::array<float, 11> aElevation_profile_left;
-    //std::array<float, 11> aElevation_profile_right;
-    // std::vector<hillslope>::iterator iIterator;
+    // std::array<float, 11> aElevation_profile_left;
+    // std::array<float, 11> aElevation_profile_right;
+    //  std::vector<hillslope>::iterator iIterator;
     /*
     for (iIterator = vHillslope.begin(); iIterator != vHillslope.end(); iIterator++)
     {
@@ -621,9 +626,7 @@ namespace hexwatershed
     // list of characteristics needed: total area, mean slope, segment length, average width
 
     // width is already calculated
-
     // area is already calculated
-
     // length
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
@@ -644,18 +647,32 @@ namespace hexwatershed
     }
     // create an array of 10 elements for both left and right hillslope
     // for first and last of the elevation profile are min and max
-    aElevation_profile_left[0] = *std::min_element(vElevation_left.begin(), vElevation_left.end());
-    aElevation_profile_left[10] = *std::max_element(vElevation_left.begin(), vElevation_left.end());
-    for (int i = 1; i < nElevation_profile; i++)
+    // left
+    // check element number is larger than 11
+    if (vElevation_left.size() > 11)
     {
-      p = i * 10.0;
-      aElevation_profile_left[i] = data::percentile(vElevation_left, p);
-      aElevation_profile_right[i] = data::percentile(vElevation_right, p);
+      aElevation_profile_left[0] = *std::min_element(vElevation_left.begin(), vElevation_left.end());
+      aElevation_profile_left[10] = *std::max_element(vElevation_left.begin(), vElevation_left.end());
+      for (int i = 1; i < nElevation_profile; i++)
+      {
+        p = i * 10.0;
+        aElevation_profile_left[i] = data::percentile(vElevation_left, p);
+      }
+      // now calculate the hillslope slope using the elevation profile
+      dSlope_hillslope_left = (aElevation_profile_left[10] - aElevation_profile_left[0]) / dLength_hillslope_left;
     }
-    //how to save this data? maybe using the subbasin class.
-    //now calculate the hillslope slope using the elevation profile
-    dSlope_hillslope_left = ( aElevation_profile_left[10] - aElevation_profile_left[0]  )/dLength_hillslope_left;
-    dSlope_hillslope_right = ( aElevation_profile_right[10] - aElevation_profile_right[0]  )/dLength_hillslope_right;
+    // right
+    if (vElevation_right.size() > 11)
+    {
+      aElevation_profile_right[0] = *std::min_element(vElevation_right.begin(), vElevation_right.end());
+      aElevation_profile_right[10] = *std::max_element(vElevation_right.begin(), vElevation_right.end());
+      for (int i = 1; i < nElevation_profile; i++)
+      {
+        p = i * 10.0;
+        aElevation_profile_right[i] = data::percentile(vElevation_right, p);
+      }
+      dSlope_hillslope_right = (aElevation_profile_right[10] - aElevation_profile_right[0]) / dLength_hillslope_right;
+    }
 
     return error_code;
   }

@@ -157,7 +157,7 @@ namespace hexwatershed
     iStream_order_center = vCell_active[lCellIndex_center].iStream_order_burned;
     lCellID_current = vCell_active[lCellIndex_center].lCellID;
     // stream first
-    // std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
+    //std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];

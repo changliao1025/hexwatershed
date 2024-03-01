@@ -29,6 +29,7 @@ namespace hexwatershed
         int iFlag_headwater; // 1: headwater, 0: not headwater
         int iFlag_outlet;    // 1: outlet, 0: not outlet
         int nHillslope;
+        int iFlag_hillslope;
 
         long lSubbasin; // each subbasin should have the same index with its segment
         long lSubbasinIndex;

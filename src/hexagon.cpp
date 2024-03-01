@@ -123,6 +123,7 @@ namespace hexwatershed
     dLength = sqrt( dArea );    
     dResolution_effective = dLength ;
     dLength_stream_conceptual = dResolution_effective;
+    dLength_edge_mean = dResolution_effective;
     return error_code;
   }
 

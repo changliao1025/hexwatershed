@@ -76,9 +76,8 @@ namespace hexwatershed
       {
         pHexagon.iFlag_stream_burned = 1;
       }
-
       pHexagon.calculate_effective_resolution();
-      pHexagon.calculate_average_edge_length();
+      //pHexagon.calculate_average_edge_length();
       // we require the
       if (pHexagon.dLength_stream_burned < pHexagon.dLength_stream_conceptual)
       {
