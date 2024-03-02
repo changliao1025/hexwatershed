@@ -431,7 +431,7 @@ namespace hexwatershed
             aIndex = compset_find_lowest_cell_in_priority_queue(vCell_boundary);
             lCellIndex_active = aIndex[1]; // local id
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
-            // vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); //for animation only
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); //for animation only
 
             // new simplified approach
             if (iFlag_stream_burning_topology == 0)
@@ -457,7 +457,7 @@ namespace hexwatershed
               lCellIndex_active = (*iIterator).lCellIndex;
               if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
               {
-                // vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); //animation
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); //animation
               }
               vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
             }
@@ -807,7 +807,7 @@ namespace hexwatershed
           }
           else
           {
-            // vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
             if (dElevation_mean_neighbor <= dElevation_mean_center)
             {
               vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;

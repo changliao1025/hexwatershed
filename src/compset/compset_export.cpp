@@ -80,13 +80,10 @@ namespace hexwatershed
   int compset::compset_export_watershed_animation_json(const std::string &sFilename_in)
   {
     int error_code = 1;
-
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
-
     jsonmodel::mesh cMesh;
-
     if (iFlag_global != 1)
     {
       if (iFlag_multiple_outlet != 1)
@@ -96,6 +93,12 @@ namespace hexwatershed
         {
           cell pCell;
           pCell.lCellID = (*iIterator).lCellID;
+          pCell.dElevation_raw = (*iIterator).dElevation_raw;
+          pCell.dElevation_mean = (*iIterator).dElevation_mean;
+          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+          pCell.vVertex = (*iIterator).vVertex;
+          pCell.nVertex = pCell.vVertex.size();
           cMesh.aCell.push_back(pCell);
         }
 

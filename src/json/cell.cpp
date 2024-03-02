@@ -18,6 +18,8 @@ namespace jsonmodel
 		dLatitude_center_degree = -9999.0;
 		dLongitude_center_degree = -9999.0;
 		dArea = -9999.0;
+		dLength=0.0;
+		dLength_flowline=0.0;
 		dDistance_to_downslope = -9999.0;
 		dDistance_to_subbasin_outlet = -9999.0;
 		dDistance_to_watershed_outlet = -9999.0;
@@ -29,6 +31,7 @@ namespace jsonmodel
 
 		dSlope_between = -9999.0;
 		dSlope_within = -9999.0;
+		dSlope_profile =-9999.0;
 	}
 
 	cell::~cell()
