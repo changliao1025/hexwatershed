@@ -984,6 +984,46 @@ namespace hexwatershed
       sLine = "Average slope: " + convert_float_to_string(dSlope_mean);
       ofs << sLine << std::endl;
 
+      //left hillslope
+      sLine = "Average left hillslope area: " + convert_float_to_string(dArea_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope length: " + convert_float_to_string(dLength_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope width: " + convert_float_to_string(dWidth_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope slope: " + convert_float_to_string(dSlope_hillslope_left_mean);
+      ofs << sLine << std::endl;
+
+      //right hilslope
+      sLine = "Average right hillslope area: " + convert_float_to_string(dArea_hillslope_right_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average right hillslope length: " + convert_float_to_string(dLength_hillslope_right_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average right hillslope width: " + convert_float_to_string(dWidth_hillslope_right_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average right hillslope slope: " + convert_float_to_string(dSlope_hillslope_right_mean);
+      ofs << sLine << std::endl;
+
+      //headwater
+      sLine = "Average headwater hillslope area: " + convert_float_to_string(dArea_hillslope_headwater_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average headwater hillslope length: " + convert_float_to_string(dLength_hillslope_headwater_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average headwater hillslope width: " + convert_float_to_string(dWidth_hillslope_headwater_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average headwater hillslope slope: " + convert_float_to_string(dSlope_hillslope_headwater_mean);
+      ofs << sLine << std::endl;
+
+      //mean hillslope
+      sLine = "Average hillslope area: " + convert_float_to_string(dArea_hillslope_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average hillslope length: " + convert_float_to_string(dLength_hillslope_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average hillslope width: " + convert_float_to_string(dWidth_hillslope_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average hillslope slope: " + convert_float_to_string(dSlope_hillslope_mean);
+      ofs << sLine << std::endl;
+
       ofs.close();
     }
 
@@ -1023,6 +1063,7 @@ namespace hexwatershed
     std::vector<subbasin>::iterator iIterator1;
     std::ofstream ofs;
 
+    //for each subbasin:
     ofs.open(sFilename_subbasin_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
@@ -1030,66 +1071,76 @@ namespace hexwatershed
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
+        sLine = convert_long_to_string((*iIterator1).lSubbasin) + ","
+         + convert_long_to_string((*iIterator1).lCellID_outlet) + ","
+          + convert_long_to_string((*iIterator1).nCell) + ","
+           + convert_float_to_string((*iIterator1).dArea) + "," 
+           + convert_float_to_string((*iIterator1).dSlope_mean) + "," 
+           + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," 
+           + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
         ofs << sLine << std::endl;
       }
+
+      //watershed average left hillslope, right hillslope, headwater hillslope
+
       ofs.close();
       // how to add the hillslope information in the export step?
     }
 
-    dWidth_mean = 0.0;
-    dLength_mean = 0.0;
-    dSlope_mean = 0.0;
+    //within each subbasin, there are multiple hillslopes (left, right, headwater)
+    
     nSlope = 0;
     nWidth = 0;
     nLength = 0;
     ofs.open(sFilename_hillslope_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-      sLine = "Hillslope ID, Subbasin ID, number of cell, total area, hillslope slope, hillslope width, hillslope length";
+      sLine = "Hillslope ID, Subbasin ID, number of cell, total area, hillslope width, hillslope length, hillslope slope, mean slope";
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," 
+        //left
+        sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," + 
+        convert_long_to_string((*iIterator1).lSubbasin) + "," 
+        + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," 
         + convert_float_to_string((*iIterator1).dArea_hillslope_left) + "," 
-        + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," 
         + convert_float_to_string((*iIterator1).dWidth_hillslope_left) + "," 
-        + convert_float_to_string((*iIterator1).dLength_hillslope_left) + ",";
+        + convert_float_to_string((*iIterator1).dLength_hillslope_left) + ","
+        + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," 
+        + convert_float_to_string((*iIterator1).dSlope_hillslope_left_mean) + ",";
         ofs << sLine << std::endl;
 
-        dSlope_mean = dSlope_mean + (*iIterator1).dSlope_hillslope_left;
-        dWidth_mean = dWidth_mean + (*iIterator1).dWidth_hillslope_left;
-        dLength_mean = dLength_mean + (*iIterator1).dLength_hillslope_left;
+        //right
 
-        sLine = convert_long_to_string((*iIterator1).lHillslope_right) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_right) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_right) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_right) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_right) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_right) + ",";
+        sLine = convert_long_to_string((*iIterator1).lHillslope_right) + "," + 
+        convert_long_to_string((*iIterator1).lSubbasin) + "," 
+        + convert_long_to_string((*iIterator1).nCell_hillslope_right) + "," 
+        + convert_float_to_string((*iIterator1).dArea_hillslope_right) + "," 
+        + convert_float_to_string((*iIterator1).dWidth_hillslope_right) + "," 
+        + convert_float_to_string((*iIterator1).dLength_hillslope_right) + ","
+         + convert_float_to_string((*iIterator1).dSlope_hillslope_right) + "," 
+         + convert_float_to_string((*iIterator1).dSlope_hillslope_right_mean) + ",";
         ofs << sLine << std::endl;
 
-        dSlope_mean = dSlope_mean + (*iIterator1).dSlope_hillslope_right;
-        dWidth_mean = dWidth_mean + (*iIterator1).dWidth_hillslope_right;
-        dLength_mean = dLength_mean + (*iIterator1).dLength_hillslope_right;
-
-        nSlope = nSlope + 2;
-        nWidth = nWidth + 2;
-        nLength = nLength + 2;
+      
 
         iFlag_headwater = (*iIterator1).iFlag_headwater;
         if (iFlag_headwater == 1)
         {
-          sLine = convert_long_to_string((*iIterator1).lHillslope_headwater) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_headwater) + ",";
+          sLine = convert_long_to_string((*iIterator1).lHillslope_headwater) + "," 
+          + convert_long_to_string((*iIterator1).lSubbasin) + "," 
+          + convert_long_to_string((*iIterator1).nCell_hillslope_headwater) + "," 
+          + convert_float_to_string((*iIterator1).dArea_hillslope_headwater) + "," 
+          + convert_float_to_string((*iIterator1).dWidth_hillslope_headwater) + "," 
+          + convert_float_to_string((*iIterator1).dLength_hillslope_headwater) + ","
+           + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater) + ","
+            + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater_mean) + ",";
           ofs << sLine << std::endl;
         }
       }
-      dSlope_mean = dSlope_mean / nSlope;
-      dWidth_mean = dWidth_mean / nWidth;
-      dLength_mean = dLength_mean / nLength;
-      sLine = "Mean hillslope slope: " + convert_float_to_string(dSlope_mean);
-      ofs << sLine << std::endl;
-      sLine = "Mean hillslope width: " + convert_float_to_string(dWidth_mean);
-      ofs << sLine << std::endl;
-      sLine = "Mean hillslope length: " + convert_float_to_string(dLength_mean);
-      ofs << sLine << std::endl;
+      
       ofs.close();
-      // how to add the hillslope information in the export step?
+      
     }
     return error_code;
   }
