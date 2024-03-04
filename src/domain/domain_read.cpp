@@ -164,8 +164,16 @@ namespace hexwatershed
     sKey = "dAccumulation_threshold";
     if (pConfigDoc.HasMember(sKey.c_str()))
     {
-      cCompset.cParameter.dAccumulation_threshold = pConfigDoc[sKey.c_str()].GetFloat();
-    }
+      cCompset.cParameter.dAccumulation_threshold_ratio = pConfigDoc[sKey.c_str()].GetFloat();
+      if (cCompset.cParameter.dAccumulation_threshold_ratio >= 1.0)
+      {
+        cCompset.cParameter.dAccumulation_threshold_ratio = 0.05;
+      }
+      if (cCompset.cParameter.dAccumulation_threshold_ratio < 1.0)
+      {
+        cCompset.cParameter.dAccumulation_threshold_ratio = 0.01;
+      }
+
 
     sKey = "dMissing_value_dem";
     if (pConfigDoc.HasMember(sKey.c_str()))

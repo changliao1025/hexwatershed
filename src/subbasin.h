@@ -63,14 +63,17 @@ namespace hexwatershed
         double dArea_hillslope_left;
         double dArea_hillslope_right;
         double dArea_hillslope_headwater;
-        // float dArea_hillslope_headwater;
+ 
         float dSlope_hillslope_left_mean;  //mean slope of cell
         float dSlope_hillslope_right_mean;
+        float dSlope_hillslope_headwater_mean;
+
         float dSlope_hillslope_left;  //slope of the hillslope
         float dSlope_hillslope_right;
         float dSlope_hillslope_headwater;
         std::array<float, 11> aElevation_profile_left;
         std::array<float, 11> aElevation_profile_right;
+        std::array<float, 11> aElevation_profile_headwater;
    
 
         hexagon cCell_headwater; // the first cell of its segment

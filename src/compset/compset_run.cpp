@@ -128,19 +128,20 @@ namespace hexwatershed
   int compset::compset_define_stream_grid()
   {
     int error_code = 1;
-    long lCellIndex_self;
-    // in watershed hydrology, a threshold is usually used to define the network
-    // here we use similar method
-    float dAccumulation;
-    float dAccumulation_min = 0.0;
-    float dAccumulation_max = 0.0;
-    float dAccumulation_threshold;
-    long lCellID_outlet;
-    long lCellIndex_outlet;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_stream_grid_option;
+    long lCellIndex_self; 
+    long lCellID_outlet;
+    long lCellIndex_outlet;    
+    float dAccumulation;
+    float dAccumulation_min = 0.0;
+    float dAccumulation_max = 0.0;
+    // in watershed hydrology, a threshold is usually used to define the network
+    // here we use similar method
+    float dAccumulation_threshold;
+    float dAccumulation_threshold_ratio = cParameter.dAccumulation_threshold_ratio;
     std::vector<hexagon>::iterator iIterator_self;
     iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
     if (iFlag_global != 1)
@@ -153,7 +154,7 @@ namespace hexwatershed
           lCellID_outlet = aBasin[0].lCellID_outlet;
 
           lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-          dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
+          dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
 
           dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
           switch (iFlag_stream_grid_option)
@@ -276,9 +277,8 @@ namespace hexwatershed
           for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
           {
             lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-
             lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-            dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
+            dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
             dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
             switch (iFlag_stream_grid_option)
             {
@@ -408,7 +408,7 @@ namespace hexwatershed
           }
         }
 
-        dAccumulation_threshold = 0.05 * vCell_active[lCellIndex_outlet].dAccumulation;
+        dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
         // also set the outlet id
         lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
 

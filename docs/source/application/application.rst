@@ -248,7 +248,7 @@ Each domain may contain one or more basins.
      - float
      - 
      - The threshold parameter for the hybrid breaching filling algorithm
-   * - dAccumulation_threshold
+   * - dAccumulation_threshold_ratio
      - float
      - 
      - The accumulation parameter to define stream cell
@@ -327,7 +327,7 @@ The basin configuration file contains one or more block of JSON basin object. Ea
      - float
      - 0 or 1
      - The outlet longitude 
-   * - dAccumulation_threshold
+   * - dAccumulation_threshold_ratio
      - float
      - 
      - The accumulation parameter to define the stream cell

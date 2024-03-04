@@ -67,9 +67,11 @@ namespace hexwatershed
     long nOutlet;
 
     // parameters
-    float dAccumulation_threshold;
+    
     float dBreach_threshold; // the threshold parameter for stream burning breaching algorithm
     float dMissing_value_dem;
+    //float dAccumulation_threshold; //real accumuation
+    float dAccumulation_threshold_ratio; //the ratio of accumulation compared with max accumulation
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;

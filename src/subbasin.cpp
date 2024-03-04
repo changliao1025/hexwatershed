@@ -405,6 +405,8 @@ namespace hexwatershed
       dWidth_hillslope_right = dWidth_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
     }
     // for headwater, it is consider a convergence, a special method is needed
+    //its width can be defined using the headwater cell edge mean
+    dWidth_hillslope_headwater = cCell_headwater.dLength_edge_mean;
 
     // calculate left and right cell count
     nCell_hillslope_left = 0;
@@ -497,6 +499,7 @@ namespace hexwatershed
 
     dArea_hillslope_left = 0.0;
     dArea_hillslope_right = 0.0;
+    dArea_hillslope_headwater = 0.0;
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
       if ((*iIterator).dArea < 0.0)
@@ -512,6 +515,10 @@ namespace hexwatershed
         if ((*iIterator).iFlag_right_hillslope == 1)
         {
           dArea_hillslope_right = dArea_hillslope_right + (*iIterator).dArea;
+        }
+        if ((*iIterator).iFlag_headwater_hillslope == 1)
+        {
+          dArea_hillslope_headwater = dArea_hillslope_headwater + (*iIterator).dArea;
         }
         dArea_total = dArea_total + (*iIterator).dArea;
       }
@@ -532,6 +539,7 @@ namespace hexwatershed
     float dSlope_total = 0.0;
     float dSlope_left = 0.0;
     float dSlope_right = 0.0;
+    float dSlope_hillslope_headwater = 0.0;
     std::vector<hexagon>::iterator iIterator;
     if (iOption == 1) // by cell
     {
@@ -546,6 +554,10 @@ namespace hexwatershed
         {
           dSlope_right = dSlope_right + (*iIterator).dSlope_max_downslope;
         }
+        if ((*iIterator).iFlag_headwater_hillslope == 1)
+        {
+          dSlope_hillslope_headwater = dSlope_hillslope_headwater + (*iIterator).dSlope_max_downslope;
+        }
       }
     }
     dSlope = dSlope_total / nCell;
@@ -553,6 +565,7 @@ namespace hexwatershed
     dSlope_mean = dSlope;
     dSlope_hillslope_left_mean = dSlope_left / nCell_hillslope_left;
     dSlope_hillslope_right_mean = dSlope_right / nCell_hillslope_right;
+    dSlope_hillslope_headwater_mean = dSlope_hillslope_headwater / nCell_hillslope_headwater;
     return error_code;
   }
 
@@ -614,7 +627,7 @@ namespace hexwatershed
     // zonal statistics
     int nElevation_profile = 11;
     float p;
-    std::vector<float> vElevation_left, vElevation_right;
+    std::vector<float> vElevation_left, vElevation_right, vElevation_headwater;
     // std::array<float, 11> aElevation_profile_left;
     // std::array<float, 11> aElevation_profile_right;
     //  std::vector<hillslope>::iterator iIterator;
@@ -627,9 +640,13 @@ namespace hexwatershed
 
     // width is already calculated
     // area is already calculated
-    // length
+    // length is defined using the rectange shape assumption
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
+    //the rectangle length function cannot be used directly on headwater
+    //a pie shape assumption is used to calculated the radius of the headwater, pi * r^2 = area * 3
+    dLength_hillslope_headwater = sqrt(dArea_hillslope_headwater * 3.0 / pi);
+
     // gather all the elevation data
     for (auto iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
@@ -643,13 +660,20 @@ namespace hexwatershed
         {
           vElevation_right.push_back((*iIterator).dElevation_mean);
         }
+        else
+        {
+          if ((*iIterator).iFlag_headwater_hillslope == 1)
+          {
+            vElevation_headwater.push_back((*iIterator).dElevation_mean);
+          }
+        }
       }
     }
     // create an array of 10 elements for both left and right hillslope
     // for first and last of the elevation profile are min and max
     // left
     // check element number is larger than 11
-    if (vElevation_left.size() > 11)
+    if (vElevation_left.size() >= 11)
     {
       aElevation_profile_left[0] = *std::min_element(vElevation_left.begin(), vElevation_left.end());
       aElevation_profile_left[10] = *std::max_element(vElevation_left.begin(), vElevation_left.end());
@@ -662,7 +686,7 @@ namespace hexwatershed
       dSlope_hillslope_left = (aElevation_profile_left[10] - aElevation_profile_left[0]) / dLength_hillslope_left;
     }
     // right
-    if (vElevation_right.size() > 11)
+    if (vElevation_right.size() >= 11)
     {
       aElevation_profile_right[0] = *std::min_element(vElevation_right.begin(), vElevation_right.end());
       aElevation_profile_right[10] = *std::max_element(vElevation_right.begin(), vElevation_right.end());
@@ -672,6 +696,19 @@ namespace hexwatershed
         aElevation_profile_right[i] = data::percentile(vElevation_right, p);
       }
       dSlope_hillslope_right = (aElevation_profile_right[10] - aElevation_profile_right[0]) / dLength_hillslope_right;
+    }
+
+    //special treatment for the headwater slope?
+    if (vElevation_headwater.size() >= 11)
+    {
+      aElevation_profile_headwater[0] = *std::min_element(vElevation_headwater.begin(), vElevation_headwater.end());
+      aElevation_profile_headwater[10] = *std::max_element(vElevation_headwater.begin(), vElevation_headwater.end());
+      for (int i = 1; i < nElevation_profile; i++)
+      {
+        p = i * 10.0;
+        aElevation_profile_headwater[i] = data::percentile(vElevation_headwater, p);
+      }
+      dSlope_hillslope_headwater = (aElevation_profile_headwater[10] - aElevation_profile_headwater[0]) / dLength_hillslope_headwater;
     }
 
     return error_code;
