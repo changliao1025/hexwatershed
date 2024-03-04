@@ -125,6 +125,11 @@ namespace hexwatershed
     {
       cCompset.cParameter.iFlag_stream_grid_option = pConfigDoc[sKey.c_str()].GetInt();
     }
+    sKey = "iFlag_hillslope";
+    if (pConfigDoc.HasMember(sKey.c_str()))
+    {
+      cCompset.cParameter.iFlag_hillslope = pConfigDoc[sKey.c_str()].GetInt();
+    }
 
     if (cCompset.cParameter.iFlag_flowline == 1)
     {
@@ -173,6 +178,7 @@ namespace hexwatershed
       {
         cCompset.cParameter.dAccumulation_threshold_ratio = 0.01;
       }
+    }
 
 
     sKey = "dMissing_value_dem";

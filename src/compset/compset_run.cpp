@@ -696,11 +696,13 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
+    int iFlag_hillslope = cParameter.iFlag_hillslope;
 
     if (iFlag_global != 1)
     {
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
+        vWatershed[lWatershed - 1].iFlag_hillslope = iFlag_hillslope;
         vWatershed[lWatershed - 1].watershed_calculate_characteristics();
       }
     }

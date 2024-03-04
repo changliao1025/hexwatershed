@@ -27,6 +27,7 @@ namespace hexwatershed
     iFlag_global = 0;
     iFlag_vtk = 0;
     iFlag_animation = 1;
+    iFlag_hillslope = 1;
     iFlag_multiple_outlet = 0;
     iFlag_elevation_profile = 0;
     iFlag_stream_grid_option = 3;

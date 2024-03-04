@@ -57,15 +57,15 @@ namespace hexwatershed
   int segment::segment_calculate_stream_segment_length()
   {
     int error_code = 1;
-    float dLength_total = 0.0;
-
+    dLength = 0.0;
+    dArea = 0.0;
     std::vector<hexagon>::iterator iIterator;
     for (iIterator = vReach_segment.begin(); iIterator != vReach_segment.end(); iIterator++)
     {
-      dLength_total = dLength_total + (*iIterator).dLength_stream_conceptual;
+      dLength = dLength + (*iIterator).dLength_stream_conceptual;
+      dArea = dArea + (*iIterator).dArea; //area of the cell
     }
 
-    dLength = dLength_total;
 
     return error_code;
   }
@@ -75,7 +75,6 @@ namespace hexwatershed
     int error_code = 1;
     float dElevation_diff;
     float dElevation_min, dElevation_max;
-
     if (nReach == 1)
     {
       // there is only reach

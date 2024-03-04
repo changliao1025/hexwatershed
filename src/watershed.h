@@ -40,6 +40,8 @@ namespace hexwatershed
 
     ~watershed();
 
+    int iFlag_hillslope;
+
     long lWatershed; // id of watershed 
     long lSegment_current;
     double dArea;

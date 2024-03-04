@@ -44,6 +44,8 @@ namespace hexwatershed
         int iFlag_has_downstream;
         int nSegment_upstream;
 
+        double dArea; //cell area, not channel area
+
         float dLength; //the total length of the stream segment
         float dSlope_mean; //the average slope 
         float dElevation_drop; //elevation drop between headwater to outlet

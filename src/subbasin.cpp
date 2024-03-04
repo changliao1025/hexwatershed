@@ -12,6 +12,10 @@ namespace hexwatershed
     iFlag_outlet = 0;
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
+    iFlag_hillslope = 0; //by default, the hillslope feature will not be turn on
+    iFlag_hillslope_left= 1;
+    iFlag_hillslope_right = 1;
+    iFlag_hillslope_headwater = 1;
     nHillslope = 2;
     lHillslope_headwater = -1;
     dWidth_hillslope_headwater = 0.0;
@@ -22,10 +26,12 @@ namespace hexwatershed
   subbasin::~subbasin()
   {
   }
+
   int subbasin::subbasin_define_hillslope()
   {
     int error_code = 1;
     int iFlag_checked;
+    
     int iFlag_left_hillslope, iFlag_right_hillslope, iFlag_headwater_hillslope;
     int iFlag_checked_downslope;
     long lCellID_upslope, lCellID_downslope;
@@ -90,6 +96,7 @@ namespace hexwatershed
     }
     else
     {
+      iFlag_hillslope_headwater = 0; //if this is not a headwater subbasin, it has not headwater hillslope
       for (iIterator = vCell_segment.begin(); iIterator != vCell_segment.end(); iIterator++)
       {
         vCellID_channel.push_back((*iIterator).lCellID);
@@ -391,22 +398,43 @@ namespace hexwatershed
     }
 
     // now calculate left and right hillslope width and count
-    dWidth_hillslope_left = 0.0;
-    for (iIterator1 = vCellID_buffer_left.begin(); iIterator1 != vCellID_buffer_left.end(); iIterator1++)
+    if (vCellID_buffer_left.size() == 0)
     {
-      lCellIndex_buffer = mCellIdToIndex[*iIterator1];
-      dWidth_hillslope_left = dWidth_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
+      //there is no left buffer, then we use segment as buffer
+      iFlag_hillslope_left = 0;
+      dWidth_hillslope_left = dLength_stream_segment; //this include the headwater cell
     }
-
-    dWidth_hillslope_right = 0.0;
-    for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
+    else
     {
-      lCellIndex_buffer = mCellIdToIndex[*iIterator1];
-      dWidth_hillslope_right = dWidth_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
+       dWidth_hillslope_left = 0.0;
+      for (iIterator1 = vCellID_buffer_left.begin(); iIterator1 != vCellID_buffer_left.end(); iIterator1++)
+      {
+        lCellIndex_buffer = mCellIdToIndex[*iIterator1];
+        dWidth_hillslope_left = dWidth_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
+      }
+    }
+   
+    if (vCellID_buffer_right.size() == 0)
+    {
+      iFlag_hillslope_right = 0;
+      //there is no right buffer, then we use segment as buffer
+      dWidth_hillslope_right = dLength_stream_segment; //this include the headwater cell
+    }
+    else
+    {
+      dWidth_hillslope_right = 0.0;
+      for (iIterator1 = vCellID_buffer_right.begin(); iIterator1 != vCellID_buffer_right.end(); iIterator1++)
+      {
+        lCellIndex_buffer = mCellIdToIndex[*iIterator1];
+        dWidth_hillslope_right = dWidth_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
+      }
     }
     // for headwater, it is consider a convergence, a special method is needed
     //its width can be defined using the headwater cell edge mean
-    dWidth_hillslope_headwater = cCell_headwater.dLength_edge_mean;
+    if (iFlag_hillslope_headwater==1)
+    {
+      dWidth_hillslope_headwater = cCell_headwater.dLength_edge_mean;
+    }
 
     // calculate left and right cell count
     nCell_hillslope_left = 0;
@@ -493,7 +521,7 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_total_area()
   {
     int error_code = 1;
-    double dArea_total = 0.0;
+    
     std::vector<hexagon>::iterator iIterator;
     nCell = vCell.size();
 
@@ -520,10 +548,25 @@ namespace hexwatershed
         {
           dArea_hillslope_headwater = dArea_hillslope_headwater + (*iIterator).dArea;
         }
-        dArea_total = dArea_total + (*iIterator).dArea;
+        dArea = dArea + (*iIterator).dArea;
       }
     }
-    dArea = dArea_total;
+    //check whether left and right actually exist 
+    if (iFlag_hillslope_left==0)
+    {
+//use the segment arae
+      dArea_hillslope_left = dArea_stream_segment;
+    }
+    if (iFlag_hillslope_right==0)
+    {
+//use the segment are
+      dArea_hillslope_left = dArea_stream_segment;
+    }
+    if (iFlag_hillslope_headwater==0)
+    {
+      dArea_hillslope_headwater = cCell_headwater.dArea;
+    }
+
     if (dArea < 0.0)
     {
       std::cout << "Something is wrong" << std::endl;
@@ -628,8 +671,6 @@ namespace hexwatershed
     int nElevation_profile = 11;
     float p;
     std::vector<float> vElevation_left, vElevation_right, vElevation_headwater;
-    // std::array<float, 11> aElevation_profile_left;
-    // std::array<float, 11> aElevation_profile_right;
     //  std::vector<hillslope>::iterator iIterator;
     /*
     for (iIterator = vHillslope.begin(); iIterator != vHillslope.end(); iIterator++)
@@ -638,15 +679,12 @@ namespace hexwatershed
     }*/
     // list of characteristics needed: total area, mean slope, segment length, average width
 
-    // width is already calculated
-    // area is already calculated
     // length is defined using the rectange shape assumption
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
     //the rectangle length function cannot be used directly on headwater
     //a pie shape assumption is used to calculated the radius of the headwater, pi * r^2 = area * 3
     dLength_hillslope_headwater = sqrt(dArea_hillslope_headwater * 3.0 / pi);
-
     // gather all the elevation data
     for (auto iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {

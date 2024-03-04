@@ -29,7 +29,10 @@ namespace hexwatershed
         int iFlag_headwater; // 1: headwater, 0: not headwater
         int iFlag_outlet;    // 1: outlet, 0: not outlet
         int nHillslope;
-        int iFlag_hillslope;
+        int iFlag_hillslope; //we will use the parameter class to set up this 
+        int iFlag_hillslope_left;
+        int iFlag_hillslope_right;
+        int iFlag_hillslope_headwater; //
 
         long lSubbasin; // each subbasin should have the same index with its segment
         long lSubbasinIndex;
@@ -51,6 +54,8 @@ namespace hexwatershed
         float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
         float dDistance_to_subbasin_outlet;
         float dDrainage_density;
+        float dLength_stream_segment; // total stream length
+        double dArea_stream_segment;
 
         float dLength_hillslope_left;
         float dLength_hillslope_right;
