@@ -554,17 +554,20 @@ namespace hexwatershed
     //check whether left and right actually exist 
     if (iFlag_hillslope_left==0)
     {
-//use the segment arae
+      //use the segment arae
       dArea_hillslope_left = dArea_stream_segment;
+      nCell_hillslope_left = vCell_segment.size();
     }
     if (iFlag_hillslope_right==0)
     {
-//use the segment are
+      //use the segment are
       dArea_hillslope_left = dArea_stream_segment;
+      nCell_hillslope_right = vCell_segment.size();
     }
     if (iFlag_hillslope_headwater==0)
     {
       dArea_hillslope_headwater = cCell_headwater.dArea;
+      nCell_hillslope_headwater = 1;
     }
 
     if (dArea < 0.0)
