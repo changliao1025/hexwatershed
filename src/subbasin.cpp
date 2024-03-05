@@ -561,7 +561,7 @@ namespace hexwatershed
     if (iFlag_hillslope_right==0)
     {
       //use the segment are
-      dArea_hillslope_left = dArea_stream_segment;
+      dArea_hillslope_right = dArea_stream_segment;
       nCell_hillslope_right = vCell_segment.size();
     }
     if (iFlag_hillslope_headwater==0)
@@ -607,11 +607,31 @@ namespace hexwatershed
       }
     }
     dSlope = dSlope_total / nCell;
-
     dSlope_mean = dSlope;
-    dSlope_hillslope_left_mean = dSlope_left / nCell_hillslope_left;
-    dSlope_hillslope_right_mean = dSlope_right / nCell_hillslope_right;
-    dSlope_hillslope_headwater_mean = dSlope_hillslope_headwater / nCell_hillslope_headwater;
+    if (iFlag_hillslope_left==0)
+    {
+      dSlope_hillslope_left_mean = dSlope_stream_segment; //use stream channel slope 
+    }
+    else
+    {
+      dSlope_hillslope_left_mean = dSlope_left / nCell_hillslope_left;
+    }
+    if (iFlag_hillslope_right==0)
+    {
+      dSlope_hillslope_right_mean = dSlope_stream_segment;
+    }
+    else
+    {
+      dSlope_hillslope_right_mean = dSlope_right / nCell_hillslope_right;
+    }
+    if (iFlag_hillslope_headwater==0)
+    {
+      dSlope_hillslope_headwater_mean = cCell_headwater.dSlope_max_downslope;
+    }
+    else
+    {
+      dSlope_hillslope_headwater_mean = dSlope_hillslope_headwater / nCell_hillslope_headwater;
+    }
     return error_code;
   }
 
@@ -680,8 +700,6 @@ namespace hexwatershed
     {
       (*iIterator).hillslope_calculate_characteristics();
     }*/
-    // list of characteristics needed: total area, mean slope, segment length, average width
-
     // length is defined using the rectange shape assumption
     dLength_hillslope_left = dArea_hillslope_left / dWidth_hillslope_left;
     dLength_hillslope_right = dArea_hillslope_right / dWidth_hillslope_right;
@@ -726,6 +744,10 @@ namespace hexwatershed
       // now calculate the hillslope slope using the elevation profile
       dSlope_hillslope_left = (aElevation_profile_left[10] - aElevation_profile_left[0]) / dLength_hillslope_left;
     }
+    else
+    {
+      dSlope_hillslope_left = dSlope_stream_segment;
+    }
     // right
     if (vElevation_right.size() >= 11)
     {
@@ -737,6 +759,10 @@ namespace hexwatershed
         aElevation_profile_right[i] = data::percentile(vElevation_right, p);
       }
       dSlope_hillslope_right = (aElevation_profile_right[10] - aElevation_profile_right[0]) / dLength_hillslope_right;
+    }
+    else
+    {
+      dSlope_hillslope_right = dSlope_stream_segment;
     }
 
     //special treatment for the headwater slope?
@@ -750,6 +776,10 @@ namespace hexwatershed
         aElevation_profile_headwater[i] = data::percentile(vElevation_headwater, p);
       }
       dSlope_hillslope_headwater = (aElevation_profile_headwater[10] - aElevation_profile_headwater[0]) / dLength_hillslope_headwater;
+    }
+    else
+    {
+      dSlope_hillslope_headwater = cCell_headwater.dSlope_max_downslope;
     }
 
     return error_code;

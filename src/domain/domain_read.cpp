@@ -174,7 +174,7 @@ namespace hexwatershed
       {
         cCompset.cParameter.dAccumulation_threshold_ratio = 0.05;
       }
-      if (cCompset.cParameter.dAccumulation_threshold_ratio < 1.0)
+      if (cCompset.cParameter.dAccumulation_threshold_ratio < 0.0)
       {
         cCompset.cParameter.dAccumulation_threshold_ratio = 0.01;
       }

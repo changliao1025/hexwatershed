@@ -725,6 +725,7 @@ namespace hexwatershed
       vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1].vReach_segment;
       vSubbasin[lSubbasin - 1].dLength_stream_segment = vSegment[lSegment - 1].dLength;
       vSubbasin[lSubbasin - 1].dArea_stream_segment = vSegment[lSegment - 1].dArea;
+      vSubbasin[lSubbasin - 1].dSlope_stream_segment = vSegment[lSegment - 1].dSlope_mean;
       // we also need the downslope cell of the subbasin outlet cell
       if (lSubbasin != nSubbasin) //.watershed outlet has no downslope cell
       {

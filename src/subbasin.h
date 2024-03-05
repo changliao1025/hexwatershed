@@ -5,6 +5,7 @@
 #pragma once
 #include <iostream>
 #include <unordered_map>
+#include <cmath>
 #include "hexagon.h"
 #include "data.h"
 // #include "hillslope.h"
@@ -56,6 +57,7 @@ namespace hexwatershed
         float dDrainage_density;
         float dLength_stream_segment; // total stream length
         double dArea_stream_segment;
+        float dSlope_stream_segment;
 
         float dLength_hillslope_left;
         float dLength_hillslope_right;
