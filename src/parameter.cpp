@@ -31,7 +31,10 @@ namespace hexwatershed
     iFlag_multiple_outlet = 0;
     iFlag_elevation_profile = 0;
     iFlag_stream_grid_option = 3;
-    dAccumulation_threshold_ratio = 0.05;
+    iFlag_accumulation_threshold_ratio = 0;
+    dAccumulation_threshold_ratio = 0.001;
+    dAccumulation_threshold_value = 2.5E7;
+    
     dBreach_threshold = 5.0; // unit in meter
     nOutlet = 1;
   }

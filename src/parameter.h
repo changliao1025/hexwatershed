@@ -65,6 +65,7 @@ namespace hexwatershed
     int iFlag_stream_grid_option;
     int iFlag_slope_provided;
     int iFlag_merge_reach;
+    int iFlag_accumulation_threshold_ratio;
     long nOutlet;
 
     // parameters
@@ -73,6 +74,7 @@ namespace hexwatershed
     float dMissing_value_dem;
     //float dAccumulation_threshold; //real accumuation
     float dAccumulation_threshold_ratio; //the ratio of accumulation compared with max accumulation
+    float dAccumulation_threshold_value; //the value of accumulation
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;

@@ -72,7 +72,7 @@ namespace hexwatershed
   int domain::domain_retrieve_user_input()
   {
     int error_code = 1;
-
+    float dValue;
     eMesh_type pMesh_type;
     std::string sMesh_type;
     std::string sKey = "sMesh_type";
@@ -169,15 +169,25 @@ namespace hexwatershed
     sKey = "dAccumulation_threshold";
     if (pConfigDoc.HasMember(sKey.c_str()))
     {
-      cCompset.cParameter.dAccumulation_threshold_ratio = pConfigDoc[sKey.c_str()].GetFloat();
-      if (cCompset.cParameter.dAccumulation_threshold_ratio >= 1.0)
+      dValue = pConfigDoc[sKey.c_str()].GetFloat();
+      
+      if (dValue >= 1.0)
       {
-        cCompset.cParameter.dAccumulation_threshold_ratio = 0.05;
+        //this is provided as the actual accumulation value;
+        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 0;
+        cCompset.cParameter.dAccumulation_threshold_value = dValue;
       }
-      if (cCompset.cParameter.dAccumulation_threshold_ratio < 0.0)
+      else
       {
-        cCompset.cParameter.dAccumulation_threshold_ratio = 0.01;
+        //this is provided as a ratio
+        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 1;
+        cCompset.cParameter.dAccumulation_threshold_ratio = dValue;
+        if (cCompset.cParameter.dAccumulation_threshold_ratio < 0.0)
+        {
+          cCompset.cParameter.dAccumulation_threshold_ratio = 0.001;
+        }
       }
+      
     }
 
 
