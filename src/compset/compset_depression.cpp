@@ -769,7 +769,6 @@ namespace hexwatershed
     while (pq.size() > 3)
     {
       //std::cout << "Depression filling step: " << lStep_count << std::endl;
-
       // the old method with manually priority queue
       // aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
       // lCellIndex_boundary = aIndex_search[0]; // local index in boundary

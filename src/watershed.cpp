@@ -1093,6 +1093,15 @@ namespace hexwatershed
       sLine = "Watershed drainage area: " + convert_float_to_string(dArea);
       ofs << sLine << std::endl;
 
+      sLine = "Outlet cell ID: " + convert_float_to_string(lCellID_outlet);
+      ofs << sLine << std::endl;
+
+      sLine = "Outlet longitude degree: " + convert_float_to_string(dLongitude_outlet_degree);
+      ofs << sLine << std::endl;
+
+      sLine = "Outlet latitude degree: " + convert_float_to_string(dLatitude_outlet_degree);
+      ofs << sLine << std::endl;
+
       sLine = "Longest stream length: " + convert_float_to_string(dLongest_length_stream);
       ofs << sLine << std::endl;
 

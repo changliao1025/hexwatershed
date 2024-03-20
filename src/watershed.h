@@ -56,6 +56,9 @@ namespace hexwatershed
 
     long lCellID_outlet; // the mesh ID of the outlet
 
+    float dLongitude_outlet_degree;
+    float dLatitude_outlet_degree;
+
     float dArea_2_stream_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
     float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
     float dDrainage_density;

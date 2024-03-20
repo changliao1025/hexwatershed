@@ -85,10 +85,10 @@ namespace hexwatershed
     std::vector<hexagon> vCell_active;         // all calls has elevation (not missing value)
     std::vector<hexagon> vCell_priority_flood; // animation purpose
     // watershed cWatershed;
-    std::vector<watershed> vWatershed;
+    std::vector<watershed> vWatershed; //for oop functions
     std::vector<vertex> vVertex_active; // for vtk support, it store all the vertex in 3D
-    std::vector<cell> aCell;
-    std::vector<basin> aBasin;
+    std::vector<cell> aCell; //for json
+    std::vector<basin> aBasin; //for json
     std::vector<hexagon> vContinent_boundary;
 
     std::unordered_map<long, long> mCellIdToIndex; // a map for fast search

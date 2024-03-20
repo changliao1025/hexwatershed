@@ -154,7 +154,6 @@ namespace hexwatershed
         {
           // use outlet id as largest
           lCellID_outlet = aBasin[0].lCellID_outlet;
-
           lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
           if (iFlag_accumulation_threshold_ratio ==1)
           {
@@ -164,7 +163,6 @@ namespace hexwatershed
           {
             dAccumulation_threshold = dAccumulation_threshold_value;
           }
-
           dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
           switch (iFlag_stream_grid_option)
           {
@@ -453,7 +451,10 @@ namespace hexwatershed
         basin pBasin;
         aBasin.clear();
         aBasin.push_back(pBasin);
+        //set the id and outlet
         aBasin[0].lCellID_outlet = lCellID_outlet;
+        aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+        aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
         // we also need to update the nOutlet?
         cParameter.nOutlet = 1;
       }
@@ -492,7 +493,6 @@ namespace hexwatershed
 
     if (iFlag_global != 1)
     {
-
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
@@ -585,12 +585,14 @@ namespace hexwatershed
           }
         }
 
-        // in the last step, we then push in the outlet
+        // in the last step, we then push in the outlet cell
         vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
         vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
         vCell_active[lCellIndex_outlet].lCellIndex_watershed = lCellIndex_watershed;
         cWatershed.vCell.push_back(vCell_active[lCellIndex_outlet]);
         cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
+        cWatershed.dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+        cWatershed.dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
         vWatershed.push_back(cWatershed);
       }
       // how about other auto-defined watershed?
