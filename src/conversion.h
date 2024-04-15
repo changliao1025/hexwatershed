@@ -45,6 +45,8 @@ std::string convert_integer_to_string(int iNumber_in);
 std::string convert_long_to_string(long iNumber_in);
 std::string convert_integer_to_string(int iNumber_in,
 	int iWidth_in);
+std::string convert_long_to_string(long lNumber_in,
+                                      int iWidth_in);
 std::string convert_double_to_string(double dNumber_in);
 std::string convert_double_to_string(int iPrecision_in,
 	int iWidth_in,

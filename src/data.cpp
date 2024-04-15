@@ -24,7 +24,7 @@ data::~data()
  * @param sFilename_in 
  * @return float* 
  */
-float * data::read_binary(std::string sFilename_in)
+float * data::read_binary(const std::string sFilename_in)
 {
 	float * pData_out = nullptr;
 	long lLength1, lLength2;
@@ -74,7 +74,7 @@ float * data::read_binary(std::string sFilename_in)
  * @param lRow_in 
  * @return float** 
  */
-float ** data::read_binary(string sFilename_in,
+float ** data::read_binary(const std::string sFilename_in,
 	long lColumn_in,
 	long lRow_in
 )
@@ -124,7 +124,7 @@ float ** data::read_binary(string sFilename_in,
  * @param sFilename_in 
  * @return vector<float> 
  */
-vector<float> data::read_binary_vector(std::string sFilename_in)
+vector<float> data::read_binary_vector(const std::string sFilename_in)
 {
 	long lLength1, lLength2;
 	float dummy;
@@ -171,7 +171,7 @@ vector<float> data::read_binary_vector(std::string sFilename_in)
  * @param vData_in 
  * @return int 
  */
-int data::write_binary_vector(std::string sFilename_out, std::vector <float> vData_in)
+int data::write_binary_vector(const std::string sFilename_out, std::vector <float> vData_in)
 {
 	int error_code = 1;
 	float dDummy0, dDummy1;
@@ -221,4 +221,30 @@ int data::write_binary_vector(std::string sFilename_out, std::vector <float> vDa
 		ofs.close();
 	}
 	return error_code;
+}
+
+float data::percentile(const std::vector<float>& data, float percentile)
+ {
+    // Make sure the data is sorted
+    std::vector<float> sorted_data = data;
+    std::sort(sorted_data.begin(), sorted_data.end());
+
+    // Calculate the rank (index) of the percentile
+    float rank = (percentile / 100.0) * (sorted_data.size() - 1);
+
+    // Get the floor and ceiling ranks
+    size_t floor_rank = std::floor(rank);
+    size_t ceil_rank = std::ceil(rank);
+
+    // If the rank is an integer, return the corresponding value
+    if (floor_rank == ceil_rank) {
+        return sorted_data[floor_rank];
+    }
+
+    // Otherwise, interpolate between the floor and ceiling values
+    float floor_value = sorted_data[floor_rank];
+    float ceil_value = sorted_data[ceil_rank];
+    float fraction = rank - floor_rank;
+    
+    return floor_value + fraction * (ceil_value - floor_value);
 }

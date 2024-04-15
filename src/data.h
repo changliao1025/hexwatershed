@@ -36,13 +36,15 @@ class data
   //50==================================================
   //Traditional data IO
   //50==================================================
-  static float * read_binary(std::string sFilename_in);
-  static float ** read_binary(std::string sFilename_in,
+  static float * read_binary(const std::string sFilename_in);
+  static float ** read_binary(const std::string sFilename_in,
                               long lColumn_in,
                               long lRow_in);
-  static std::vector<float> read_binary_vector(std::string sFilename_in);
-  static int write_binary_vector(std::string sFilename_in,
+  static std::vector<float> read_binary_vector(const std::string sFilename_in);
+  static int write_binary_vector(const std::string sFilename_in,
                                  vector <float> vData_in);
+
+  static float percentile(const std::vector<float>& data, float percentile);
   //50==================================================
   //advanced data io using MPI
   //dataIO using PETSc

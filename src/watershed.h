@@ -40,9 +40,11 @@ namespace hexwatershed
 
     ~watershed();
 
+    int iFlag_hillslope;
+
     long lWatershed; // id of watershed 
     long lSegment_current;
-    float dArea;
+    double dArea;
     float dSlope;
     float dSlope_mean;
     float dSlope_max;
@@ -54,16 +56,45 @@ namespace hexwatershed
 
     long lCellID_outlet; // the mesh ID of the outlet
 
+    float dLongitude_outlet_degree;
+    float dLatitude_outlet_degree;
+
     float dArea_2_stream_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
     float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
     float dDrainage_density;
     float dLongest_length_stream;    // the length of longest stream segment
     float dLength_stream_conceptual; // total stream length
 
+    //hillslope attribute
+    //one single hillslope for left
+    float dArea_hillslope_left_mean;
+    float dLength_hillslope_left_mean;
+    float dWidth_hillslope_left_mean;
+    float dSlope_hillslope_left_mean;
+
+    //one single hillslope for right
+    float dArea_hillslope_right_mean;
+    float dLength_hillslope_right_mean;
+    float dWidth_hillslope_right_mean;
+    float dSlope_hillslope_right_mean;
+
+    //one single hillslope for headwater
+    float dArea_hillslope_headwater_mean;
+    float dLength_hillslope_headwater_mean;
+    float dWidth_hillslope_headwater_mean;
+    float dSlope_hillslope_headwater_mean;
+
+    //one single conceputal hillslope
+    float dArea_hillslope_mean;
+    float dLength_hillslope_mean;
+    float dWidth_hillslope_mean;
+    float dSlope_hillslope_mean;
+
     std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
     std::string sFilename_subbasin_characteristics;
+    std::string sFilename_hillslope_characteristics;
 
     std::string sFilename_watershed_json;
     std::string sFilename_watershed_stream_edge_json;
@@ -88,6 +119,7 @@ namespace hexwatershed
     int watershed_build_stream_topology();
     int watershed_define_stream_order();    
     int watershed_define_subbasin();
+    int watershed_define_hillslope();
     int watershed_update_attribute();
 
     // the watershed characteristics for comparison

@@ -16,6 +16,7 @@ namespace hexwatershed
   watershed::watershed()
   {
     lWatershed = -1;
+    iFlag_hillslope = 0;
   }
 
   watershed::~watershed()
@@ -38,9 +39,10 @@ namespace hexwatershed
       if ((*iIterator_self).iFlag_stream == 1 && (*iIterator_self).lWatershed == lWatershed)
       {
         lCellID_downstream = (*iIterator_self).lCellID_downslope_dominant;
-        lCellIndex_downstream = watershed_find_index_by_cell_id(lCellID_downstream);        
-        if (lCellIndex_downstream != -1)
+        auto iterator = mCellIdToIndex.find(lCellID_downstream); // use map to find index
+        if (iterator != mCellIdToIndex.end())
         {
+          lCellIndex_downstream = iterator->second;
           (vCell[lCellIndex_downstream]).vUpstream.push_back((*iIterator_self).lCellID); // use id instead of index
         }
         else
@@ -52,7 +54,7 @@ namespace hexwatershed
     // sum up the size the upstream
     for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
     {
-      (*iIterator_self).nUpstream = ((*iIterator_self).vUpstream).size();
+      (*iIterator_self).nUpstream = (*iIterator_self).vUpstream.size();
     }
     // calculate total segment
     vConfluence.clear();
@@ -77,6 +79,7 @@ namespace hexwatershed
 
     return error_code;
   }
+
   int watershed::watershed_define_stream_segment()
   {
     int error_code = 1;
@@ -90,7 +93,7 @@ namespace hexwatershed
     long lCellID_current;
     long lCellID_upstream;
 
-    lCellIndex_outlet = watershed_find_index_by_cell_id(lCellID_outlet);
+    lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
     iFlag_confluence = vCell[lCellIndex_outlet].iFlag_confluence;
     lCellIndex_current = vCell[lCellIndex_outlet].lCellIndex_watershed;
     lCellID_current = vCell[lCellIndex_outlet].lCellID;
@@ -99,7 +102,7 @@ namespace hexwatershed
     std::vector<hexagon> vReach_segment;
     vCell[lCellIndex_outlet].iFlag_last_reach = 1;
 
-    if (nSegment == 1) // these is only one segment in this watershed
+    if (nSegment == 1) // there is only one segment in this watershed
     {
       lSegment_current = nSegment;
       vCell[lCellIndex_outlet].lSegment = lSegment_current;
@@ -111,7 +114,7 @@ namespace hexwatershed
         if (iUpstream == 1) //
         {
           lCellID_upstream = (vCell[lCellIndex_current]).vUpstream[0];
-          lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
+          lCellIndex_current = mCellIdToIndex[lCellID_upstream];
           vCell[lCellIndex_current].lSegment = lSegment_current;
           vReach_segment.push_back(vCell[lCellIndex_current]);
         }
@@ -138,12 +141,13 @@ namespace hexwatershed
       cSegment.iFlag_headwater = 1;
       vSegment.push_back(cSegment);
 
-      mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
+      mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; // setup unordered map
     }
     else
     {
       lSegment_current = nSegment;
       vCell[lCellIndex_outlet].lSegment = lSegment_current;
+      vCell[lCellIndex_outlet].dDistance_to_channel = 0.0; // all channel cells have 0.0 distance to channel
       vReach_segment.push_back(vCell[lCellIndex_outlet]);
       if (iFlag_confluence == 1) // the outlet is actually a confluence
       {
@@ -158,7 +162,7 @@ namespace hexwatershed
         cSegment.iFlag_has_downstream = 0;
         cSegment.lWatershed = lWatershed;
         vSegment.push_back(cSegment);
-        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; // setup unordered map
       }
       else
       {
@@ -168,14 +172,16 @@ namespace hexwatershed
           if (iUpstream == 1) //
           {
             lCellID_upstream = (vCell[lCellIndex_current]).vUpstream[0];
-            lCellIndex_current = watershed_find_index_by_cell_id(lCellID_upstream);
+            lCellIndex_current = mCellIdToIndex[lCellID_upstream];
             vCell[lCellIndex_current].lSegment = lSegment_current;
+            vCell[lCellIndex_current].dDistance_to_channel = 0.0;
             vReach_segment.push_back(vCell[lCellIndex_current]);
           }
           else
-          { // headwater
+          { // headwater or confluence
             // vCell[lCellIndex_current].lSegment = iSegment_current;
             vCell[lCellIndex_current].iFlag_first_reach = 1;
+            vCell[lCellIndex_current].dDistance_to_channel = 0.0;
             lCellID_current = vCell[lCellIndex_current].lCellID;
             // vReach_segment.push_back(vCell[lCellIndex_current]);
             iFlag_confluence = 1;
@@ -200,7 +206,7 @@ namespace hexwatershed
           cSegment.iFlag_headwater = 1;
         }
         vSegment.push_back(cSegment);
-        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; // setup unordered map
       }
       lSegment_current = lSegment_current - 1;
       watershed_tag_confluence_upstream(lCellID_current);
@@ -210,6 +216,7 @@ namespace hexwatershed
     }
     return error_code;
   }
+
   int watershed::watershed_tag_confluence_upstream(long lCellID_confluence)
   {
     int error_code = 1;
@@ -224,7 +231,7 @@ namespace hexwatershed
     std::vector<long>::iterator iterator_upstream;
     std::vector<hexagon> vReach_segment;
 
-    long lCellIndex_confluence = watershed_find_index_by_cell_id(lCellID_confluence);
+    long lCellIndex_confluence = mCellIdToIndex[lCellID_confluence];
 
     // if may not be necessary to use these flags in this algorithm because it will only search for the segment
     vUpstream = vCell[lCellIndex_confluence].vUpstream;
@@ -234,26 +241,27 @@ namespace hexwatershed
          iterator_upstream++)
     {
       lCellID_upstream = *iterator_upstream;
-      lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
+      lCellIndex_upstream = mCellIdToIndex[lCellID_upstream];
       iFlag_first_reach = 0;
       // remember that it is possible a segment only has one reach
       iFlag_confluence = vCell[lCellIndex_upstream].iFlag_confluence;
       vCell[lCellIndex_upstream].iFlag_last_reach = 1;
       // use last reach to find next stream segment
       vCell[lCellIndex_upstream].lSegment_downstream = vCell[lCellIndex_confluence].lSegment;
+      vCell[lCellIndex_upstream].dDistance_to_channel = 0.0;
       vReach_segment.clear();
 
-      // if the immediate upstream is also confluence: 1-1, we can quickly setup then move on
+      // if the immediate upstream is also confluence: 1-1, we can quickly set up then move on
       // to the confluence
       if (iFlag_confluence == 1)
       {
         // continuous confluence, in this case, we need to set only one reach and move on
         nUpstream = (vCell[lCellIndex_upstream]).nUpstream;
-        // we need to set 4 importnat attributes
+        // we need to set up importnat attributes
         vCell[lCellIndex_upstream].lSegment = lSegment_current;
         (vCell[lCellIndex_upstream]).iFlag_first_reach = 1;
-        //(vCell[lCellIndex_upstream]).iFlag_last_reach = 1;
         (vCell[lCellIndex_upstream]).iFlag_headwater = 0;
+        (vCell[lCellIndex_upstream]).dDistance_to_channel = 0;
 
         vReach_segment.push_back(vCell[lCellIndex_upstream]);
         // it has only one reach
@@ -270,7 +278,7 @@ namespace hexwatershed
         cSegment.lSegment_downstream = lSegment_confluence;
         // add the segment to the watershed object
         vSegment.push_back(cSegment);
-        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; // setup unordered map
 
         // update segment index
         lSegment_current = lSegment_current - 1;
@@ -284,12 +292,14 @@ namespace hexwatershed
           // it has only one upstream
           nUpstream = (vCell[lCellIndex_upstream]).nUpstream;
           (vCell[lCellIndex_upstream]).lSegment = lSegment_current;
+          (vCell[lCellIndex_upstream]).dDistance_to_channel = 0.0;
           if (nUpstream == 0)
           {
             // this is the headwater, 1-0-2
             iFlag_first_reach = 1;
             (vCell[lCellIndex_upstream]).iFlag_first_reach = 1;
             (vCell[lCellIndex_upstream]).iFlag_headwater = 1;
+            (vCell[lCellIndex_upstream]).dDistance_to_channel = 0.0;
             vReach_segment.push_back(vCell[lCellIndex_upstream]);
             break;
           }
@@ -299,11 +309,12 @@ namespace hexwatershed
             (vCell[lCellIndex_upstream]).iFlag_last_reach = 0;
             (vCell[lCellIndex_upstream]).iFlag_first_reach = 0;
             (vCell[lCellIndex_upstream]).iFlag_headwater = 0;
+            (vCell[lCellIndex_upstream]).dDistance_to_channel = 0.0;
             vReach_segment.push_back(vCell[lCellIndex_upstream]);
             // we are on the stream segment and there is only one upstream
             // move to upstream
             lCellID_upstream = (vCell[lCellIndex_upstream]).vUpstream[0];
-            lCellIndex_upstream = watershed_find_index_by_cell_id(lCellID_upstream);
+            lCellIndex_upstream = mCellIdToIndex[lCellID_upstream];
             iFlag_confluence = vCell[lCellIndex_upstream].iFlag_confluence;
             // should not add now
           }
@@ -322,8 +333,8 @@ namespace hexwatershed
           (vCell[lCellIndex_upstream]).iFlag_last_reach = 0;
           (vCell[lCellIndex_upstream]).iFlag_first_reach = 1;
           (vCell[lCellIndex_upstream]).iFlag_headwater = 0;
+          (vCell[lCellIndex_upstream]).dDistance_to_channel = 0.0;
           vReach_segment.push_back(vCell[lCellIndex_upstream]);
-
           cSegment.iFlag_has_upstream = 1;
           cSegment.iFlag_headwater = 0;
         }
@@ -339,7 +350,7 @@ namespace hexwatershed
         cSegment.lWatershed = lWatershed;
         cSegment.lSegment_downstream = lSegment_confluence;
         vSegment.push_back(cSegment);
-        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; //setup unordered map 
+        mSegmentIdToIndex[cSegment.lSegment] = cSegment.lSegmentIndex; // setup unordered map
         lSegment_current = lSegment_current - 1;
         if (iFlag_first_reach != 1)
         {
@@ -415,7 +426,6 @@ namespace hexwatershed
     }
     else
     {
-
       for (iIterator_segment = vSegment.begin();
            iIterator_segment != vSegment.end();
            iIterator_segment++)
@@ -474,25 +484,16 @@ namespace hexwatershed
     }
     return error_code;
   }
-  
+
   // The new method for performance improvement
   int watershed::watershed_define_subbasin()
   {
-
     int error_code = 1;
-    int iFound_outlet;
     int iFlag_checked;
     int iFlag_checked_downslope;
     long lSubbasin;
-    long lCellIndex_self;
     long lCellIndex_current;
-    long lCellID_outlet;
-    long lCellIndex_outlet; // local outlet
-    long lCellIndex_subbasin;
     long lCellID_downslope;
-    long lCellIndex_downslope;
-    long lCellIndex_accumulation;
-    long lIndex_confluence;
     std::vector<float> vAccumulation;
     std::vector<float>::iterator iterator_accumulation;
     std::vector<hexagon>::iterator iIterator_self;
@@ -501,14 +502,17 @@ namespace hexwatershed
     std::vector<long> vSearchPath;
     // assign watershed subbasin cell, maybe later?
     vSubbasin.clear();
-    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    vSubbasin.reserve(nSubbasin);
+    for (lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       subbasin cSubbasin;
       cSubbasin.lSubbasin = lSubbasin;
       cSubbasin.lSubbasinIndex = cSubbasin.lSubbasin - 1;
       vSubbasin.push_back(cSubbasin);
-      mSubbasinIdToIndex[cSubbasin.lSubbasin] = cSubbasin.lSubbasin; //setup unordered map 
+      mSubbasinIdToIndex[cSubbasin.lSubbasin] = cSubbasin.lSubbasin; // setup unordered map
     }
+    // set the last subbasin as the outlet basin
+    vSubbasin[nSubbasin - 1].iFlag_outlet = 1;
     // the whole watershed first
 
     // reset flag, we set all segment cell as
@@ -541,7 +545,7 @@ namespace hexwatershed
         { // not found keep adding to path
           vSearchPath.push_back(lCellIndex_current);
           lCellID_downslope = vCell[lCellIndex_current].lCellID_downslope_dominant;
-          lCellIndex_current = watershed_find_index_by_cell_id(lCellID_downslope);
+          lCellIndex_current = mCellIdToIndex[lCellID_downslope];
           if (lCellIndex_current != -1)
           {
             iFlag_checked_downslope = vCell[lCellIndex_current].iFlag_checked;
@@ -559,18 +563,81 @@ namespace hexwatershed
           vCell[*iIterator_path].lCellIndex_subbasin = vSubbasin[lSubbasin - 1].vCell.size();
           vSubbasin[lSubbasin - 1].vCell.push_back(vCell[*iIterator_path]);
           vSubbasin[lSubbasin - 1].mCellIdToIndex[vCell[*iIterator_path].lCellID] = vCell[*iIterator_path].lCellIndex_subbasin;
-
         }
       }
     }
     return error_code;
   }
+
+  int watershed::watershed_define_hillslope()
+  {
+    int error_code = 1;
+    int nHillslope;
+    long lHillslope_current = 1;
+    for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+    {
+      vSubbasin[lSubbasin - 1].iFlag_hillslope = 1; // turn on this feature first
+      vSubbasin[lSubbasin - 1].subbasin_define_hillslope();
+      /* this is hillslope class based
+      for (int i=0; i<vSubbasin[lSubbasin - 1].vHillslope.size(); i++)
+      {
+        vSubbasin[lSubbasin - 1].vHillslope[i].lSubbasin = lSubbasin;
+        vSubbasin[lSubbasin - 1].vHillslope[i].lHillslope = lHillslope;
+        //update hillslope id
+        for (long j=0; j<vSubbasin[lSubbasin - 1].vHillslope[i].vCell.size(); j++)
+        {
+          vSubbasin[lSubbasin - 1].vHillslope[i].vCell[j].lHillslope = lHillslope;
+        }
+        //update cell hillslope id
+        for (long j=0; j<vSubbasin[lSubbasin - 1].vCell.size(); j++)
+        {
+          vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope;
+        }
+        lHillslope++;
+      }*/
+      // a more memory efficient way to do this
+      nHillslope = vSubbasin[lSubbasin - 1].nHillslope;
+      for (long j = 0; j < vSubbasin[lSubbasin - 1].vCell.size(); j++)
+      {
+        vSubbasin[lSubbasin - 1].lHillslope_left = lHillslope_current; // not optimized
+        if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_left_hillslope == 1)
+        {
+          vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current;
+        }
+        else
+        {
+          vSubbasin[lSubbasin - 1].lHillslope_right = lHillslope_current + 1;
+          if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_right_hillslope == 1)
+          {
+            vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 1;
+          }
+          else
+          {
+            if (vSubbasin[lSubbasin - 1].iFlag_headwater == 1)
+            {
+              vSubbasin[lSubbasin - 1].lHillslope_headwater = lHillslope_current + 2;
+              if (vSubbasin[lSubbasin - 1].vCell[j].iFlag_headwater_hillslope == 1)
+              {
+                vSubbasin[lSubbasin - 1].vCell[j].lHillslope = lHillslope_current + 2;
+              }
+            }
+            else
+            {
+              // on channle, does not belong to any hillslope
+            }
+          }
+        }
+      }
+      lHillslope_current = lHillslope_current + nHillslope;
+    }
+    // then define the hillslope id
+
+    return error_code;
+  }
+
   int watershed::watershed_update_attribute()
   {
     int error_code = 1;
-    int iFlag_found;
-    long lCellID;
-    long lCellID2;
     long lCellIndex_watershed;
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<hexagon>::iterator iIterator1;
@@ -581,10 +648,12 @@ namespace hexwatershed
       for (iIterator2 = vSubbasin[lSubbasin - 1].vCell.begin(); iIterator2 != vSubbasin[lSubbasin - 1].vCell.end(); iIterator2++)
       {
         lCellIndex_watershed = (*iIterator2).lCellIndex_watershed;
-        //may also use the map to find index
+        // may also use the map to find index
         vCell[lCellIndex_watershed].lSubbasin = (*iIterator2).lSubbasin;
+        vCell[lCellIndex_watershed].lHillslope = (*iIterator2).lHillslope;
         vCell[lCellIndex_watershed].dDistance_to_subbasin_outlet = (*iIterator2).dDistance_to_subbasin_outlet;
         vCell[lCellIndex_watershed].dDistance_to_watershed_outlet = (*iIterator2).dDistance_to_watershed_outlet;
+        vCell[lCellIndex_watershed].dDistance_to_channel = (*iIterator2).dDistance_to_channel;
       }
     }
 
@@ -603,7 +672,11 @@ namespace hexwatershed
     long lSegmentIndex;
     float dLength;
     float dDistance_to_watershed_outlet;
-    float dLength_stream_conceptual;
+    float dLength_stream_conceptual_basin;
+    long nArea_left, nWidth_left, nLength_left, nSlope_left;
+    long nArea_right, nWidth_right, nLength_right, nSlope_right;
+    long nArea_headwater, nWidth_headwater, nLength_headwater, nSlope_headwater;
+    long nArea, nWidth, nLength, nSlope;
 
     std::vector<segment>::iterator iIterator0;
     std::vector<segment>::iterator iIterator2;
@@ -639,13 +712,149 @@ namespace hexwatershed
       }
     }
 
+    // pass segment information to subbasin
     for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
     {
       lSegment = lSubbasin;
+      vSubbasin[lSubbasin - 1].cCell_headwater = vSegment[lSegment - 1].cReach_start;
+      vSubbasin[lSubbasin - 1].lCellID_headwater = vSegment[lSegment - 1].cReach_start.lCellID;
       vSubbasin[lSubbasin - 1].cCell_outlet = vSegment[lSegment - 1].cReach_end;
       vSubbasin[lSubbasin - 1].lCellID_outlet = vSegment[lSegment - 1].cReach_end.lCellID;
-      dLength_stream_conceptual = vSegment[lSegment - 1].dLength;
-      vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual);
+      vSubbasin[lSubbasin - 1].iFlag_headwater = vSegment[lSegment - 1].iFlag_headwater;
+      // set the whole channel to the subbasin
+      vSubbasin[lSubbasin - 1].vCell_segment = vSegment[lSegment - 1].vReach_segment;
+      vSubbasin[lSubbasin - 1].dLength_stream_segment = vSegment[lSegment - 1].dLength;
+      vSubbasin[lSubbasin - 1].dArea_stream_segment = vSegment[lSegment - 1].dArea;
+      vSubbasin[lSubbasin - 1].dSlope_stream_segment = vSegment[lSegment - 1].dSlope_mean;
+      // we also need the downslope cell of the subbasin outlet cell
+      if (lSubbasin != nSubbasin) //.watershed outlet has no downslope cell
+      {
+        // find the next segment
+        lSegment_downstream = vSegment[lSegment - 1].lSegment_downstream;
+        // get the first cell of the next segment
+        vSubbasin[lSubbasin - 1].cCell_outlet_downslope = vSegment[lSegment_downstream - 1].cReach_start;
+      }
+    }
+
+    // now we can define the hillslope
+    if (iFlag_hillslope == 1)
+    {
+      watershed_define_hillslope();
+
+      dArea_hillslope_left_mean = 0.0;
+      dLength_hillslope_left_mean = 0.0;
+      dWidth_hillslope_left_mean = 0.0;
+      dSlope_hillslope_left_mean = 0.0;
+
+      dArea_hillslope_right_mean = 0.0;
+      dLength_hillslope_right_mean = 0.0;
+      dWidth_hillslope_right_mean = 0.0;
+      dSlope_hillslope_right_mean = 0.0;
+
+      dArea_hillslope_headwater_mean = 0.0;
+      dLength_hillslope_headwater_mean = 0.0;
+      dWidth_hillslope_headwater_mean = 0.0;
+      dSlope_hillslope_headwater_mean = 0.0;
+
+      // mean
+      dArea_hillslope_mean = 0.0;
+      dLength_hillslope_mean = 0.0;
+      dWidth_hillslope_mean = 0.0;
+      dSlope_hillslope_mean = 0.0;
+
+      nArea_left = nArea_right = nArea_headwater = 0;
+      nWidth_left = nWidth_right = nWidth_headwater = 0;
+      nLength_left = nLength_right = nLength_headwater = 0;
+      nSlope_left = nSlope_right = nSlope_headwater = 0;
+
+      nArea = nWidth = nLength = nSlope = 0;
+
+      for (long lSubbasin = 1; lSubbasin <= nSubbasin; lSubbasin++)
+      {
+        lSegment = lSubbasin;
+        dLength_stream_conceptual_basin = vSegment[lSegment - 1].dLength;
+        vSubbasin[lSubbasin - 1].subbasin_calculate_characteristics(dLength_stream_conceptual_basin);
+
+        // left hillslope
+        dArea_hillslope_left_mean = dArea_hillslope_left_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_left;
+        dLength_hillslope_left_mean = dLength_hillslope_left_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_left;
+        dWidth_hillslope_left_mean = dWidth_hillslope_left_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_left;
+        dSlope_hillslope_left_mean = dSlope_hillslope_left_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_left;
+
+        nArea_left = nArea_left + 1;
+        nWidth_left = nWidth_left + 1;
+        nLength_left = nLength_left + 1;
+        nSlope_left = nSlope_left + 1;
+
+        // right hillslope
+        dArea_hillslope_right_mean = dArea_hillslope_right_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_right;
+        dLength_hillslope_right_mean = dLength_hillslope_right_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_right;
+        dWidth_hillslope_right_mean = dWidth_hillslope_right_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_right;
+        dSlope_hillslope_right_mean = dSlope_hillslope_right_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_right;
+
+        nArea_right = nArea_right + 1;
+        nWidth_right = nWidth_right + 1;
+        nLength_right = nLength_right + 1;
+        nSlope_right = nSlope_right + 1;
+
+        dArea_hillslope_mean = dArea_hillslope_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_left;
+        dArea_hillslope_mean = dArea_hillslope_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_right;
+        dLength_hillslope_mean = dLength_hillslope_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_left;
+        dLength_hillslope_mean = dLength_hillslope_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_right;
+
+        dWidth_hillslope_mean = dWidth_hillslope_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_left;
+        dWidth_hillslope_mean = dWidth_hillslope_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_right;
+        dSlope_hillslope_mean = dSlope_hillslope_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_left;
+        dSlope_hillslope_mean = dSlope_hillslope_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_right;
+
+        nArea = nArea + 2;
+        nWidth = nWidth + 2;
+        nLength = nLength + 2;
+        nSlope = nSlope + 2;
+
+        if (vSubbasin[lSubbasin - 1].iFlag_headwater == 1)
+        {
+          dArea_hillslope_headwater_mean = dArea_hillslope_headwater_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_headwater;
+          dLength_hillslope_headwater_mean = dLength_hillslope_headwater_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_headwater;
+          dWidth_hillslope_headwater_mean = dWidth_hillslope_headwater_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_headwater;
+          dSlope_hillslope_headwater_mean = dSlope_hillslope_headwater_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_headwater;
+          nArea_headwater = nArea_headwater + 1;
+          nWidth_headwater = nWidth_headwater + 1;
+          nLength_headwater = nLength_headwater + 1;
+          nSlope_headwater = nSlope_headwater + 1;
+
+          dArea_hillslope_mean = dArea_hillslope_mean + vSubbasin[lSubbasin - 1].dArea_hillslope_headwater;
+          dLength_hillslope_mean = dLength_hillslope_mean + vSubbasin[lSubbasin - 1].dLength_hillslope_headwater;
+          dWidth_hillslope_mean = dWidth_hillslope_mean + vSubbasin[lSubbasin - 1].dWidth_hillslope_headwater;
+          dSlope_hillslope_mean = dSlope_hillslope_mean + vSubbasin[lSubbasin - 1].dSlope_hillslope_headwater;
+          nArea = nArea + 1;
+          nWidth = nWidth + 1;
+          nLength = nLength + 1;
+          nSlope = nSlope + 1;
+        }
+      }
+
+      // calculate average hillslop attribute
+      dArea_hillslope_left_mean = dArea_hillslope_left_mean / nArea_left;
+      dLength_hillslope_left_mean = dLength_hillslope_left_mean / nLength_left;
+      dWidth_hillslope_left_mean = dWidth_hillslope_left_mean / nWidth_left;
+      dSlope_hillslope_left_mean = dSlope_hillslope_left_mean / nSlope_left;
+
+      dArea_hillslope_right_mean = dArea_hillslope_right_mean / nArea_right;
+      dLength_hillslope_right_mean = dLength_hillslope_right_mean / nLength_right;
+      dWidth_hillslope_right_mean = dWidth_hillslope_right_mean / nWidth_right;
+      dSlope_hillslope_right_mean = dSlope_hillslope_right_mean / nSlope_right;
+
+      dArea_hillslope_headwater_mean = dArea_hillslope_headwater_mean / nArea_headwater;
+      dLength_hillslope_headwater_mean = dLength_hillslope_headwater_mean / nLength_headwater;
+      dWidth_hillslope_headwater_mean = dWidth_hillslope_headwater_mean / nWidth_headwater;
+      dSlope_hillslope_headwater_mean = dSlope_hillslope_headwater_mean / nSlope_headwater;
+
+      // calculate the total hillslope attribute
+      dArea_hillslope_mean = dArea_hillslope_mean / nArea;
+      dLength_hillslope_mean = dLength_hillslope_mean / nLength;
+      dWidth_hillslope_mean = dWidth_hillslope_mean / nWidth;
+      dSlope_hillslope_mean = dSlope_hillslope_mean / nSlope;
     }
 
     watershed_calculate_travel_distance();
@@ -672,25 +881,14 @@ namespace hexwatershed
   int watershed::watershed_calculate_drainage_area()
   {
     int error_code = 1;
-    int iOption = 2; // sum up subbasin
-
-    float dArea_total = 0.0;
+    double dArea_total = 0.0;
     std::vector<hexagon>::iterator iIterator;
     std::vector<subbasin>::iterator iIterator1;
-    if (iOption == 1)
+    for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
     {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-      {
-        dArea_total = dArea_total + (*iIterator).dArea;
-      }
+      dArea_total = dArea_total + (*iIterator1).dArea;
     }
-    else
-    {
-      for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
-      {
-        dArea_total = dArea_total + (*iIterator1).dArea;
-      }
-    }
+
     dArea = dArea_total;
     return error_code;
   }
@@ -702,30 +900,15 @@ namespace hexwatershed
   int watershed::watershed_calculate_total_stream_length()
   {
     int error_code = 1;
-    int iOption = 2; // sum up subbasin
 
     float dLength_total = 0.0;
 
     std::vector<hexagon>::iterator iIterator;
     std::vector<segment>::iterator iIterator1;
-    if (iOption == 1)
-    {
-      for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-      {
 
-        if ((*iIterator).iFlag_stream == 1)
-        {
-          // should have calculated dLength_stream_conceptual by now
-          dLength_total = dLength_total + (*iIterator).dLength_stream_conceptual;
-        }
-      }
-    }
-    else
+    for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
     {
-      for (iIterator1 = vSegment.begin(); iIterator1 != vSegment.end(); iIterator1++)
-      {
-        dLength_total = dLength_total + (*iIterator1).dLength;
-      }
+      dLength_total = dLength_total + (*iIterator1).dLength;
     }
 
     dLength_stream_conceptual = dLength_total;
@@ -742,17 +925,17 @@ namespace hexwatershed
     int error_code = 1;
 
     float dLength_longest = 0.0;
-    float dLength_stream_conceptual;
+    float dLength_stream_conceptual_temp;
 
     // loop through head water
     std::vector<segment>::iterator iIterator;
 
     for (iIterator = vSegment.begin(); iIterator != vSegment.end(); iIterator++)
     {
-      dLength_stream_conceptual = (*iIterator).dLength;
-      if (dLength_stream_conceptual > dLength_longest)
+      dLength_stream_conceptual_temp = (*iIterator).dLength;
+      if (dLength_stream_conceptual_temp > dLength_longest)
       {
-        dLength_longest = dLength_stream_conceptual;
+        dLength_longest = dLength_stream_conceptual_temp;
       }
     }
 
@@ -828,18 +1011,11 @@ namespace hexwatershed
     float a;
     float b;
     float c;
-    float d;
     float dTwi;
     std::vector<hexagon>::iterator iIterator;
     // can use openmp
     for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
     {
-      // if ((*iIterator).iFlag_outlet == 1)
-      //{
-      //   (*iIterator).dTwi = -1;
-      // }
-      // else
-      //{
       a = float(((*iIterator).dAccumulation));
       b = (*iIterator).dSlope_max_downslope;
       c = tan(b);
@@ -853,7 +1029,6 @@ namespace hexwatershed
         std::cout << a << b << c << std::endl;
       }
       (*iIterator).dTwi = dTwi;
-      //}
     }
 
     return error_code;
@@ -864,7 +1039,6 @@ namespace hexwatershed
     int error_code = 1;
     long lSegment;
     long lSubbasin;
-    long lSegment_downstream;
     long lSegmentIndex;
     float dDistance_to_watershed_outlet;
     // calculate confluence travel
@@ -913,10 +1087,19 @@ namespace hexwatershed
     ofs.open(sFilename_watershed_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-      sLine = "Total number of cells: " + convert_float_to_string(nCell);
+      sLine = "Total number of cells: " + convert_long_to_string(nCell);
       ofs << sLine << std::endl;
 
       sLine = "Watershed drainage area: " + convert_float_to_string(dArea);
+      ofs << sLine << std::endl;
+
+      sLine = "Outlet cell ID: " + convert_long_to_string(lCellID_outlet);
+      ofs << sLine << std::endl;
+
+      sLine = "Outlet longitude degree: " + convert_float_to_string(dLongitude_outlet_degree);
+      ofs << sLine << std::endl;
+
+      sLine = "Outlet latitude degree: " + convert_float_to_string(dLatitude_outlet_degree);
       ofs << sLine << std::endl;
 
       sLine = "Longest stream length: " + convert_float_to_string(dLongest_length_stream);
@@ -930,6 +1113,49 @@ namespace hexwatershed
 
       sLine = "Average slope: " + convert_float_to_string(dSlope_mean);
       ofs << sLine << std::endl;
+
+      // left hillslope
+      sLine = "Average left hillslope area: " + convert_float_to_string(dArea_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope length: " + convert_float_to_string(dLength_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope width: " + convert_float_to_string(dWidth_hillslope_left_mean);
+      ofs << sLine << std::endl;
+      sLine = "Average left hillslope slope: " + convert_float_to_string(dSlope_hillslope_left_mean);
+      ofs << sLine << std::endl;
+
+      if (iFlag_hillslope == 1)
+      {
+        // right hilslope
+        sLine = "Average right hillslope area: " + convert_float_to_string(dArea_hillslope_right_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average right hillslope length: " + convert_float_to_string(dLength_hillslope_right_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average right hillslope width: " + convert_float_to_string(dWidth_hillslope_right_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average right hillslope slope: " + convert_float_to_string(dSlope_hillslope_right_mean);
+        ofs << sLine << std::endl;
+
+        // headwater
+        sLine = "Average headwater hillslope area: " + convert_float_to_string(dArea_hillslope_headwater_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average headwater hillslope length: " + convert_float_to_string(dLength_hillslope_headwater_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average headwater hillslope width: " + convert_float_to_string(dWidth_hillslope_headwater_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average headwater hillslope slope: " + convert_float_to_string(dSlope_hillslope_headwater_mean);
+        ofs << sLine << std::endl;
+
+        // mean hillslope
+        sLine = "Average hillslope area: " + convert_float_to_string(dArea_hillslope_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average hillslope length: " + convert_float_to_string(dLength_hillslope_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average hillslope width: " + convert_float_to_string(dWidth_hillslope_mean);
+        ofs << sLine << std::endl;
+        sLine = "Average hillslope slope: " + convert_float_to_string(dSlope_hillslope_mean);
+        ofs << sLine << std::endl;
+      }
 
       ofs.close();
     }
@@ -962,9 +1188,14 @@ namespace hexwatershed
   int watershed::watershed_export_subbasin_characteristics()
   {
     int error_code = 1;
+    int iFlag_headwater;
+
     std::string sLine;
+
     std::vector<subbasin>::iterator iIterator1;
     std::ofstream ofs;
+
+    // for each subbasin:
     ofs.open(sFilename_subbasin_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
@@ -972,10 +1203,46 @@ namespace hexwatershed
       ofs << sLine << std::endl;
       for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
       {
-        sLine = convert_integer_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density) + ",";
+        sLine = convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).lCellID_outlet) + "," + convert_long_to_string((*iIterator1).nCell) + "," + convert_float_to_string((*iIterator1).dArea) + "," + convert_float_to_string((*iIterator1).dSlope_mean) + "," + convert_float_to_string((*iIterator1).dArea_2_stream_ratio) + "," + convert_float_to_string((*iIterator1).dDrainage_density);
         ofs << sLine << std::endl;
       }
+
+      // watershed average left hillslope, right hillslope, headwater hillslope
+
       ofs.close();
+      // how to add the hillslope information in the export step?
+    }
+
+    // within each subbasin, there are multiple hillslopes (left, right, headwater)
+    if (iFlag_hillslope == 1)
+    {
+      ofs.open(sFilename_hillslope_characteristics.c_str(), ios::out);
+      if (ofs.good())
+      {
+        sLine = "Hillslope ID, Subbasin ID, number of cell, total area, hillslope width, hillslope length, hillslope slope, mean slope";
+        ofs << sLine << std::endl;
+        for (iIterator1 = vSubbasin.begin(); iIterator1 != vSubbasin.end(); iIterator1++)
+        {
+          // left
+          sLine = convert_long_to_string((*iIterator1).lHillslope_left) + "," +
+                  convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_left) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_left) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_left) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_left) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_left) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_left_mean);
+          ofs << sLine << std::endl;
+
+          // right
+
+          sLine = convert_long_to_string((*iIterator1).lHillslope_right) + "," +
+                  convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_right) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_right) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_right) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_right) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_right) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_right_mean);
+          ofs << sLine << std::endl;
+
+          iFlag_headwater = (*iIterator1).iFlag_headwater;
+          if (iFlag_headwater == 1)
+          {
+            sLine = convert_long_to_string((*iIterator1).lHillslope_headwater) + "," + convert_long_to_string((*iIterator1).lSubbasin) + "," + convert_long_to_string((*iIterator1).nCell_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dArea_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dWidth_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dLength_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater) + "," + convert_float_to_string((*iIterator1).dSlope_hillslope_headwater_mean);
+            ofs << sLine << std::endl;
+          }
+        }
+        ofs.close();
+      }
     }
     return error_code;
   }
@@ -984,18 +1251,19 @@ namespace hexwatershed
   {
     int error_code = 1;
     jsonmodel::mesh cMesh;
-   
-    //for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
-    for (const hexagon& pHexagon : vCell)
+
+    // for (iIterator = vCell.begin(); iIterator != vCell.end(); iIterator++)
+    for (const hexagon &pHexagon : vCell)
     {
       if (pHexagon.iFlag_watershed == 1)
       {
         cell pCell;
         pCell.dLongitude_center_degree = pHexagon.dLongitude_center_degree;
-        pCell.dLatitude_center_degree =pHexagon.dLatitude_center_degree;
+        pCell.dLatitude_center_degree = pHexagon.dLatitude_center_degree;
         pCell.dSlope_between = pHexagon.dSlope_max_downslope;
         pCell.dSlope_profile = pHexagon.dSlope_elevation_profile0;
         pCell.dDistance_to_downslope = pHexagon.dDistance_to_downslope;
+        pCell.dDistance_to_channel = pHexagon.dDistance_to_channel;
         pCell.dDistance_to_subbasin_outlet = pHexagon.dDistance_to_subbasin_outlet;
         pCell.dDistance_to_watershed_outlet = pHexagon.dDistance_to_watershed_outlet;
         pCell.dElevation_mean = pHexagon.dElevation_mean;
@@ -1007,6 +1275,7 @@ namespace hexwatershed
         pCell.lCellID = pHexagon.lCellID;
         pCell.lStream_segment = pHexagon.lSegment;
         pCell.lSubbasin = pHexagon.lSubbasin;
+        pCell.lHillslope = pHexagon.lHillslope;
         pCell.lStream_segment_burned = pHexagon.lStream_segment_burned; // flag for burned stream
         pCell.lCellID_downslope = pHexagon.lCellID_downslope_dominant;
         pCell.dAccumulation = pHexagon.dAccumulation;
@@ -1061,7 +1330,7 @@ namespace hexwatershed
   }
 
   long watershed::watershed_find_index_by_cell_id(long lCellID_in)
-  {  
+  {
     auto iIterator = mCellIdToIndex.find(lCellID_in);
     if (iIterator != mCellIdToIndex.end())
     {
@@ -1074,7 +1343,7 @@ namespace hexwatershed
   }
 
   long watershed::watershed_find_index_by_segment_id(long lSegment_in)
-  {   
+  {
     auto iIterator = mSegmentIdToIndex.find(lSegment_in);
     if (iIterator != mSegmentIdToIndex.end())
     {
@@ -1083,11 +1352,11 @@ namespace hexwatershed
     else
     {
       return -1;
-    }    
+    }
   }
 
   long watershed::watershed_find_index_by_subbasin_id(long lSegment_in)
-  {    
+  {
     auto iIterator = mSubbasinIdToIndex.find(lSegment_in);
     if (iIterator != mSubbasinIdToIndex.end())
     {

@@ -29,6 +29,11 @@ namespace hexwatershed
     iFlag_stream_burning_treated = 0;
     iFlag_depression_filling_treated = 0;
 
+    iFlag_headwater_hillslope=0;
+    iFlag_left_hillslope=0;
+    iFlag_right_hillslope=0;
+    lHillslope = 0;
+    
     iFlag_confluence_burned = 0;
     iFlag_headwater_burned =0;
     lStream_segment_burned = -1;
@@ -68,6 +73,7 @@ namespace hexwatershed
     dSlope_max_upslope= 0.0;
     dSlope_min_upslope= 0.0;
     dSlope_mean_upslope= 0.0;
+    dSlope_elevation_profile0=0.0;
     //dSlope_mean_between= 0.0;
      
     dz = -9999.0;
@@ -118,6 +124,7 @@ namespace hexwatershed
     dLength = sqrt( dArea );    
     dResolution_effective = dLength ;
     dLength_stream_conceptual = dResolution_effective;
+    dLength_edge_mean = dResolution_effective;
     return error_code;
   }
 
@@ -137,6 +144,11 @@ namespace hexwatershed
     dz = aLocation[2];
 
     return error_code;
+  }
+
+  bool hexagon::operator>(const hexagon& other) const 
+  {
+    return dElevation_mean > other.dElevation_mean;
   }
 
 } // namespace hexwatershed

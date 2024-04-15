@@ -26,7 +26,7 @@ namespace hexwatershed
     long lVertexIndex = 0;
     long ncell = this->aCell.size();
     vCell_active.clear();
-    vCell_active.reserve(ncell); // CL: dont remember that this does but it speeds up the code
+    vCell_active.reserve(ncell); // CL: don't remember that this does but it speeds up the code
     // for (iIterator1 = aCell.begin(); iIterator1 != aCell.end(); iIterator1++)
     for (const cell &pCell : aCell)
     {
@@ -66,7 +66,7 @@ namespace hexwatershed
       }
 
       // define the bounding box using the vertex info, no longer needed for spatial index
-      // pHexagon.aBoundingBox = {dLongtitue_min, dLatitude_min, dLongtitue_max, dLatitude_max};
+      // pHexagon.aBoundingBox = {dLongitude_min, dLatitude_min, dLongitude_max, dLatitude_max};
 
       pHexagon.lStream_segment_burned = pCell.lStream_segment_burned;
       pHexagon.iStream_order_burned = pCell.iStream_order_burned;
@@ -76,8 +76,8 @@ namespace hexwatershed
       {
         pHexagon.iFlag_stream_burned = 1;
       }
-
       pHexagon.calculate_effective_resolution();
+      //pHexagon.calculate_average_edge_length();
       // we require the
       if (pHexagon.dLength_stream_burned < pHexagon.dLength_stream_conceptual)
       {
@@ -93,7 +93,7 @@ namespace hexwatershed
     if (iFlag_vtk == 1)
     {
       // if vtk is needed, we need to prepare the vertex index
-      vVertex_active.clear();      
+      vVertex_active.clear();
       // Collect unique vertex IDs and build mVertexIdToIndex
       lVertexIndex = 0;
       for (const hexagon &pHexagon : vCell_active)

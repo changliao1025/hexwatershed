@@ -58,6 +58,10 @@ namespace hexwatershed
     int iFlag_confluence_burned;
     int iFlag_headwater_burned;
 
+    int iFlag_left_hillslope;
+    int iFlag_right_hillslope;
+    int iFlag_headwater_hillslope;
+
     int iFlag_first_reach; //whether it is the first reach of a stream
     int iFlag_last_reach;  //whether it is the last reach of a stream
     int iFlag_headwater;   //whether the stream segment is headwater, but we should set it to segment level?
@@ -68,6 +72,7 @@ namespace hexwatershed
     long lStream_segment_burned;
     long lSegment;       //the stream segment id    
     long lSubbasin;      //the subbasin id, should be the same with the segment
+    long lHillslope;
     long lWatershed; 
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge
@@ -84,7 +89,7 @@ namespace hexwatershed
     
     long lCellID_downstream_burned;//the downstream mesh ID
 
-    float dAccumulation;             //the flow accumulation value. it does not consider area of hexagon in this version
+    double dAccumulation;             //the flow accumulation value. it does not consider area of hexagon in this version
     float dAspect; //maybe used for radiation
     float dSlope;
 
@@ -115,7 +120,7 @@ namespace hexwatershed
     float dElevation_profile0;            //from DEM, (unit:m)
     float dElevation_raw;            //from DEM, (unit:m)
     float dElevation_downstream; //down stream elevation for breach algorithm
-    float dArea;                 //the area of hexagon,  (unit:m2)
+    double dArea;                 //the area of hexagon,  (unit:m2)
     float dTwi;                  //terrain wetness index
     float dLength_stream_conceptual;//conceptual length based on mesh
     float dLength_stream_burned; //the provided flowline length
@@ -123,6 +128,7 @@ namespace hexwatershed
     float dDistance_to_downslope;
     float dDistance_to_subbasin_outlet;
     float dDistance_to_watershed_outlet; 
+    float dDistance_to_channel; //to the first downslope channel cell
     
     //a 4 element array to define the bounding box, which will use used by rtree spatial index
     //std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
@@ -146,6 +152,8 @@ namespace hexwatershed
     int calculate_average_edge_length();
     int calculate_effective_resolution();
     int update_location();
+
+    bool operator>(const hexagon& other) const;
   };
 
 } // namespace hexwatershed

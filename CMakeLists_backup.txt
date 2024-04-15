@@ -32,6 +32,8 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/multibasin.h   
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/JSONBase.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/JSONBase.h     
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.cpp        
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/conversion.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/conversion.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/data.cpp
@@ -45,7 +47,7 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/global.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/global.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/hexagon.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hexagon.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src/hexagon.h 
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/parameter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/parameter.h
@@ -55,8 +57,6 @@ set(hexwatershed_srcs
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/subbasin.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/system.cpp        
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/system.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.cpp        
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/json/vertex.h
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/watershed.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/../src/watershed.h       
         )

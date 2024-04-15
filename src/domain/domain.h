@@ -51,7 +51,7 @@ namespace hexwatershed
   class domain {
   public:
     domain ();
-    domain (std::string sFilename_configuration_in);
+    domain (const std::string &sFilename_configuration_in);
     ~domain ();
 
     std::string sWorkspace_input;
@@ -129,10 +129,10 @@ namespace hexwatershed
     //function
     int domain_read ();
     int domain_read_configuration_file ();
-    int domain_read_elevation_json(std::string sFilename_elevation_in);
-    int domain_read_basin_json(std::string sFilename_basin_in);
+    int domain_read_elevation_json(const std::string &sFilename_elevation_in);
+    int domain_read_basin_json(const std::string &sFilename_basin_in);
 
-    int domain_assign_parameter ();
+    //int domain_assign_parameter ();
     int domain_read_input_data();
     int domain_initialize ();
     int domain_retrieve_user_input();

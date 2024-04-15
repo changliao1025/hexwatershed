@@ -34,8 +34,8 @@ namespace jsonmodel
     //float dLongitude_center_radian;
     //float dz;
 
-    float dArea;  /*!<cell area*/
-    float dAccumulation; /*!<flow accumulation*/
+    double dArea;  /*!<cell area*/
+    double dAccumulation; /*!<flow accumulation*/
     float dSlope_between; /*!<slope between this cell and downslope cell*/
     float dSlope_within; /*!<slope based on high resolution DEM*/
     float dSlope_profile; /*!<slope based on elevation profile between downslope cell*/
@@ -45,6 +45,7 @@ namespace jsonmodel
     float dDistance_to_downslope; /*!<distance to downsloe*/
     float dDistance_to_subbasin_outlet; /*!< distance to subbasin outlet*/
     float dDistance_to_watershed_outlet; /*!< distance to watershed outlet*/
+    float dDistance_to_channel; /*!<distance to channel*/
    
     int nEdge;
     int nNeighbor;
@@ -56,6 +57,7 @@ namespace jsonmodel
     
     long lStream_segment;
     long lSubbasin;
+    long lHillslope;
     long lCellID; /*!<global cell ID*/
     long lCellID_downstream_burned;/*!<pre-descibed global downstream cell ID*/
     long lCellID_downslope;/*!<global downslope cell ID*/

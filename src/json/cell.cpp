@@ -18,6 +18,8 @@ namespace jsonmodel
 		dLatitude_center_degree = -9999.0;
 		dLongitude_center_degree = -9999.0;
 		dArea = -9999.0;
+		dLength=0.0;
+		dLength_flowline=0.0;
 		dDistance_to_downslope = -9999.0;
 		dDistance_to_subbasin_outlet = -9999.0;
 		dDistance_to_watershed_outlet = -9999.0;
@@ -29,6 +31,7 @@ namespace jsonmodel
 
 		dSlope_between = -9999.0;
 		dSlope_within = -9999.0;
+		dSlope_profile =-9999.0;
 	}
 
 	cell::~cell()
@@ -76,7 +79,7 @@ namespace jsonmodel
 		sKey = "dArea";
 		if (obj.HasMember(sKey.c_str()))
 		{
-			this->dArea = obj[sKey.c_str()].GetFloat();
+			this->dArea = obj[sKey.c_str()].GetDouble();
 		}
 
 		sKey = "lCellID";
@@ -176,6 +179,9 @@ namespace jsonmodel
 		writer->String("lSubbasin");
 		writer->Int64(lSubbasin);
 
+		writer->String("lHillslope");
+		writer->Int64(lHillslope);
+
 		writer->String("dLongitude_center_degree");
 		writer->Double(dLongitude_center_degree);
 		writer->String("dLatitude_center_degree");
@@ -205,6 +211,8 @@ namespace jsonmodel
 		writer->Double(dAccumulation);
 		writer->String("dDistance_to_downslope");
 		writer->Double(dDistance_to_downslope);
+		writer->String("dDistance_to_channel");
+		writer->Double(dDistance_to_channel);
 		writer->String("dDistance_to_subbasin_outlet");
 		writer->Double(dDistance_to_subbasin_outlet);
 		writer->String("dDistance_to_watershed_outlet");

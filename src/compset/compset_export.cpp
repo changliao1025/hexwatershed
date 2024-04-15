@@ -38,7 +38,7 @@ namespace hexwatershed
       {
         sFilename = sFilename_domain_json;
         compset_export_domain_json(sFilename); // this one for domain
-        compset_export_watershed_json(); // this one for each watershed
+        compset_export_watershed_json();       // this one for each watershed
         compset_export_watershed_characteristics();
       }
       else // single watershed
@@ -46,12 +46,12 @@ namespace hexwatershed
         // when there is only single watershed, we will only output watershed level output because domain-scale is the same
         // now we will update some new result due to debug flag
 
-        // main json file        
+        // main json file
         compset_export_watershed_json();
 
         // reserved for animation
         if (iFlag_animation == 1)
-        {          
+        {
           compset_export_watershed_animation_json(sFilename_domain_animation_json);
         }
 
@@ -60,7 +60,7 @@ namespace hexwatershed
         {
           compset_export_watershed_vtk(sFilename_domain_vtk);
         }
-       
+
         // watershed level
         compset_export_watershed_characteristics();
       }
@@ -68,25 +68,22 @@ namespace hexwatershed
 
     ofs_log.close();
 
-    sTime = get_current_time();        
+    sTime = get_current_time();
     sLog = "Finished saving results! at " + sTime;
     std::cout << sLog << std::endl;
-    
+
     std::flush(std::cout);
 
     return error_code;
   }
 
-  int compset::compset_export_watershed_animation_json(std::string sFilename_in)
+  int compset::compset_export_watershed_animation_json(const std::string &sFilename_in)
   {
     int error_code = 1;
-
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
-
     jsonmodel::mesh cMesh;
-
     if (iFlag_global != 1)
     {
       if (iFlag_multiple_outlet != 1)
@@ -96,16 +93,22 @@ namespace hexwatershed
         {
           cell pCell;
           pCell.lCellID = (*iIterator).lCellID;
+          pCell.dElevation_raw = (*iIterator).dElevation_raw;
+          pCell.dElevation_mean = (*iIterator).dElevation_mean;
+          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+          pCell.vVertex = (*iIterator).vVertex;
+          pCell.nVertex = pCell.vVertex.size();
           cMesh.aCell.push_back(pCell);
         }
 
-        cMesh.SerializeToFile(sFilename_in.c_str());
+        cMesh.SerializeToFile(sFilename_in);
       }
     }
     return error_code;
   }
 
-  int compset::compset_export_domain_json(std::string sFilename_in)
+  int compset::compset_export_domain_json(const std::string &sFilename_in)
   {
     int error_code = 1;
     long lWatershed;
@@ -170,7 +173,7 @@ namespace hexwatershed
             cMesh.aCell.push_back(pCell);
           }
 
-          cMesh.SerializeToFile(sFilename_in.c_str());
+          cMesh.SerializeToFile(sFilename_in);
         }
         else // single watershed
         {
@@ -193,14 +196,12 @@ namespace hexwatershed
   {
     int error_code = 1;
     long lWatershed;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    
-      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-      {
-        vWatershed[lWatershed - 1].watershed_export_json();
-        vWatershed[lWatershed - 1].watershed_export_stream_edge_json();
-      }
-    
+
+    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+    {
+      vWatershed[lWatershed - 1].watershed_export_json();
+      vWatershed[lWatershed - 1].watershed_export_stream_edge_json();
+    }
 
     return error_code;
   }
@@ -212,27 +213,25 @@ namespace hexwatershed
   {
     int error_code = 1;
     long lWatershed;
-    int iFlag_flowline = cParameter.iFlag_flowline;
-    
-      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-      {
-        vWatershed[lWatershed - 1].watershed_export_characteristics();
-        vWatershed[lWatershed - 1].watershed_export_segment_characteristics();
-        vWatershed[lWatershed - 1].watershed_export_subbasin_characteristics();
-      }
-    
+
+    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+    {
+      vWatershed[lWatershed - 1].watershed_export_characteristics();
+      vWatershed[lWatershed - 1].watershed_export_segment_characteristics();
+      vWatershed[lWatershed - 1].watershed_export_subbasin_characteristics();
+    }
 
     return error_code;
   }
 
-  int compset::compset_export_watershed_vtk(std::string sFilename_in)
+  int compset::compset_export_watershed_vtk(const std::string &sFilename_in)
   {
     int error_code = 1;
     int iVertex;
     int iFlag_debug = cParameter.iFlag_debug;
-    long lValue;
+
     long lCount;
-    long lCellID, lCellIndex;
+    long lCellIndex;
     long nVertex, nHexagon, nBoundary;
     float dr, dx, dy, dz;
     std::string sDummy;
@@ -326,9 +325,7 @@ namespace hexwatershed
       {
         if ((*iIterator).lCellID_downslope_dominant != -1)
         {
-          sLine = "2 ";
-          lCellID = (*iIterator).lCellID_downslope_dominant;
-          //lCellIndex = compset_find_index_by_cell_id(lCellID);
+          sLine = "2 ";        
           lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;
@@ -447,10 +444,7 @@ namespace hexwatershed
       {
         if ((*iIterator).lCellID_downslope_dominant != -1)
         {
-          sLine = "2 ";
-          // cannot use cellindex anymore?
-          lCellID = (*iIterator).lCellID_downslope_dominant;
-          //lCellIndex = compset_find_index_by_cell_id(lCellID);
+          sLine = "2 ";          
           lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;
