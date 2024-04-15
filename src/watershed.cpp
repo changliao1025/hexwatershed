@@ -1087,13 +1087,13 @@ namespace hexwatershed
     ofs.open(sFilename_watershed_characteristics.c_str(), ios::out);
     if (ofs.good())
     {
-      sLine = "Total number of cells: " + convert_float_to_string(nCell);
+      sLine = "Total number of cells: " + convert_long_to_string(nCell);
       ofs << sLine << std::endl;
 
       sLine = "Watershed drainage area: " + convert_float_to_string(dArea);
       ofs << sLine << std::endl;
 
-      sLine = "Outlet cell ID: " + convert_float_to_string(lCellID_outlet);
+      sLine = "Outlet cell ID: " + convert_long_to_string(lCellID_outlet);
       ofs << sLine << std::endl;
 
       sLine = "Outlet longitude degree: " + convert_float_to_string(dLongitude_outlet_degree);
