@@ -122,10 +122,10 @@ namespace hexwatershed
   }
 
   /**
-   * define the stream network using flow accumulation value
+   * this function is used to define at least one watershed by finding the max flow accumulation
    * @return
    */
-  int compset::compset_define_stream_grid()
+  int compset::compset_stats_flow_accumulation()
   {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
@@ -140,324 +140,58 @@ namespace hexwatershed
     float dAccumulation;
     float dAccumulation_min = 0.0;
     float dAccumulation_max = 0.0;
-    // in watershed hydrology, a threshold is usually used to define the network
-    // here we use similar method
-    float dAccumulation_threshold;
-    float dAccumulation_threshold_ratio = cParameter.dAccumulation_threshold_ratio;
-    float dAccumulation_threshold_value = cParameter.dAccumulation_threshold_value;
     std::vector<hexagon>::iterator iIterator_self;
-    iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
+
     if (iFlag_global != 1)
     {
-      if (iFlag_flowline == 1)
+      if (iFlag_multiple_outlet == 0) // only one outlet
       {
-        if (iFlag_multiple_outlet == 0)
+        if (iFlag_flowline == 1) // user provide flowline
         {
-          // use outlet id as largest
-          lCellID_outlet = aBasin[0].lCellID_outlet;
-          lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-          if (iFlag_accumulation_threshold_ratio ==1)
-          {
-            dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
-          }
-          else
-          {
-            dAccumulation_threshold = dAccumulation_threshold_value;
-          }
-          dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
-          switch (iFlag_stream_grid_option)
-          {
-          case 1: // only burnt-in
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-              // should we set burnt in stream here? i think so
-              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-              else
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                // we still need its length for MOSART model.
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-            }
-            break;
-          case 2: // only threshold
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-              else
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                // we still need its length for MOSART model.
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-            }
-            break;
-          case 3: // combined
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-
-              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-              else
-              {
-                // should we set burnt in stream here? i think so
-                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                  // we still need its length for MOSART model.
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-              }
-            }
-            break;
-          case 4:
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                dAccumulation = vCell_active[lCellIndex_self].dAccumulation;
-                if (dAccumulation < dAccumulation_min)
-                {
-                  dAccumulation_min = dAccumulation;
-                }
-              }
-            }
-            // update threshold
-
-            dAccumulation_threshold = dAccumulation_min;
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-              if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-              else
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                // we still need its length for MOSART model.
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-            }
-            break;
-          default:
-            // default it option 1
-            for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-            {
-              // should we set burnt in stream here? i think so
-              if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-              else
-              {
-                (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                // we still need its length for MOSART model.
-                (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-              }
-            }
-            break;
-          }
-          // openmp may  not work for std container in earlier C++
-          // #pragma omp parallel for private(lCellIndex_self)
+          // maybe we can just get the flow accumulation directly
+          aBasin[0].iFlag_flowline = 1;
+          lCellIndex_outlet = mCellIdToIndex[aBasin[0].lCellID_outlet];
+          dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
         }
-        else // todo: multiple 'pre-defined' outlets
+        else // no flowline provided, so it is based on DEM
         {
-          // define pre-define first
-          for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+          dAccumulation_max = 0.0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
-            lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-            lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-            if(iFlag_accumulation_threshold_ratio ==1)
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
             {
-              dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
-            }
-            else
-            {
-              dAccumulation_threshold = dAccumulation_threshold_value;
-            }
-            dAccumulation_min = vCell_active[lCellIndex_outlet].dAccumulation;
-            switch (iFlag_stream_grid_option)
-            {
-            case 1: // only burnt-in
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-                // should we set burnt in stream here? i think so
-                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                  // we still need its length for MOSART model.
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-              }
-              break;
-            case 2: // only threshold
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                  // we still need its length for MOSART model.
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-              }
-              break;
-            case 3: // combined
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-
-                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  // should we set burnt in stream here? i think so
-                  if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-                  {
-                    (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                    (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                  }
-                  else
-                  {
-                    (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                    // we still need its length for MOSART model.
-                    (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                  }
-                }
-              }
-              break;
-            case 4:
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  dAccumulation = vCell_active[lCellIndex_self].dAccumulation;
-                  if (dAccumulation < dAccumulation_min)
-                  {
-                    dAccumulation_min = dAccumulation;
-                  }
-                }
-              }
-              // update threshold
-
-              dAccumulation_threshold = dAccumulation_min;
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-                if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                  // we still need its length for MOSART model.
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-              }
-              break;
-            default:
-              // default it option 1
-              for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-              {
-                // should we set burnt in stream here? i think so
-                if ((vCell_active[lCellIndex_self]).iFlag_stream_burned == 1)
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-                else
-                {
-                  (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-                  // we still need its length for MOSART model.
-                  (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-                }
-              }
-              break;
+              dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+              lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
             }
           }
-          // then define normal grid as well
+          // also set the outlet id
+          lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
+          // should we update at least one watershed?
+          basin pBasin;
+          aBasin.clear();
+          aBasin.push_back(pBasin);
+          // set the id and outlet
+          aBasin[0].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
+          aBasin[0].lCellID_outlet = lCellID_outlet;
+          aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+          aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+          // we also need to update the nOutlet?
+          cParameter.nOutlet = 1;
         }
       }
-      else
+      else // more than 1 outlet is provided
       {
-        // find the maximum accumulation
-        dAccumulation_max = 0.0;
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
         {
-          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
-          {
-            dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
-            lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
-          }
-        }
-        if (iFlag_accumulation_threshold_ratio ==1)
-        {
-          dAccumulation_threshold = dAccumulation_threshold_ratio * vCell_active[lCellIndex_outlet].dAccumulation;
-        }
-        else
-        {
-          dAccumulation_threshold = dAccumulation_threshold_value;
-        }
-        // also set the outlet id
-        lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
+          lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+          lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+          aBasin[lWatershed - 1].iFlag_flowline = 1;
+          // set the id and outlet
+          aBasin[lWatershed - 1].lCellID_outlet = lCellID_outlet;
+          aBasin[lWatershed - 1].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+          aBasin[lWatershed - 1].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
 
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-        {
-          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold)
-          {
-            (vCell_active[lCellIndex_self]).iFlag_stream = 1;
-            (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-          }
-          else
-          {
-            (vCell_active[lCellIndex_self]).iFlag_stream = 0;
-            // we still need its length for MOSART model.
-            (vCell_active[lCellIndex_self]).dLength_stream_conceptual = (vCell_active[lCellIndex_self]).dResolution_effective;
-          }
         }
-
-        // should we update at least one watershed?
-        basin pBasin;
-        aBasin.clear();
-        aBasin.push_back(pBasin);
-        //set the id and outlet
-        aBasin[0].lCellID_outlet = lCellID_outlet;
-        aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
-        aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
-        // we also need to update the nOutlet?
-        cParameter.nOutlet = 1;
       }
     }
     else
@@ -476,6 +210,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFound_outlet;
+    int iFlag_flowline;
     long lWatershed;
     long lCellIndex_self;
     long lCellIndex_current;
@@ -484,6 +219,7 @@ namespace hexwatershed
     long lCellIndex_watershed;
     long lCellID_downslope;
     long lCellID_outlet;
+
 
     std::string sWatershed;
     std::string sWorkspace_output_watershed;
@@ -497,6 +233,7 @@ namespace hexwatershed
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+
         lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
         watershed cWatershed;
         sWatershed = convert_long_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
@@ -590,6 +327,16 @@ namespace hexwatershed
         vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
         vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
         vCell_active[lCellIndex_outlet].lCellIndex_watershed = lCellIndex_watershed;
+
+        cWatershed.dAccumulation_max = vCell_active[lCellIndex_outlet].dAccumulation;
+        // copy parameter as well
+        cWatershed.cParameter.iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
+        
+        cWatershed.cParameter.iFlag_flowline = aBasin[lWatershed - 1].iFlag_flowline; // this one is tricky
+        cWatershed.cParameter.iFlag_accumulation_threshold_ratio = aBasin[lWatershed - 1].iFlag_accumulation_threshold_ratio;
+        cWatershed.cParameter.dAccumulation_threshold_ratio = aBasin[lWatershed - 1].dAccumulation_threshold_ratio;
+        cWatershed.cParameter.dAccumulation_threshold_value = aBasin[lWatershed - 1].dAccumulation_threshold_value;
+
         cWatershed.vCell.push_back(vCell_active[lCellIndex_outlet]);
         cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
         cWatershed.dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
@@ -600,6 +347,40 @@ namespace hexwatershed
     }
     else
     {
+    }
+
+    return error_code;
+  }
+
+  /**
+   * define the stream network using flow accumulation value
+   * @return
+   */
+  int compset::compset_define_stream_grid()
+  {
+    int error_code = 1;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_flowline = cParameter.iFlag_flowline;
+
+    int iFlag_accumulation_threshold_ratio = cParameter.iFlag_accumulation_threshold_ratio;
+    int iFlag_accumulation_threshold_ratio_basin = 0;
+    long lWatershed;
+
+    float dAccumulation_threshold;
+    float dAccumulation_threshold_ratio = cParameter.dAccumulation_threshold_ratio;
+    float dAccumulation_threshold_value = cParameter.dAccumulation_threshold_value;
+
+    if (iFlag_global != 1)
+    {
+      for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+      {
+        vWatershed[lWatershed - 1].watershed_define_stream_grid();
+      }
+      // how about the remaining cells?
+    }
+    else
+    {
+      // global scale simulation
     }
 
     return error_code;
@@ -750,11 +531,11 @@ namespace hexwatershed
         watershed cWatershed = vWatershed[lWatershed - 1];
         for (iIterator1 = cWatershed.vCell.begin(); iIterator1 != cWatershed.vCell.end(); iIterator1++)
         {
-
           lCellIndex = (*iIterator1).lCellIndex;
-
           if (lCellIndex != -1)
           {
+            vCell_active[lCellIndex].iFlag_stream = (*iIterator1).iFlag_stream;
+            vCell_active[lCellIndex].dLength_stream_conceptual = (*iIterator1).dLength_stream_conceptual;
             vCell_active[lCellIndex].lSubbasin = (*iIterator1).lSubbasin;
             vCell_active[lCellIndex].lSegment = (*iIterator1).lSegment;
             vCell_active[lCellIndex].dDistance_to_subbasin_outlet = (*iIterator1).dDistance_to_subbasin_outlet;

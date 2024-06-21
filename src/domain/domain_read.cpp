@@ -76,6 +76,7 @@ namespace hexwatershed
     eMesh_type pMesh_type;
     std::string sMesh_type;
     std::string sKey = "sMesh_type";
+    std::list<basin>::iterator iIterator;
     // std::string sWorkspace_output_hexwatershed;
     if (pConfigDoc.HasMember(sKey.c_str()))
     {
@@ -131,6 +132,29 @@ namespace hexwatershed
       cCompset.cParameter.iFlag_hillslope = pConfigDoc[sKey.c_str()].GetInt();
     }
 
+    sKey = "dAccumulation_threshold";
+    if (pConfigDoc.HasMember(sKey.c_str()))
+    {
+      dValue = pConfigDoc[sKey.c_str()].GetFloat();
+
+      if (dValue >= 1.0)
+      {
+        // this is provided as the actual accumulation value;
+        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 0;
+        cCompset.cParameter.dAccumulation_threshold_value = dValue;
+      }
+      else
+      {
+        // this is provided as a ratio
+        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 1;
+        cCompset.cParameter.dAccumulation_threshold_ratio = dValue;
+        if (cCompset.cParameter.dAccumulation_threshold_ratio < 0.0)
+        {
+          cCompset.cParameter.dAccumulation_threshold_ratio = 0.001;
+        }
+      }
+    }
+
     if (cCompset.cParameter.iFlag_flowline == 1)
     {
       sKey = "nOutlet";
@@ -145,7 +169,7 @@ namespace hexwatershed
         cCompset.cParameter.iFlag_stream_burning_topology = pConfigDoc[sKey.c_str()].GetInt();
       }
 
-      sKey = "dBreach_threshold";
+      sKey = "dBreach_threshold"; //this could also be a local parameter for each basin
       if (pConfigDoc.HasMember(sKey.c_str()))
       {
         cCompset.cParameter.dBreach_threshold = pConfigDoc[sKey.c_str()].GetFloat();
@@ -159,37 +183,19 @@ namespace hexwatershed
         // read basin info
         domain_read_basin_json(sFilename_basins);
 
-        for (std::list<basin>::iterator it = cBasin.aBasin.begin(); it != cBasin.aBasin.end(); ++it)
+        for (iIterator = cBasin.aBasin.begin(); iIterator != cBasin.aBasin.end(); ++iIterator)
         {
-          cCompset.aBasin.push_back((*it));
+          // quality control of basin parameters
+          iIterator->iFlag_flowline = cCompset.cParameter.iFlag_flowline; //this must be 1 in this case
+          if (iIterator->iFlag_accumulation_threshold_provided == 0)
+          {
+            iIterator->dAccumulation_threshold_ratio = cCompset.cParameter.iFlag_accumulation_threshold_ratio;
+            iIterator->dAccumulation_threshold_value = cCompset.cParameter.dAccumulation_threshold_value;
+          }
+          cCompset.aBasin.push_back((*iIterator));
         }
       }
     }
-
-    sKey = "dAccumulation_threshold";
-    if (pConfigDoc.HasMember(sKey.c_str()))
-    {
-      dValue = pConfigDoc[sKey.c_str()].GetFloat();
-      
-      if (dValue >= 1.0)
-      {
-        //this is provided as the actual accumulation value;
-        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 0;
-        cCompset.cParameter.dAccumulation_threshold_value = dValue;
-      }
-      else
-      {
-        //this is provided as a ratio
-        cCompset.cParameter.iFlag_accumulation_threshold_ratio = 1;
-        cCompset.cParameter.dAccumulation_threshold_ratio = dValue;
-        if (cCompset.cParameter.dAccumulation_threshold_ratio < 0.0)
-        {
-          cCompset.cParameter.dAccumulation_threshold_ratio = 0.001;
-        }
-      }
-      
-    }
-
 
     sKey = "dMissing_value_dem";
     if (pConfigDoc.HasMember(sKey.c_str()))

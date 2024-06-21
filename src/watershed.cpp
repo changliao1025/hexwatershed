@@ -23,6 +23,170 @@ namespace hexwatershed
   {
   }
 
+  int watershed::watershed_define_stream_grid()
+  {
+    int error_code = 1;
+    int iCount = 0;
+    int iFlag_stream_grid_option;
+    int iFlag_accumulation_threshold_ratio;
+    int iFlag_flowline = cParameter.iFlag_flowline;
+    float dAccumulation_threshold_ratio;
+    float dAccumulation_threshold_value;
+    float dAccumulation_threshold;
+    float dAccumulation_max;
+    float dAccumulation;
+    float dAccumulation_min;
+
+    std::vector<hexagon>::iterator iIterator_self;
+    iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
+    dAccumulation_threshold_value = cParameter.dAccumulation_threshold_value;
+    iFlag_accumulation_threshold_ratio = cParameter.iFlag_accumulation_threshold_ratio;
+    dAccumulation_threshold_ratio = cParameter.dAccumulation_threshold_ratio;
+
+    dAccumulation_max = this->dAccumulation_max;
+    if (iFlag_accumulation_threshold_ratio == 1)
+    {
+      dAccumulation_threshold = dAccumulation_threshold_ratio * dAccumulation_max;
+    }
+    else
+    {
+      dAccumulation_threshold = dAccumulation_threshold_value;
+    }
+    dAccumulation_min =dAccumulation_threshold;
+    if (iFlag_flowline == 1) //user provided flowline
+    {
+      switch (iFlag_stream_grid_option)
+      {
+      case 1: // only burnt-in
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          // should we set burnt in stream here? i think so
+          if ((*iIterator_self).iFlag_stream_burned == 1)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+          else
+          {
+            (*iIterator_self).iFlag_stream = 0;
+            // we still need its length for MOSART model.
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+        }
+        break;
+      case 2: // only threshold
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          if ((*iIterator_self).dAccumulation >= dAccumulation_threshold)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+          else
+          {
+            (*iIterator_self).iFlag_stream = 0;
+            // we still need its length for MOSART model.
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+        }
+        break;
+      case 3: // combined
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          if ((*iIterator_self).dAccumulation >= dAccumulation_threshold)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+          else
+          {
+            // should we set burnt in stream here? i think so
+            if ((*iIterator_self).iFlag_stream_burned == 1)
+            {
+              (*iIterator_self).iFlag_stream = 1;
+              (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+            }
+            else
+            {
+              (*iIterator_self).iFlag_stream = 0;
+              // we still need its length for MOSART model.
+              (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+            }
+          }
+        }
+        break;
+      case 4: //use min flow accumulation from user flowline as new threshold
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          if ((*iIterator_self).iFlag_stream_burned == 1)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            dAccumulation = (*iIterator_self).dAccumulation;
+            if (dAccumulation < dAccumulation_min)
+            {
+              dAccumulation_min = dAccumulation;
+            }
+          }
+        }
+        // update threshold
+
+        dAccumulation_threshold = dAccumulation_min;
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          if ((*iIterator_self).dAccumulation >= dAccumulation_threshold)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+          else
+          {
+            (*iIterator_self).iFlag_stream = 0;
+            // we still need its length for MOSART model.
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+        }
+        break;
+      default:
+        // default it option 1
+        for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+        {
+          // should we set burnt in stream here? i think so
+          if ((*iIterator_self).iFlag_stream_burned == 1)
+          {
+            (*iIterator_self).iFlag_stream = 1;
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+          else
+          {
+            (*iIterator_self).iFlag_stream = 0;
+            // we still need its length for MOSART model.
+            (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+          }
+        }
+        break;
+      }
+    }
+    else //no user provided flowline, so i must rely on flow accumulation
+    {
+      for (iIterator_self = vCell.begin(); iIterator_self != vCell.end(); iIterator_self++)
+      {
+        if ((*iIterator_self).dAccumulation >= dAccumulation_threshold)
+        {
+          (*iIterator_self).iFlag_stream = 1;
+          (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+        }
+        else
+        {
+          (*iIterator_self).iFlag_stream = 0;
+          // we still need its length for MOSART model.
+          (*iIterator_self).dLength_stream_conceptual = (*iIterator_self).dResolution_effective;
+        }
+      }
+    }
+
+    return error_code;
+  }
+
   int watershed::watershed_define_stream_confluence()
   {
     int error_code = 1;

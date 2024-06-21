@@ -15,11 +15,14 @@ namespace jsonmodel
     virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
     int iFlag_dam;
+    int iFlag_flowline;
+    int iFlag_accumulation_threshold_provided;
     int iFlag_accumulation_threshold_ratio;
 
     float dLongitude_outlet_degree;
     float dLatitude_outlet_degree;
     float dBreach_threshold;
+    //float dAccumulation_max;
     float dAccumulation_threshold_ratio;
     float dAccumulation_threshold_value;
 

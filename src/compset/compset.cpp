@@ -80,14 +80,9 @@ namespace hexwatershed
     {
       if (iFlag_multiple_outlet == 1)
       {
-        // multiple outlet case, do we need these information?
-        compset_define_stream_grid();
-        sTime = get_current_time();
-        sLog = "Finished defining stream grid at " + sTime;
-        ofs_log << sLog << std::endl;
-        ofs_log.flush();
-        std::cout << sLog << std::endl;
+
         iFlag_debug = 0;
+        compset_stats_flow_accumulation();//this function should be further simplified.
         compset_define_watershed_boundary();
         sTime = get_current_time();
         sLog = "Finished defining watershed boundary at " + sTime;
@@ -96,7 +91,16 @@ namespace hexwatershed
         std::cout << sLog << std::endl;
         // start from here, we can actually run all the algorithm using the watershed object
         //if we want to use different threshold for different watersheds, then we need to redefine the stream grid here?
-        //todo 
+        //todo
+        // multiple outlet case, do we need these information?
+        compset_define_stream_grid();
+        sTime = get_current_time();
+        sLog = "Finished defining stream grid at " + sTime;
+        ofs_log << sLog << std::endl;
+        ofs_log.flush();
+        std::cout << sLog << std::endl;
+
+
         compset_define_stream_confluence();
         sTime = get_current_time();
         sLog = "Finished defining confluence at " + sTime;
@@ -141,19 +145,21 @@ namespace hexwatershed
       }
       else
       {
+
+
+        iFlag_debug = 0;
         // step 4
-        compset_define_stream_grid();
+        compset_define_watershed_boundary();
         sTime = get_current_time();
-        sLog = "Finished defining stream grid at " + sTime;
+        sLog = "Finished defining watershed boundary at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
 
-        iFlag_debug = 0;
         // step 5
-        compset_define_watershed_boundary();
+        compset_define_stream_grid();
         sTime = get_current_time();
-        sLog = "Finished defining watershed boundary at " + sTime;
+        sLog = "Finished defining stream grid at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;

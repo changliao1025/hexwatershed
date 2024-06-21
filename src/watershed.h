@@ -28,6 +28,7 @@
 #include "./json/cell.h"
 #include "./json/basin.h"
 #include "./json/multibasin.h"
+#include "./parameter.h"
 using namespace std;
 
 namespace hexwatershed
@@ -42,7 +43,7 @@ namespace hexwatershed
 
     int iFlag_hillslope;
 
-    long lWatershed; // id of watershed 
+    long lWatershed; // id of watershed
     long lSegment_current;
     double dArea;
     float dSlope;
@@ -58,6 +59,11 @@ namespace hexwatershed
 
     float dLongitude_outlet_degree;
     float dLatitude_outlet_degree;
+
+    //int iFlag_accumulation_threshold_ratio;
+    //float dAccumulation_threshold_value;
+    //float dAccumulation_threshold_ratio;
+    float dAccumulation_max;
 
     float dArea_2_stream_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
     float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
@@ -90,6 +96,8 @@ namespace hexwatershed
     float dWidth_hillslope_mean;
     float dSlope_hillslope_mean;
 
+    parameter cParameter;
+
     std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
     std::string sFilename_segment_characteristics;
@@ -111,13 +119,14 @@ namespace hexwatershed
     std::unordered_map<long, long> mSubbasinIdToIndex;
 
     // function
+    int watershed_define_stream_grid();
 
     int watershed_define_stream_confluence();
     int watershed_define_stream_segment();
     int watershed_tag_confluence_upstream( long lCellID_confluence);
 
     int watershed_build_stream_topology();
-    int watershed_define_stream_order();    
+    int watershed_define_stream_order();
     int watershed_define_subbasin();
     int watershed_define_hillslope();
     int watershed_update_attribute();

@@ -19,7 +19,7 @@
 #include <numeric>
 #include <cmath> // abs, floor
 #include <unordered_map>
-#include <queue>  
+#include <queue>
 #include <chrono>
 #include <ctime> //for timing recording
 #include "../system.h"
@@ -40,7 +40,7 @@ using namespace rapidjson;
 using namespace jsonmodel;
 
 namespace hexwatershed
-{  
+{
 
   class compset
   {
@@ -80,7 +80,7 @@ namespace hexwatershed
     std::string sFilename_netcdf_output; // if model use netcdf, we can put all results into one single netcdf file,
     // except the txt based results.
     std::string sFilename_hexagon_netcdf;
-    
+
     std::vector<float> vElevation; // vector to store the DEM raster data
     std::vector<hexagon> vCell_active;         // all calls has elevation (not missing value)
     std::vector<hexagon> vCell_priority_flood; // animation purpose
@@ -94,7 +94,7 @@ namespace hexwatershed
     std::unordered_map<long, long> mCellIdToIndex; // a map for fast search
     std::unordered_map<long, long> mVertexIdToIndex;
 
-    parameter cParameter;    
+    parameter cParameter;
     // std::vector<instance> vInstance;
 
     int compset_initialize_model();
@@ -111,8 +111,9 @@ namespace hexwatershed
     int compset_breaching_stream_elevation(long lCellID_center);
     int compset_calculate_flow_direction();
     int compset_calculate_flow_accumulation();
-    int compset_define_stream_grid();
+    int compset_stats_flow_accumulation();
     int compset_define_watershed_boundary();
+    int compset_define_stream_grid();
     int compset_define_stream_confluence();
     int compset_define_stream_segment();
     // int compset_tag_confluence_upstream (long lWatershed, long lCellID_confluence);
