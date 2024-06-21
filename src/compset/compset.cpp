@@ -95,6 +95,8 @@ namespace hexwatershed
         ofs_log.flush();
         std::cout << sLog << std::endl;
         // start from here, we can actually run all the algorithm using the watershed object
+        //if we want to use different threshold for different watersheds, then we need to redefine the stream grid here?
+        //todo 
         compset_define_stream_confluence();
         sTime = get_current_time();
         sLog = "Finished defining confluence at " + sTime;
