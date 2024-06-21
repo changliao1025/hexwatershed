@@ -133,9 +133,10 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_stream_grid_option;
     int iFlag_accumulation_threshold_ratio = cParameter.iFlag_accumulation_threshold_ratio;
-    long lCellIndex_self; 
+    int iFlag_accumulation_threshold_ratio_basin = 0;
+    long lCellIndex_self;
     long lCellID_outlet;
-    long lCellIndex_outlet;    
+    long lCellIndex_outlet;
     float dAccumulation;
     float dAccumulation_min = 0.0;
     float dAccumulation_max = 0.0;

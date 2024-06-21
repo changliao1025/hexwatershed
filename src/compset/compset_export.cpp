@@ -30,6 +30,8 @@ namespace hexwatershed
     // https://hexwatershed.readthedocs.io/en/latest/application/application.html#simulation-results
     if (iFlag_global == 1) // global simulation
     {
+      sFilename = sFilename_domain_json;
+      compset_export_domain_json(sFilename); // this one for domain
     }
     else
     {
@@ -135,9 +137,7 @@ namespace hexwatershed
         pCell.dArea = (*iIterator).dArea;
         pCell.dAccumulation = (*iIterator).dAccumulation;
         pCell.lCellID = (*iIterator).lCellID;
-
         pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-
         pCell.vVertex = (*iIterator).vVertex;
         pCell.nVertex = pCell.vVertex.size();
         cMesh.aCell.push_back(pCell);
@@ -325,7 +325,7 @@ namespace hexwatershed
       {
         if ((*iIterator).lCellID_downslope_dominant != -1)
         {
-          sLine = "2 ";        
+          sLine = "2 ";
           lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;
@@ -444,7 +444,7 @@ namespace hexwatershed
       {
         if ((*iIterator).lCellID_downslope_dominant != -1)
         {
-          sLine = "2 ";          
+          sLine = "2 ";
           lCellIndex = (*iIterator).lCellIndex;
           sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
           ofs_vtk << sLine << std::endl;

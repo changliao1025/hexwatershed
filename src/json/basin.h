@@ -8,23 +8,26 @@ namespace jsonmodel
   class basin : public JSONBase
   {
   public:
-    basin();		    
+    basin();
     virtual ~basin();
-    
+
     virtual bool Deserialize(const rapidjson::Value& obj);
     virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
     int iFlag_dam;
-    
-    
+    int iFlag_accumulation_threshold_ratio;
+
     float dLongitude_outlet_degree;
     float dLatitude_outlet_degree;
-    
+    float dBreach_threshold;
+    float dAccumulation_threshold_ratio;
+    float dAccumulation_threshold_value;
+
     long lCellID_outlet;
     long lBasinID;
-    
-    
+
+
   private:
-    
-  };	
+
+  };
 }
