@@ -2,12 +2,12 @@
 /**
  * @file hexagon.cpp
  * @author Chang Liao (chang.liao@pnnl.gov)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2019-06-11Created by Chang Liao on 4/26/18.
- * 
+ *
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 
 #include "hexagon.h"
@@ -25,6 +25,7 @@ namespace hexwatershed
     iFlag_headwater = 0;
     iFlag_stream = -1;
     iFlag_stream_burned = 0;
+    iFlag_watershed_boundary_burned = 0;
 
     iFlag_stream_burning_treated = 0;
     iFlag_depression_filling_treated = 0;
@@ -33,7 +34,7 @@ namespace hexwatershed
     iFlag_left_hillslope=0;
     iFlag_right_hillslope=0;
     lHillslope = 0;
-    
+
     iFlag_confluence_burned = 0;
     iFlag_headwater_burned =0;
     lStream_segment_burned = -1;
@@ -42,9 +43,9 @@ namespace hexwatershed
     iFlag_outlet = -1;
     lCellID_downslope_dominant = -1;
 
-    lCellIndex=-1;     
-    lCellIndex_watershed=-1;     
-    lCellIndex_subbasin=-1;     
+    lCellIndex=-1;
+    lCellIndex_watershed=-1;
+    lCellIndex_subbasin=-1;
 
     dAccumulation = 0.0;
 
@@ -65,7 +66,7 @@ namespace hexwatershed
     dElevation_downstream = -9999.0;
 
 
-    dSlope = 0.0;   
+    dSlope = 0.0;
     dSlope_within= 0.0;
     dSlope_max_downslope= 0.0;
     dSlope_min_downslope= 0.0;
@@ -75,7 +76,7 @@ namespace hexwatershed
     dSlope_mean_upslope= 0.0;
     dSlope_elevation_profile0=0.0;
     //dSlope_mean_between= 0.0;
-     
+
     dz = -9999.0;
 
     dTwi = 0.0;
@@ -84,7 +85,7 @@ namespace hexwatershed
 
     dDistance_to_downslope= 0.0;
     dDistance_to_subbasin_outlet= 0.0;
-    dDistance_to_watershed_outlet= 0.0; 
+    dDistance_to_watershed_outlet= 0.0;
     dLength_edge_mean=0.0;
   }
 
@@ -92,12 +93,12 @@ namespace hexwatershed
   {
   }
 
-  
-  
+
+
   /**
    * @brief calculate the mean edge length
-   * 
-   * @return int 
+   *
+   * @return int
    */
   int hexagon::calculate_average_edge_length()
   {
@@ -114,25 +115,25 @@ namespace hexwatershed
 
   /**
    * @brief calculate the effective resolution using area
-   * 
-   * @return int 
+   *
+   * @return int
    */
   int hexagon::calculate_effective_resolution()
   {
     int error_code = 1;
-    float dLength = 0.0;   
-    dLength = sqrt( dArea );    
+    float dLength = 0.0;
+    dLength = sqrt( dArea );
     dResolution_effective = dLength ;
     dLength_stream_conceptual = dResolution_effective;
     dLength_edge_mean = dResolution_effective;
     return error_code;
   }
 
- 
+
   /**
    * @brief update the x y z location
-   * 
-   * @return int 
+   *
+   * @return int
    */
   int hexagon::update_location()
   {
@@ -146,7 +147,7 @@ namespace hexwatershed
     return error_code;
   }
 
-  bool hexagon::operator>(const hexagon& other) const 
+  bool hexagon::operator>(const hexagon& other) const
   {
     return dElevation_mean > other.dElevation_mean;
   }

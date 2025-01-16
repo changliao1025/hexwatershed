@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 message("CMAKE_CURRENT_SOURCE_DIR is = ${CMAKE_CURRENT_SOURCE_DIR}")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Automatically include all source files in the src directory
-file(GLOB_RECURSE hexwatershed_srcs "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h")
+file(GLOB_RECURSE hexwatershed_srcs "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/../src/*.h")
 
 add_executable(hexwatershed ${hexwatershed_srcs})
 
@@ -33,7 +33,7 @@ message("build type = ${default_build_type}")
 
 target_compile_options(hexwatershed PUBLIC -std=c++11)
 
-set(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 install(TARGETS hexwatershed RUNTIME DESTINATION ${INSTALL_DIR})
 
 find_package(OpenMP)
@@ -43,7 +43,7 @@ if (OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-set(RAPIDJSON_NCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson)
+set(RAPIDJSON_NCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/rapidjson)
 
 include_directories(${RAPIDJSON_NCLUDE_DIR})
 

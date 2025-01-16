@@ -65,11 +65,12 @@ namespace hexwatershed
     int iFlag_stream_grid_option;
     int iFlag_slope_provided;
     int iFlag_merge_reach;
+    int iFlag_force_watershed_boundary;
     int iFlag_accumulation_threshold_ratio;
     long nOutlet;
 
     // parameters
-    
+
     float dBreach_threshold; // the threshold parameter for stream burning breaching algorithm
     float dMissing_value_dem;
     //float dAccumulation_threshold; //real accumuation

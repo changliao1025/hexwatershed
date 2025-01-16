@@ -385,6 +385,7 @@ namespace hexwatershed
     int iFlag_finished = 0;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
     long nOutlet = cParameter.nOutlet;
@@ -396,6 +397,7 @@ namespace hexwatershed
     float dElevation_mean_center;
     std::array<long, 3> aIndex;
     std::vector<hexagon> vCell_boundary;
+    std::vector<hexagon> vCell_stream;
     std::vector<flowline>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator;
     std::vector<hexagon>::iterator iIterator_self;
@@ -431,7 +433,7 @@ namespace hexwatershed
             aIndex = compset_find_lowest_cell_in_priority_queue(vCell_boundary);
             lCellIndex_active = aIndex[1]; // local id
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
-            vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); //for animation only
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); // for animation only
 
             // new simplified approach
             if (iFlag_stream_burning_topology == 0)
@@ -451,17 +453,41 @@ namespace hexwatershed
               vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
               compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
             }
-            // the model requires the initial boundary to be modified already after stream burning
-            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+            if (iFlag_force_watershed_boundary == 1)
             {
-              lCellIndex_active = (*iIterator).lCellIndex;
-              if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
+              // a new algorithm will be used from this point
+              // this algorithm should start from the river riparian zone for the flood algorithm instead of the outer boundary
+              // step 1: set the boundary as watershed noundary
+              for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
               {
-                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); //animation
+                lCellIndex_active = (*iIterator).lCellIndex;
+                vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 1;
               }
-              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+              // step 2: find the stream as the new boundary zone
+              vCell_stream = compset_obtain_stream(vCell_active);
+              for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
+              {
+                lCellIndex_active = (*iIterator).lCellIndex;
+                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+              }
+              // step 3: start the flood algorithm
+              priority_flood_depression_filling_endorheic(vCell_stream);
             }
-            priority_flood_depression_filling(vCell_boundary);
+            else
+            {
+              // the initial boundary may be modified after stream burning, because cells may be next to stream channels.
+              for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+              {
+                lCellIndex_active = (*iIterator).lCellIndex;
+                if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
+                {
+                  vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
+                }
+                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+              }
+              // vCell_boundary may be the actual watershed boundary because pyflowline uses the boundary to generate the mesh
+              priority_flood_depression_filling(vCell_boundary);
+            }
           }
           else
           {
@@ -740,6 +766,8 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
+    int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
+    int iFlag_pit = 0;
     long lCellID_lowest;
     long lCellIndex_neighbor;
     long lCellID_neighbor;
@@ -758,23 +786,34 @@ namespace hexwatershed
 
     // push into the priority queue using std::priority_queue
     //  Creating the priority queue with the custom comparator
-    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq;
-
+    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq; //priority queue
+    std::queue<hexagon> pq_pit;  //plain queue
     // Adding elements to the priority queue
     for (iIterator = vCell_boundary_in.begin(); iIterator != vCell_boundary_in.end(); iIterator++)
     {
       pq.push(*iIterator);
     }
 
-    while (pq.size() > 3)
+    while (pq.size() > 3 or pq_pit.size() > 0)
     {
-      //std::cout << "Depression filling step: " << lStep_count << std::endl;
-      // the old method with manually priority queue
-      // aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
-      // lCellIndex_boundary = aIndex_search[0]; // local index in boundary
-      // lCellIndex_active = aIndex_search[1];
-      // lCellID_lowest = aIndex_search[2];
-      hexagon pCell_min = pq.top();
+      // std::cout << "Depression filling step: " << lStep_count << std::endl;
+      //  the old method with manually priority queue
+      //  aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
+      //  lCellIndex_boundary = aIndex_search[0]; // local index in boundary
+      //  lCellIndex_active = aIndex_search[1];
+      //  lCellID_lowest = aIndex_search[2];
+      //hexagon pCell_min = pq.top();
+      hexagon pCell_min;
+      if (pq_pit.size() > 0)
+      {
+        pCell_min = pq_pit.front();
+        pq_pit.pop();
+      }
+      else
+      {
+        pCell_min = pq.top();
+        pq.pop();
+      }
       // get Cell id
       lCellID_lowest = pCell_min.lCellID;
       lCellIndex_active = pCell_min.lCellIndex;
@@ -784,32 +823,36 @@ namespace hexwatershed
 
       // remove it from the queue
       // vCell_boundary_in.erase(vCell_boundary_in.begin() + lCellIndex_boundary);
-      pq.pop();
+      //pq.pop();
 
-      //std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
+      // std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
       for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
       {
         lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
         iFlag_depression_filling_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
         iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
         dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-        if (iFlag_depression_filling_treated_neighbor != 1)
+        if (iFlag_depression_filling_treated_neighbor != 1) // not depression filling treated yet
         {
-          if (iFlag_stream_burning_treated_neighbor == 1)
+          if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
           {
             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
             // replace with pq
             // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
             pq.push(vCell_active[lCellIndex_neighbor]);
-
-            //std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) << std::endl;
+            // std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) << std::endl;
           }
           else
           {
-            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
             if (dElevation_mean_neighbor <= dElevation_mean_center)
             {
+              iFlag_pit = 1;
               vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+            }
+            else
+            {
+              iFlag_pit = 0;
             }
             // elevation profile case
             if (iFlag_elevation_profile == 1)
@@ -823,9 +866,15 @@ namespace hexwatershed
             }
             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
             // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
-            pq.push(vCell_active[lCellIndex_neighbor]);
-
-            //std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
+            if (iFlag_pit == 1)
+            {
+              pq_pit.push(vCell_active[lCellIndex_neighbor]);
+            }
+            else
+            {
+              pq.push(vCell_active[lCellIndex_neighbor]); //be careful
+            }
+            // std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
           }
         }
         else
@@ -839,4 +888,121 @@ namespace hexwatershed
     return error_code;
   }
 
+  int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon> &vCell_boundary_in)
+  {
+    int error_code = 1;
+    int iFlag_stream_burning_treated_neighbor;
+    int iFlag_global = cParameter.iFlag_global;
+    int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
+    int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
+    int iFlag_pit;
+    // int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
+
+    long lCellID_lowest;
+    long lCellIndex_neighbor;
+    long lCellID_neighbor;
+    long lCellIndex_boundary;
+    long lCellIndex_active;
+    long lStep_count = 1;
+    float dElevation_mean_center;
+    float dElevation_mean_neighbor;
+    float dElevation_profile0_center;
+    float dElevation_profile0_neighbor;
+    int iFlag_depression_filling_treated_neighbor;
+    int iFlag_watershed_boundary_burned_neighbor;
+
+    std::array<long, 3> aIndex_search;
+    std::vector<long> vNeighbor_land;
+    std::vector<long>::iterator iIterator_neighbor;
+    std::vector<hexagon>::iterator iIterator;
+
+    // push into the priority queue using std::priority_queue
+    // Creating the priority queue with the custom comparator
+    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq;
+    std::queue<hexagon> pq_pit;
+    // Adding elements to the priority queue
+    for (iIterator = vCell_boundary_in.begin(); iIterator != vCell_boundary_in.end(); iIterator++)
+    {
+      pq.push(*iIterator);
+    }
+
+    while (pq.size() > 3 or pq_pit.size() > 0)
+    {
+      hexagon pCell_min;
+      if (pq_pit.size() > 0)
+      {
+        pCell_min = pq_pit.front(); //the first element
+        pq_pit.pop();
+      }
+      else
+      {
+        pCell_min = pq.top();
+        pq.pop();
+      }
+      // get Cell id
+      lCellID_lowest = pCell_min.lCellID;
+      lCellIndex_active = pCell_min.lCellIndex;
+      dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
+      dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
+      vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
+      //std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
+      for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
+      {
+        lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+        iFlag_depression_filling_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
+        iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
+        iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
+        dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+        if (iFlag_depression_filling_treated_neighbor != 1) // not depression filling treated yet
+        {
+          if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already, so it is the riparian zone land
+          {
+            vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+            pq.push(vCell_active[lCellIndex_neighbor]);
+          }
+          else
+          {
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+            if (dElevation_mean_neighbor <= dElevation_mean_center)
+            {
+              iFlag_pit = 1;
+              vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+            }
+            else
+            {
+              iFlag_pit = 0;
+            }
+            // elevation profile case, does this change the status if pit?
+            if (iFlag_elevation_profile == 1)
+            {
+              dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+              if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+              {
+                vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                    dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+              }
+            }
+            vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+            //stop here, we don't push boundary into the queue, why?
+            if (iFlag_pit == 1)
+            {
+              pq_pit.push(vCell_active[lCellIndex_neighbor]);
+            }
+            else
+            {
+              pq.push(vCell_active[lCellIndex_neighbor]); //be careful
+            }
+          }
+        }
+        else
+        {
+          (vCell_active[lCellIndex_neighbor]).iFlag_depression_filling_treated = 1;
+        }
+      }
+      lStep_count = lStep_count + 1;
+      std::flush(std::cout);
+    }
+    return error_code;
+
+  }
 }

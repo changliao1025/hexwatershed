@@ -12,6 +12,21 @@
 
 namespace hexwatershed
 {
+  std::vector<hexagon> compset::compset_obtain_stream(std::vector<hexagon> vCell_in)
+  {
+    int error_code = 1;
+    eMesh_type pMesh_type = this->cParameter.pMesh_type;
+    std::vector<hexagon>::iterator iIterator1;
+    std::vector<hexagon> vCell_out;
+      for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
+      {
+        if ((*iIterator1).iFlag_stream_burned == 1) // or vertex
+        {
+          vCell_out.push_back(*iIterator1);
+        }
+      }
+      return vCell_out;
+  }
   /**
    * @brief
    *
@@ -148,7 +163,7 @@ namespace hexwatershed
     float dElevation_profile0_center;
     float dElevation_profile0_neighbor;
     std::vector<long> vNeighbor_land;
-    std::vector<long>::iterator iIterator_neighbor;    
+    std::vector<long>::iterator iIterator_neighbor;
     vCell_active[lCellIndex_center].iFlag_stream_burning_treated = 1;
     vNeighbor_land = vCell_active[lCellIndex_center].vNeighbor_land;
     dElevation_mean_center = vCell_active[lCellIndex_center].dElevation_mean;
@@ -282,7 +297,7 @@ namespace hexwatershed
     long lCellID_downstream2;
     long lCellID_next;
     float dElevation_upstream;
-    float dElevation_downstream;        
+    float dElevation_downstream;
     float dDifference_dummy;
     lCellIndex_active = mCellIdToIndex[lCellID_active_in];
     while (iFlag_finished != 1)

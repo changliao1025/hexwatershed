@@ -27,6 +27,7 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
+    int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
     long iNeighborIndex;
     long lCellID_lowest;
     long lCellID_highest;
@@ -337,9 +338,10 @@ namespace hexwatershed
               }
             }
           }
+          
           else
           {
-            // normal land grid neighbor, this cell maybe on the edge, if so, we can set it manually as beach
+            // normal land grid neighbor, this cell maybe on the edge, if so, we can set it manually as beach next to ocean
             if (pMesh_type == eMesh_type::eM_hexagon || pMesh_type == eMesh_type::eM_mpas || pMesh_type == eMesh_type::eM_dggrid) // this only apply to mpas that does not consider the vertex neighbors
             {
               if ((vCell_active[lCellIndex_self]).nNeighbor_land == (vCell_active[lCellIndex_self]).nVertex)
@@ -367,14 +369,22 @@ namespace hexwatershed
                 else
                 {
                   // this cell is not on the edge, so it must has one
-                  std::cout << "It should have one downslope!" << std::endl;
+                  std::cout << "It should have one downslope!" << vCell_active[lCellIndex_self].lCellID << std::endl;
                 }
               }
               else
               { // this is a edge node
                 if (lCellID_lowest != -1)
                 {
-                  (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
+                  if (iFlag_force_watershed_boundary == 1)
+                  {
+                    // in this case, we dont push them out of the domain
+                    (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+                  }
+                  else
+                  {
+                    (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
+                  }
                   (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
                   (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
                   if (iFlag_elevation_profile == 1)
@@ -456,7 +466,7 @@ namespace hexwatershed
         dDistance_downslope = dDistance_initial;
         // iterate through all neighbors
         for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
-        {  
+        {
           lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
           dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
           // get distance

@@ -115,6 +115,12 @@ namespace hexwatershed
       cCompset.cParameter.iFlag_multiple_outlet = pConfigDoc[sKey.c_str()].GetInt();
     }
 
+    sKey = "iFlag_force_watershed_boundary";
+    if (pConfigDoc.HasMember(sKey.c_str()))
+    {
+      cCompset.cParameter.iFlag_force_watershed_boundary = pConfigDoc[sKey.c_str()].GetInt();
+    }
+
     sKey = "iFlag_flowline";
     if (pConfigDoc.HasMember(sKey.c_str()))
     {

@@ -4,12 +4,12 @@
  * @brief The header file the hexagon class.
  * @version 0.1
  * @date 2019-08-02
- * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020). 
+ * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020).
  * Watershed delineation on a hexagonal mesh grid. Environmental Modelling & Software, 104702.
  * https://www.sciencedirect.com/science/article/pii/S1364815219308278
  * @github page https://github.com/changliao1025/hexwatershed
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 #pragma once
 
@@ -37,17 +37,17 @@ namespace hexwatershed
     long lCellIndex_subbasin; //index in a subbasin
 
     /*! \brief Brief description.
-    *   this is the mesh id from the json, it might be the same with Global ID,      
+    *   this is the mesh id from the json, it might be the same with Global ID,
     *  Detailed description starts here.
     */
-    long lCellID;   
+    long lCellID;
     // this depends upon how mesh id was generated, it can be different from global id
     int iFlag_checked; //used for loop
     int iFlag_active;        //if it has elevation assigned
     int iFlag_watershed;     //whether it is inside a watershed
     int iFlag_stream;        //whether it is a stream grid
     int iFlag_stream_burned; /*flag for burned stream gridd*/
- 
+
     //be careful, a stream grid maybe visited multiple if breaching is enabled
 
     int iFlag_stream_burning_treated;
@@ -57,6 +57,7 @@ namespace hexwatershed
     int nFlowline_burned;
     int iFlag_confluence_burned;
     int iFlag_headwater_burned;
+    int iFlag_watershed_boundary_burned;
 
     int iFlag_left_hillslope;
     int iFlag_right_hillslope;
@@ -70,10 +71,10 @@ namespace hexwatershed
     int iFlag_confluence;  //whether this hexagon is a stream confluence or not, confluence is where stream meets.
     int iSegment_order; //the stream order of segment, there are different type of definition
     long lStream_segment_burned;
-    long lSegment;       //the stream segment id    
+    long lSegment;       //the stream segment id
     long lSubbasin;      //the subbasin id, should be the same with the segment
     long lHillslope;
-    long lWatershed; 
+    long lWatershed;
 
     int nNeighbor; //number of neighbors, should be equal or less than nedge
     int nNeighbor_land;
@@ -86,7 +87,7 @@ namespace hexwatershed
     int nVertex; //the vertex number from polygon, should always be constant for uniform resolution, for MPAS, this can be 5, 6, 7
     int nEdge; //total number of edge
     long lCellID_downslope_dominant; //the downslope hexagon local ID
-    
+
     long lCellID_downstream_burned;//the downstream mesh ID
 
     double dAccumulation;             //the flow accumulation value. it does not consider area of hexagon in this version
@@ -115,7 +116,7 @@ namespace hexwatershed
     float dLatitude_center_degree;             //GCS, (unit:degree)
     float dLongitude_center_radian;            //GCS, (unit:degree)
     float dLatitude_center_radian;             //GCS, (unit:degree)
-    
+
     float dElevation_mean;            //from DEM, (unit:m)
     float dElevation_profile0;            //from DEM, (unit:m)
     float dElevation_raw;            //from DEM, (unit:m)
@@ -127,12 +128,12 @@ namespace hexwatershed
 
     float dDistance_to_downslope;
     float dDistance_to_subbasin_outlet;
-    float dDistance_to_watershed_outlet; 
+    float dDistance_to_watershed_outlet;
     float dDistance_to_channel; //to the first downslope channel cell
-    
+
     //a 4 element array to define the bounding box, which will use used by rtree spatial index
     //std::array<float, 4> aBoundingBox; //minx, miny, maxx, maxy
-    
+
 
     std::vector<long> vNeighbor;  //list of neighbor local id
     std::vector<float> vNeighbor_distance;  //list of neighbor local id

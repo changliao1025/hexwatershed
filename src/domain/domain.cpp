@@ -50,7 +50,7 @@ namespace hexwatershed
     }
 
     sTime = get_current_time();
-    sLog = "Finished set up  model at " + sTime;
+    sLog = "Finished set up model at " + sTime;
     std::cout << sLog << std::endl;
     std::flush(std::cout);
 
