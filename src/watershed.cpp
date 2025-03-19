@@ -998,7 +998,7 @@ namespace hexwatershed
         }
       }
 
-      // calculate average hillslop attribute
+      // calculate average hillslop attribute， this may be updated later
       dArea_hillslope_left_mean = dArea_hillslope_left_mean / nArea_left;
       dLength_hillslope_left_mean = dLength_hillslope_left_mean / nLength_left;
       dWidth_hillslope_left_mean = dWidth_hillslope_left_mean / nWidth_left;

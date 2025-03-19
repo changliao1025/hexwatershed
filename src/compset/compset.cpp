@@ -78,11 +78,9 @@ namespace hexwatershed
     }
     else
     {
-      if (iFlag_multiple_outlet == 1)
+      if (iFlag_multiple_outlet == 1) //user defined multiple outlets.
       {
-
         iFlag_debug = 0;
-        compset_stats_flow_accumulation();//this function should be further simplified.
         compset_define_watershed_boundary();
         sTime = get_current_time();
         sLog = "Finished defining watershed boundary at " + sTime;
@@ -99,8 +97,6 @@ namespace hexwatershed
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
-
-
         compset_define_stream_confluence();
         sTime = get_current_time();
         sLog = "Finished defining confluence at " + sTime;
@@ -145,9 +141,8 @@ namespace hexwatershed
       }
       else
       {
-
-
         iFlag_debug = 0;
+        compset_stats_flow_accumulation();//this function should be further simplified.
         // step 4
         compset_define_watershed_boundary();
         sTime = get_current_time();

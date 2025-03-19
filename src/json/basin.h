@@ -22,7 +22,7 @@ namespace jsonmodel
     float dLongitude_outlet_degree;
     float dLatitude_outlet_degree;
     float dBreach_threshold;
-    //float dAccumulation_max;
+    float dAccumulation_max;
     float dAccumulation_threshold_ratio;
     float dAccumulation_threshold_value;
 

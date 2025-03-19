@@ -338,7 +338,7 @@ namespace hexwatershed
               }
             }
           }
-          
+
           else
           {
             // normal land grid neighbor, this cell maybe on the edge, if so, we can set it manually as beach next to ocean
@@ -499,29 +499,101 @@ namespace hexwatershed
             }
           }
         }
-        // mark the direction as the largest elevation differences
-        if (lCellID_lowest != -1)
+        if (pMesh_type == eMesh_type::eM_hexagon || pMesh_type == eMesh_type::eM_mpas || pMesh_type == eMesh_type::eM_dggrid) // this only apply to mpas that does not consider the vertex neighbors
         {
-          (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
-
-          // before define stream, we cannot establish upslope relationship
-          if (dSlope_downslope < 0.0)
+          if ((vCell_active[lCellIndex_self]).nNeighbor_land == (vCell_active[lCellIndex_self]).nVertex)
           {
-            std::cout << "Slope should be positive!" << std::endl;
+            // mark the direction as the largest elevation differences
+            if (lCellID_lowest != -1)
+            {
+              (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+              // before define stream, we cannot establish upslope relationship
+              (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
+              (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
+
+              // elevation profile
+              if (iFlag_elevation_profile == 1)
+              {
+                dElevation_diff = dElevation_profile0 - vCell_active[lCellIndex_neighbor_lowest].dElevation_profile0;
+                dSlope_elevation_profile0 = dElevation_diff / (vCell_active[lCellIndex_self]).dLength_stream_burned;
+                if (dSlope_elevation_profile0 <= 0.0001)
+                {
+                  dSlope_elevation_profile0 = 0.0001;
+                }
+                (vCell_active[lCellIndex_self]).dSlope_elevation_profile0 = dSlope_elevation_profile0;
+              }
+            }
+            else
+            {
+              // this cell is not on the edge, so it must has one
+              std::cout << "It should have one downslope!" << vCell_active[lCellIndex_self].lCellID << std::endl;
+            }
           }
-          (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
-          (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
+          else
+          { // this is a edge node
+            if (lCellID_lowest != -1)
+            {
+              if (iFlag_force_watershed_boundary == 1)
+              {
+                // in this case, we dont push them out of the domain
+                (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+              }
+              else
+              {
+                (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
+              }
+              (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
+              (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
+              if (iFlag_elevation_profile == 1)
+              {
+                dElevation_diff = dElevation_profile0 - vCell_active[lCellIndex_neighbor_lowest].dElevation_profile0;
+                dSlope_elevation_profile0 = dElevation_diff / (vCell_active[lCellIndex_self]).dLength_stream_burned;
+                if (dSlope_elevation_profile0 <= 0.0001)
+                {
+                  dSlope_elevation_profile0 = 0.0001;
+                }
+                (vCell_active[lCellIndex_self]).dSlope_elevation_profile0 = dSlope_elevation_profile0;
+              }
+            }
+            else
+            {
+              (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
+              (vCell_active[lCellIndex_self]).dSlope_max_downslope = -1.0 * dSlope_upslope;
+              (vCell_active[lCellIndex_self]).dDistance_to_downslope = (vCell_active[lCellIndex_self]).dLength_edge_mean;
+
+              if (iFlag_elevation_profile == 1) // beach
+              {
+                (vCell_active[lCellIndex_self]).dSlope_elevation_profile0 = 0.0001;
+              }
+            }
+          }
         }
         else
         {
-          // outlet
-          // in this case, we will use the highest upslope as slope calculation
-          if (dSlope_upslope > 0.0)
+          // mark the direction as the largest elevation differences
+          if (lCellID_lowest != -1)
           {
-            std::cout << "Upslope should be positive!" << std::endl;
+            (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+
+            // before define stream, we cannot establish upslope relationship
+            if (dSlope_downslope < 0.0)
+            {
+              std::cout << "Slope should be positive!" << std::endl;
+            }
+            (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
+            (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
           }
-          (vCell_active[lCellIndex_self]).dSlope_max_downslope = -1 * dSlope_upslope;
-          (vCell_active[lCellIndex_self]).dDistance_to_downslope = (vCell_active[lCellIndex_self]).dLength_edge_mean;
+          else
+          {
+            // outlet
+            // in this case, we will use the highest upslope as slope calculation
+            if (dSlope_upslope > 0.0)
+            {
+              std::cout << "Upslope should be positive!" << std::endl;
+            }
+            (vCell_active[lCellIndex_self]).dSlope_max_downslope = -1 * dSlope_upslope;
+            (vCell_active[lCellIndex_self]).dDistance_to_downslope = (vCell_active[lCellIndex_self]).dLength_edge_mean;
+          }
         }
       }
     }

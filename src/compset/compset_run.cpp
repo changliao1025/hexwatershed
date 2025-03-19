@@ -146,12 +146,14 @@ namespace hexwatershed
     {
       if (iFlag_multiple_outlet == 0) // only one outlet
       {
-        if (iFlag_flowline == 1) // user provide flowline
+        if (iFlag_flowline == 1) // user provided flowline
         {
           // maybe we can just get the flow accumulation directly
           aBasin[0].iFlag_flowline = 1;
           lCellIndex_outlet = mCellIdToIndex[aBasin[0].lCellID_outlet];
-          dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+          dAccumulation_max = (vCell_active[lCellIndex_outlet]).dAccumulation;
+          //no watershed yet, so we have to use the basin to save the max accumulation
+          aBasin[0].dAccumulation_max = dAccumulation_max;
         }
         else // no flowline provided, so it is based on DEM
         {
@@ -164,6 +166,7 @@ namespace hexwatershed
               lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
             }
           }
+
           // also set the outlet id
           lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
           // should we update at least one watershed?
@@ -175,8 +178,10 @@ namespace hexwatershed
           aBasin[0].lCellID_outlet = lCellID_outlet;
           aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
           aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+          aBasin[0].dAccumulation_max = dAccumulation_max;
           // we also need to update the nOutlet?
           cParameter.nOutlet = 1;
+
         }
       }
       else // more than 1 outlet is provided
@@ -211,23 +216,18 @@ namespace hexwatershed
     int error_code = 1;
     int iFound_outlet;
     int iFlag_flowline;
+    int iFlag_global = cParameter.iFlag_global;
     long lWatershed;
     long lCellIndex_self;
     long lCellIndex_current;
-
     long lCellIndex_outlet;
     long lCellIndex_watershed;
     long lCellID_downslope;
     long lCellID_outlet;
-
-
     std::string sWatershed;
     std::string sWorkspace_output_watershed;
-
     std::vector<float>::iterator iterator_float;
     std::vector<hexagon>::iterator iIterator_self;
-    int iFlag_global = cParameter.iFlag_global;
-
     if (iFlag_global != 1)
     {
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
@@ -331,8 +331,8 @@ namespace hexwatershed
         cWatershed.dAccumulation_max = vCell_active[lCellIndex_outlet].dAccumulation;
         // copy parameter as well
         cWatershed.cParameter.iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
-        
-        cWatershed.cParameter.iFlag_flowline = aBasin[lWatershed - 1].iFlag_flowline; // this one is tricky
+
+        cWatershed.cParameter.iFlag_flowline = aBasin[lWatershed - 1].iFlag_flowline; // this one is tricky, because not all have flowline
         cWatershed.cParameter.iFlag_accumulation_threshold_ratio = aBasin[lWatershed - 1].iFlag_accumulation_threshold_ratio;
         cWatershed.cParameter.dAccumulation_threshold_ratio = aBasin[lWatershed - 1].dAccumulation_threshold_ratio;
         cWatershed.cParameter.dAccumulation_threshold_value = aBasin[lWatershed - 1].dAccumulation_threshold_value;
@@ -341,6 +341,9 @@ namespace hexwatershed
         cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
         cWatershed.dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
         cWatershed.dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+        //also need to copy the cParameter from compset to watershed object (mannually, because some parameter are already set)
+        //careful here
+
         vWatershed.push_back(cWatershed);
       }
       // how about other auto-defined watershed?

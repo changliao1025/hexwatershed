@@ -9,9 +9,10 @@ namespace jsonmodel
     dLatitude_outlet_degree = -9999;
     iFlag_flowline =0;
     iFlag_accumulation_threshold_provided = 0;
-    iFlag_accumulation_threshold_ratio = 0;
+    iFlag_accumulation_threshold_ratio = 1;
 
-    dAccumulation_threshold_ratio = 0.001;
+    dAccumulation_max=0.0;
+    dAccumulation_threshold_ratio = 0.01;
     dAccumulation_threshold_value = 2.5E7;
     dBreach_threshold = 5.0; // unit in meter
 
