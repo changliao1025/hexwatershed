@@ -47,7 +47,7 @@ namespace hexwatershed
      * @return int 
      */
 
-    int edge::check_point_overlap(vertex pVertex_in)
+    int edge::check_point_overlap(vertex pVertex_in) const
     {
         int overlap = 0;
         float diff;

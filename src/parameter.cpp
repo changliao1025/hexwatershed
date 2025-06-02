@@ -32,6 +32,7 @@ namespace hexwatershed
     iFlag_elevation_profile = 0;
     iFlag_stream_grid_option = 3;
     iFlag_force_watershed_boundary = 0;
+    iFlag_endorheic_basin = 0;
     iFlag_accumulation_threshold_ratio = 1;
     dAccumulation_threshold_ratio = 0.01;
     dAccumulation_threshold_value = 2.5E7;
@@ -44,12 +45,12 @@ namespace hexwatershed
   {
   }
 
-  eMesh_type parameter::define_mesh_type(const std::string &sMesh_type)
+  eMesh_type parameter::define_mesh_type(const std::string &sMeshType)
   {
-    if (mMesh_type.find(sMesh_type) != mMesh_type.end())
+    if (mMesh_type.find(sMeshType) != mMesh_type.end())
     {
-      this->pMesh_type = mMesh_type[sMesh_type];
-      return mMesh_type[sMesh_type];
+      this->pMesh_type = mMesh_type[sMeshType];
+      return mMesh_type[sMeshType];
     }
     else
     {

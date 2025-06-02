@@ -38,7 +38,6 @@
 int main(int argc, char *argv[])
 {
   int error_code = 1;
-
   //initial program running status as success,
   //the status variable changes to 0 if any step fails to proceed.
   std::cout << "Start to run HexWatershed model!" << std::endl;
@@ -54,7 +53,6 @@ int main(int argc, char *argv[])
   {
     std::cout << "No arguments are provided!" << std::endl;
     std::cout << "Please input the configuration file: " << std::endl;
-  
   }
   //initialize the ecosystem model
   hexwatershed::domain cDomain(sConfiguration_file);

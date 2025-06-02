@@ -28,9 +28,7 @@ namespace hexwatershed
   {
   public:
     hexagon();
-
     ~hexagon();
-
 
     long lCellIndex;       //it includes cell outside of watershed
     long lCellIndex_watershed;  //only in the designed watershed
@@ -44,9 +42,10 @@ namespace hexwatershed
     // this depends upon how mesh id was generated, it can be different from global id
     int iFlag_checked; //used for loop
     int iFlag_active;        //if it has elevation assigned
+    int iFlag_inactive;      //used to mark cell that should be ignored, such as barriers or holes.
     int iFlag_watershed;     //whether it is inside a watershed
     int iFlag_stream;        //whether it is a stream grid
-    int iFlag_stream_burned; /*flag for burned stream gridd*/
+    int iFlag_stream_burned; /*flag for burned stream grid*/
 
     //be careful, a stream grid maybe visited multiple if breaching is enabled
 
@@ -57,7 +56,7 @@ namespace hexwatershed
     int nFlowline_burned;
     int iFlag_confluence_burned;
     int iFlag_headwater_burned;
-    int iFlag_watershed_boundary_burned;
+    int iFlag_watershed_boundary_burned; //this might be the watershed boundary?
 
     int iFlag_left_hillslope;
     int iFlag_right_hillslope;
@@ -70,13 +69,14 @@ namespace hexwatershed
     int iFlag_outlet;      //whether this hexagon is an outlet or not
     int iFlag_confluence;  //whether this hexagon is a stream confluence or not, confluence is where stream meets.
     int iSegment_order; //the stream order of segment, there are different type of definition
+
     long lStream_segment_burned;
     long lSegment;       //the stream segment id
     long lSubbasin;      //the subbasin id, should be the same with the segment
     long lHillslope;
     long lWatershed;
 
-    int nNeighbor; //number of neighbors, should be equal or less than nedge
+    int nNeighbor; //number of neighbors, should be equal or less than nEdge
     int nNeighbor_land;
     int nNeighbor_ocean;
     int nUpslope;  //all upslope including stream
@@ -84,7 +84,7 @@ namespace hexwatershed
     int nUpstream;           //only consider stream upslope
     long lSegment_downstream; //if a hexagon is a stream, this is the downstream index, -1 for outlet
 
-    int nVertex; //the vertex number from polygon, should always be constant for uniform resolution, for MPAS, this can be 5, 6, 7
+    int nVertex; //the vertex number from polygon, should always be constant for uniform resolution, for MPAS mesh, this can be 5, 6, 7
     int nEdge; //total number of edge
     long lCellID_downslope_dominant; //the downslope hexagon local ID
 

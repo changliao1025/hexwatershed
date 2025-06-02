@@ -174,7 +174,7 @@ float convert_degree_to_radian(const float dAngle_degree)
  * @param sString_in
  * @return std::vector<std::string>
  */
-std::vector<std::string> split_string_by_space(std::string sString_in)
+std::vector<std::string> split_string_by_space(const std::string& sString_in)
 {
 	std::size_t lLength = sString_in.length();
 	if (lLength > 0)
@@ -198,7 +198,7 @@ std::vector<std::string> split_string_by_space(std::string sString_in)
  * @param cDelimiter
  * @return std::vector<std::string>
  */
-std::vector<std::string> split_string_by_delimiter(std::string sString_in,
+std::vector<std::string> split_string_by_delimiter(const std::string& sString_in,
 												   char cDelimiter)
 {
 	std::size_t lLength = sString_in.length();

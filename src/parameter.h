@@ -66,6 +66,7 @@ namespace hexwatershed
     int iFlag_slope_provided;
     int iFlag_merge_reach;
     int iFlag_force_watershed_boundary;
+    int iFlag_endorheic_basin;
     int iFlag_accumulation_threshold_ratio;
     long nOutlet;
 
@@ -79,6 +80,6 @@ namespace hexwatershed
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;
-    eMesh_type define_mesh_type(const std::string &sMesh_type);
+    eMesh_type define_mesh_type(const std::string &sMeshType);
   };
 }

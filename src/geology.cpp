@@ -49,7 +49,7 @@ std::array<float, 3> calculate_location_based_on_lon_lat_radian(float dLongitude
                                                                 float dLatitude_radian,
                                                                 float dElevation)
 {
-    std::array<float, 3> aLocation;
+    std::array<float, 3> aLocation{};
     // see: http://www.mathworks.de/help/toolbox/aeroblks/llatoecefposition.html
     float f = 1.0 / 298.257223563; // # Flattening factor WGS84 Model
     float cosLat = cos(dLatitude_radian);

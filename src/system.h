@@ -79,16 +79,16 @@ int file_test(std::string sFilename);
 //50==================================================
 //make directory ()
 //50==================================================
-int make_directory(std::string sDirectory);
+int make_directory(const std::string& sDirectory);
 
 //50==================================================
 //check whether a directory exists or not
 //50==================================================
-int path_test(std::string sPath);
+int path_test(const std::string& sPath);
 
-int run_command(std::string sCommand);
+int run_command(const std::string& sCommand);
 
-long get_file_size(std::string sFilename);
+long get_file_size(const std::string& sFilename);
 
 std::string get_current_time();
 

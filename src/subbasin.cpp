@@ -398,7 +398,7 @@ namespace hexwatershed
     }
 
     // now calculate left and right hillslope width and count
-    if (vCellID_buffer_left.size() == 0)
+    if (vCellID_buffer_left.empty())
     {
       //there is no left buffer, then we use segment as buffer
       iFlag_hillslope_left = 0;
@@ -414,7 +414,7 @@ namespace hexwatershed
       }
     }
    
-    if (vCellID_buffer_right.size() == 0)
+    if (vCellID_buffer_right.empty())
     {
       iFlag_hillslope_right = 0;
       //there is no right buffer, then we use segment as buffer
@@ -429,7 +429,7 @@ namespace hexwatershed
         dWidth_hillslope_right = dWidth_hillslope_right + vCell[lCellIndex_buffer].dLength_edge_mean;
       }
     }
-    // for headwater, it is consider a convergence, a special method is needed
+    // for headwater, it is considered a convergence, a special method is needed
     //its width can be defined using the headwater cell edge mean
     if (iFlag_hillslope_headwater==1)
     {
@@ -521,10 +521,8 @@ namespace hexwatershed
   int subbasin::subbasin_calculate_total_area()
   {
     int error_code = 1;
-    
     std::vector<hexagon>::iterator iIterator;
     nCell = vCell.size();
-
     dArea_hillslope_left = 0.0;
     dArea_hillslope_right = 0.0;
     dArea_hillslope_headwater = 0.0;
@@ -639,10 +637,8 @@ namespace hexwatershed
   {
     int error_code = 1;
     dArea_2_stream_ratio = dArea / dLength_stream_conceptual;
-
     dLength_2_area_ratio = 1.0 / dArea_2_stream_ratio;
     dDrainage_density = dLength_2_area_ratio;
-
     return error_code;
   }
 

@@ -24,7 +24,7 @@ data::~data()
  * @param sFilename_in 
  * @return float* 
  */
-float * data::read_binary(const std::string sFilename_in)
+float * data::read_binary(const std::string& sFilename_in)
 {
 	float * pData_out = nullptr;
 	long lLength1, lLength2;
@@ -74,7 +74,7 @@ float * data::read_binary(const std::string sFilename_in)
  * @param lRow_in 
  * @return float** 
  */
-float ** data::read_binary(const std::string sFilename_in,
+float ** data::read_binary(const std::string& sFilename_in,
 	long lColumn_in,
 	long lRow_in
 )
@@ -113,7 +113,7 @@ float ** data::read_binary(const std::string sFilename_in,
 		//file missing
 		std::cout << sError_file_missing << sFilename_in << std::endl;
 	}
-//delete[] pdata_dummy;
+    //delete[] pdata_dummy;
 	return pData_out;
 }
 
@@ -124,7 +124,7 @@ float ** data::read_binary(const std::string sFilename_in,
  * @param sFilename_in 
  * @return vector<float> 
  */
-vector<float> data::read_binary_vector(const std::string sFilename_in)
+vector<float> data::read_binary_vector(const std::string& sFilename_in)
 {
 	long lLength1, lLength2;
 	float dummy;
@@ -171,7 +171,7 @@ vector<float> data::read_binary_vector(const std::string sFilename_in)
  * @param vData_in 
  * @return int 
  */
-int data::write_binary_vector(const std::string sFilename_out, std::vector <float> vData_in)
+int data::write_binary_vector(const std::string& sFilename_out, std::vector <float> vData_in)
 {
 	int error_code = 1;
 	float dDummy0, dDummy1;
@@ -181,7 +181,7 @@ int data::write_binary_vector(const std::string sFilename_out, std::vector <floa
 	//the old approach will cause loss data warning
 	//std::vector<float> vData_float(vData_in.begin(), vData_in.end());	
 	//the new approach
-	//in the next developement, I will use template instead of explict conversion
+	//in the next development, I will use template instead of explict conversion
 	std::vector<float> vData_float;
 	std::vector<float>::iterator iIterator_double;
 	std::vector<float>::iterator iIterator_float;
@@ -237,7 +237,8 @@ float data::percentile(const std::vector<float>& data, float percentile)
     size_t ceil_rank = std::ceil(rank);
 
     // If the rank is an integer, return the corresponding value
-    if (floor_rank == ceil_rank) {
+    if (floor_rank == ceil_rank)
+    {
         return sorted_data[floor_rank];
     }
 

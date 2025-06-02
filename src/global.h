@@ -81,7 +81,7 @@ extern const float gram_per_square_meter_2_kilogram_per_square_meter;
 
 extern const float joule_2_calorie;
 extern const float joule_2_megajoule;
-extern const float joule_2_langley; // convert from joulies  to langley
+extern const float joule_2_langley; // convert from joules  to langley
 
 extern const float calorie_2_joule; // convert from calorie  to langley
 

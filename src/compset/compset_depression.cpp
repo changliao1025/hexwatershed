@@ -386,29 +386,33 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
+    int iFlag_endorheic_basin = cParameter.iFlag_endorheic_basin;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
+    int iFlag_found;
+    long lCellIndex_active;
     long nOutlet = cParameter.nOutlet;
     long lCellID_outlet;
     long lCellIndex_outlet;
     float dBreach_threshold = cParameter.dBreach_threshold;
-    int iFlag_found;
-    long lCellIndex_active;
     float dElevation_mean_center;
-    std::array<long, 3> aIndex;
+    std::array<long, 3> aIndex{};
     std::vector<hexagon> vCell_boundary;
+    std::vector<hexagon> vCell_boundary_endorheic;
     std::vector<hexagon> vCell_stream;
     std::vector<flowline>::iterator iIterator1;
     std::vector<hexagon>::iterator iIterator;
     std::vector<hexagon>::iterator iIterator_self;
 
-    if (iFlag_global == 0)
+    // this call will include all the mesh cell
+    // that are on the edges, including holes
+    vCell_boundary = compset_obtain_boundary(vCell_active);
+
+    if (iFlag_global == 0) // not global
     {
-      if (iFlag_multiple_outlet == 0)
+      if (iFlag_multiple_outlet == 0) // not multiple outlets
       {
         std::cout << "This is a local simulation." << std::endl;
-        vCell_boundary = compset_obtain_boundary(vCell_active);
-
         // set initial as true for boundary
         if (iFlag_flowline == 1)
         {
@@ -457,7 +461,7 @@ namespace hexwatershed
             {
               // a new algorithm will be used from this point
               // this algorithm should start from the river riparian zone for the flood algorithm instead of the outer boundary
-              // step 1: set the boundary as watershed noundary
+              // step 1: set the boundary as watershed boundary
               for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
               {
                 lCellIndex_active = (*iIterator).lCellIndex;
@@ -528,92 +532,160 @@ namespace hexwatershed
 
         return error_code;
       }
-      else
+      else // multiple outlets
       {
         std::cout << "This is a regional simulation with multiple outlets" << std::endl;
-        // global case
-        if (iFlag_flowline == 1) // with stream burning
+        if (iFlag_endorheic_basin == 0) // non endorheic basin
         {
-          if (iFlag_stream_burning_topology == 0)
+          //  case
+          if (iFlag_flowline == 1) // with stream burning
           {
-            for (int i = 0; i < nOutlet; i++)
+            if (iFlag_stream_burning_topology == 0)
             {
-              lCellID_outlet = aBasin[i].lCellID_outlet;
-              lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-              dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
-              // rasterization based stream burning
-              // this will make sure the outlet is the lowest point in the beginning
-              vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; //    deep reduction
-              // set boundary as treated
-              vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
-              compset_stream_burning_without_topology(vCell_active[lCellIndex_outlet].lCellID);
-            }
-          }
-          else // topology is used
-          {
-            for (int i = 0; i < nOutlet; i++)
-            {
-              // topology based stream burning
-              lCellID_outlet = aBasin[i].lCellID_outlet;
-              lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-              dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
-              // burn stream first, set flag as well
-              vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
-              compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
-            }
-          }
-          // depression filling
-          // find each watershed
-          for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-          {
-            if ((*iIterator_self).iFlag_depression_filling_treated != 1)
-            {
-              if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
+              for (int i = 0; i < nOutlet; i++)
               {
-                vContinent_boundary.clear();
-                compset_find_continent_boundary((*iIterator_self).lCellID);
-                for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-                {
-                  lCellIndex_active = (*iIterator).lCellIndex;
-                  vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                }
-                // start flooding
-                if (vContinent_boundary.size() >= 3) // careful
-                {
-                  priority_flood_depression_filling(vContinent_boundary);
-                }
-                // reset to the next continent
-                vContinent_boundary.clear();
+                lCellID_outlet = aBasin[i].lCellID_outlet;
+                lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+                dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
+                // rasterization based stream burning
+                // this will make sure the outlet is the lowest point in the beginning
+                vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; //    deep reduction
+                // set boundary as treated
+                vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
+                compset_stream_burning_without_topology(vCell_active[lCellIndex_outlet].lCellID);
               }
             }
+            else // topology is used
+            {
+              for (int i = 0; i < nOutlet; i++)
+              {
+                // topology based stream burning
+                lCellID_outlet = aBasin[i].lCellID_outlet;
+                lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+                dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
+                // burn stream first, set flag as well
+                vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
+                compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
+              }
+            }
+            // depression filling
+            // the old method does not work nicely if there are holes in the mesh.
+            // a new method will be used, the old method is commented out below
+            /*
+            for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
+            {
+              if ((*iIterator_self).iFlag_depression_filling_treated != 1)
+              {
+                if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
+                {
+                  vContinent_boundary.clear();
+                  compset_find_continent_boundary((*iIterator_self).lCellID);
+                  for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
+                  {
+                    lCellIndex_active = (*iIterator).lCellIndex;
+                    vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                  }
+                  // start flooding
+                  if (vContinent_boundary.size() >= 3) // careful
+                  {
+                    priority_flood_depression_filling(vContinent_boundary);
+                  }
+                  // reset to the next continent
+                  vContinent_boundary.clear();
+                }
+              }
+            }
+            */
+            // the new method
+            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
+              {
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
+              }
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+            }
+            // vCell_boundary may be the actual watershed boundary because pyflowline uses the boundary to generate the mesh
+            priority_flood_depression_filling(vCell_boundary);
+          }
+          else // pure dem based
+          {
+            // find each watershed, old method
+            /*
+            for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
+            {
+              if ((*iIterator_self).iFlag_depression_filling_treated != 1)
+              {
+                if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
+                {
+                  vContinent_boundary.clear();
+                  compset_find_continent_boundary((*iIterator_self).lCellID);
+                  for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
+                  {
+                    lCellIndex_active = (*iIterator).lCellIndex;
+                    vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                  }
+
+                  // start flooding
+                  if (vContinent_boundary.size() >= 3) // careful
+                  {
+                    priority_flood_depression_filling(vContinent_boundary);
+                  }
+                  // reset to the next continent
+                  vContinent_boundary.clear();
+                }
+              }
+            }
+            */
+            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+            }
+            priority_flood_depression_filling(vCell_boundary);
           }
         }
-        else // pure dem based
+        else // endorheic basin
         {
-          // find each watershed
-          for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
+          // vCell_boundary = compset_obtain_boundary(vCell_active ); //no longer needed
+          //   case
+          if (iFlag_flowline == 1) // with stream burning
           {
-            if ((*iIterator_self).iFlag_depression_filling_treated != 1)
+            if (iFlag_stream_burning_topology == 0)
             {
-              if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
+            }
+            else // topology is used
+            {
+              for (int i = 0; i < nOutlet; i++)
               {
-                vContinent_boundary.clear();
-                compset_find_continent_boundary((*iIterator_self).lCellID);
-                for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-                {
-                  lCellIndex_active = (*iIterator).lCellIndex;
-                  vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                }
-
-                // start flooding
-                if (vContinent_boundary.size() >= 3) // careful
-                {
-                  priority_flood_depression_filling(vContinent_boundary);
-                }
-                // reset to the next continent
-                vContinent_boundary.clear();
+                // topology based stream burning
+                lCellID_outlet = aBasin[i].lCellID_outlet;
+                lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+                dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
+                // burn stream first, set flag as well
+                vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
+                compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
               }
             }
+            // depression filling, in this case, we actually need to force the basin boundary
+            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 1;
+            }
+            // step 2: find the stream as the new boundary zone
+            vCell_stream = compset_obtain_stream(vCell_active);
+            for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+            }
+            // step 3: start the flood algorithm
+            priority_flood_depression_filling_endorheic(vCell_stream);
+          }
+          else // pure dem based
+          {
           }
         }
       }
@@ -632,7 +704,7 @@ namespace hexwatershed
             lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
             dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
             // rasterization based stream burning
-            // this will make sure the outlet is the lowest point in the begining
+            // this will make sure the outlet is the lowest point in the beginning
             vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 20 * dBreach_threshold; //    deep reduction
             // set boundary as treated
             vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
@@ -652,8 +724,9 @@ namespace hexwatershed
             compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
           }
         }
-        // depression filling
-        // find each watershed
+        // depression filling for each watershed, this is the old method, which is commented out below
+        // a new method will be used instead
+        /*
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
         {
           if ((*iIterator_self).iFlag_depression_filling_treated != 1)
@@ -677,10 +750,13 @@ namespace hexwatershed
             }
           }
         }
+         */
+        // the new method starts from here
       }
       else // pure dem based
       {
-        // find each watershed
+        // find each watershed, old method, not used anymore
+        /*
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
         {
           if ((*iIterator_self).iFlag_depression_filling_treated != 1)
@@ -704,6 +780,19 @@ namespace hexwatershed
             }
           }
         }
+        */
+        // the new method
+        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+        {
+          lCellIndex_active = (*iIterator).lCellIndex;
+          if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
+          {
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
+          }
+          vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+        }
+        // vCell_boundary may be the actual watershed boundary because pyflowline uses the boundary to generate the mesh
+        priority_flood_depression_filling(vCell_boundary);
       }
     }
 
@@ -786,8 +875,8 @@ namespace hexwatershed
 
     // push into the priority queue using std::priority_queue
     //  Creating the priority queue with the custom comparator
-    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq; //priority queue
-    std::queue<hexagon> pq_pit;  //plain queue
+    std::priority_queue<hexagon, std::vector<hexagon>, std::greater<hexagon>> pq; // priority queue
+    std::queue<hexagon> pq_pit;                                                   // plain queue
     // Adding elements to the priority queue
     for (iIterator = vCell_boundary_in.begin(); iIterator != vCell_boundary_in.end(); iIterator++)
     {
@@ -802,7 +891,7 @@ namespace hexwatershed
       //  lCellIndex_boundary = aIndex_search[0]; // local index in boundary
       //  lCellIndex_active = aIndex_search[1];
       //  lCellID_lowest = aIndex_search[2];
-      //hexagon pCell_min = pq.top();
+      // hexagon pCell_min = pq.top();
       hexagon pCell_min;
       if (pq_pit.size() > 0)
       {
@@ -823,7 +912,7 @@ namespace hexwatershed
 
       // remove it from the queue
       // vCell_boundary_in.erase(vCell_boundary_in.begin() + lCellIndex_boundary);
-      //pq.pop();
+      // pq.pop();
 
       // std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
       for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
@@ -872,7 +961,7 @@ namespace hexwatershed
             }
             else
             {
-              pq.push(vCell_active[lCellIndex_neighbor]); //be careful
+              pq.push(vCell_active[lCellIndex_neighbor]); // be careful
             }
             // std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
           }
@@ -896,7 +985,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_pit;
-    // int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
 
     long lCellID_lowest;
     long lCellIndex_neighbor;
@@ -931,7 +1019,7 @@ namespace hexwatershed
       hexagon pCell_min;
       if (pq_pit.size() > 0)
       {
-        pCell_min = pq_pit.front(); //the first element
+        pCell_min = pq_pit.front(); // the first element
         pq_pit.pop();
       }
       else
@@ -945,7 +1033,7 @@ namespace hexwatershed
       dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
       dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
       vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
-      //std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
+      // std::cout << "Depression filling removed: " << lCellID_lowest << std::endl;
       for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
       {
         lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
@@ -983,14 +1071,14 @@ namespace hexwatershed
               }
             }
             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-            //stop here, we don't push boundary into the queue, why?
+            // stop here, we don't push boundary into the queue, why?
             if (iFlag_pit == 1)
             {
               pq_pit.push(vCell_active[lCellIndex_neighbor]);
             }
             else
             {
-              pq.push(vCell_active[lCellIndex_neighbor]); //be careful
+              pq.push(vCell_active[lCellIndex_neighbor]); // be careful
             }
           }
         }
@@ -1003,6 +1091,5 @@ namespace hexwatershed
       std::flush(std::cout);
     }
     return error_code;
-
   }
 }

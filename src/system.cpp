@@ -101,7 +101,7 @@ int file_test(std::string sFilename_in)
    * @param sDirectory_in 
    * @return int 
    */
-int make_directory(std::string sDirectory_in)
+int make_directory(const std::string& sDirectory_in)
 {
 
 	//the maximum length for current setting
@@ -301,7 +301,7 @@ int make_directory(std::string sDirectory_in)
  * @param sPath_in 
  * @return int 
  */
-int path_test(std::string sPath_in)
+int path_test(const std::string& sPath_in)
 {
 #ifdef _WIN32
 	DWORD attribs = GetFileAttributesA(sPath_in.c_str());
@@ -379,7 +379,7 @@ int path_test(std::string sPath_in)
  * @param sCommand_in 
  * @return int 
  */
-int run_command(std::string sCommand_in)
+int run_command(const std::string& sCommand_in)
 {
 	int error_code = 1;
 
@@ -454,7 +454,7 @@ int run_command(std::string sCommand_in)
  * @param sFilename_in 
  * @return long 
  */
-long get_file_size(std::string sFilename_in)
+long get_file_size(const std::string& sFilename_in)
 {
 	std::ifstream ifs;
 	std::streampos fsize;
@@ -494,7 +494,7 @@ std::string get_current_time()
 
 void remove_duplicate_vector(std::vector<long> &vVector_in, std::vector<size_t> &vIndex_out)
 {
-    std::vector<long>::iterator itr = vVector_in.begin();
+    auto itr = vVector_in.begin();
     std::unordered_set<long> s;
  
     for (auto curr = vVector_in.begin(); curr != vVector_in.end(); ++curr)

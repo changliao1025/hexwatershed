@@ -59,8 +59,8 @@ std::string convert_float_to_string(int iPrecision_in,
 
 float convert_degree_to_radian( float dAngle_degree);
 
-std::vector<std::string> split_string_by_space(std::string sString_in);
-std::vector<std::string> split_string_by_delimiter(std::string sString_in, char cDelimiter_in);
+std::vector<std::string> split_string_by_space(const std::string& sString_in);
+std::vector<std::string> split_string_by_delimiter(const std::string& sString_in, char cDelimiter_in);
 
 //string trim
 std::string ltrim(const std::string& s);

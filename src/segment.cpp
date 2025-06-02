@@ -65,8 +65,6 @@ namespace hexwatershed
       dLength = dLength + (*iIterator).dLength_stream_conceptual;
       dArea = dArea + (*iIterator).dArea; //area of the cell
     }
-
-
     return error_code;
   }
 

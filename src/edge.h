@@ -34,7 +34,7 @@ namespace hexwatershed
 
       int calculate_length ();
 
-      int check_point_overlap (vertex pt);
+      int check_point_overlap (vertex pt) const;
 
       int check_overlap (vertex pt_start, const vertex &pt_end);
 
