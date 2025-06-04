@@ -7,11 +7,11 @@ namespace jsonmodel
 	{
 		lStream_segment_burned = -1;
 		iStream_order_burned = -1;
-
 		dAccumulation = 0.0;
 		lCellID = -1;
 		lCellID_downslope = -1;
 		lCellID_downstream_burned = -1;
+		lSubbasin = -1;
 		dElevation_mean = -9999.0;
 		dElevation_profile0 = -9999.0;
 		dElevation_raw = -9999.0;
@@ -152,7 +152,7 @@ namespace jsonmodel
 			pVertex.dLongitude_radian = convert_degree_to_radian(pVertex.dLongitude_degree);
 			pVertex.dLatitude_radian = convert_degree_to_radian(pVertex.dLatitude_degree);
 			pVertex.dElevation = this->dElevation_raw;
-			pVertex.update_location();				
+			pVertex.update_location();
 			this->vVertex.push_back(pVertex);
 		}
 

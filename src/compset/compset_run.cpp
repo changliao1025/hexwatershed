@@ -134,14 +134,15 @@ namespace hexwatershed
     int iFlag_stream_grid_option;
     int iFlag_accumulation_threshold_ratio = cParameter.iFlag_accumulation_threshold_ratio;
     int iFlag_accumulation_threshold_ratio_basin = 0;
+    long nOutlet;
     long lCellIndex_self;
     long lCellID_outlet;
     long lCellIndex_outlet;
     float dAccumulation;
     float dAccumulation_min = 0.0;
     float dAccumulation_max = 0.0;
+    float dAccumulation_threshold=0.0;
     std::vector<hexagon>::iterator iIterator_self;
-
     if (iFlag_global != 1)
     {
       if (iFlag_multiple_outlet == 0) // only one outlet
@@ -152,7 +153,7 @@ namespace hexwatershed
           aBasin[0].iFlag_flowline = 1;
           lCellIndex_outlet = mCellIdToIndex[aBasin[0].lCellID_outlet];
           dAccumulation_max = (vCell_active[lCellIndex_outlet]).dAccumulation;
-          //no watershed yet, so we have to use the basin to save the max accumulation
+          // no watershed yet, so we have to use the basin to save the max accumulation
           aBasin[0].dAccumulation_max = dAccumulation_max;
         }
         else // no flowline provided, so it is based on DEM
@@ -166,7 +167,6 @@ namespace hexwatershed
               lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
             }
           }
-
           // also set the outlet id
           lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
           // should we update at least one watershed?
@@ -181,20 +181,60 @@ namespace hexwatershed
           aBasin[0].dAccumulation_max = dAccumulation_max;
           // we also need to update the nOutlet?
           cParameter.nOutlet = 1;
-
         }
       }
-      else // more than 1 outlet is provided
+      else
       {
-        for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+        if (iFlag_flowline == 1) // user provided more than 1 outlet/flowline
         {
-          lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-          lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
-          aBasin[lWatershed - 1].iFlag_flowline = 1;
-          // set the id and outlet
-          aBasin[lWatershed - 1].lCellID_outlet = lCellID_outlet;
-          aBasin[lWatershed - 1].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
-          aBasin[lWatershed - 1].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+          for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
+          {
+            lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+            lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+            aBasin[lWatershed - 1].iFlag_flowline = 1;
+            // set the id and outlet
+            aBasin[lWatershed - 1].lCellID_outlet = lCellID_outlet;
+            aBasin[lWatershed - 1].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+            aBasin[lWatershed - 1].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+          }
+        }
+        else
+        {
+          //pure dem based watershed definition
+          dAccumulation_max = 0.0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          {
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
+            {
+              dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+            }
+          }
+          //now we can define the watershed based on the max accumulation?
+          //for a large scale simulation, we allow multiple watersheds,
+          //but smaller watershed do not have the large accumulation, so we use a threshold
+          dAccumulation_threshold = dAccumulation_max * 0.1;
+          //criteria for defining the watershed outlet: (1) has no downslope, (2) has accumulation larger than the threshold
+          nOutlet = 0;
+          cParameter.nOutlet = 0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          {
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold && (vCell_active[lCellIndex_self]).lCellID_downslope_dominant == -1 )
+            {
+              // this is a potential outlet
+              lCellID_outlet = vCell_active[lCellIndex_self].lCellID;
+              lCellIndex_outlet = vCell_active[lCellIndex_self].lCellIndex;
+              // we can define a basin here
+              basin pBasin;
+              aBasin.push_back(pBasin);
+              aBasin[cParameter.nOutlet].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
+              aBasin[cParameter.nOutlet].lCellID_outlet = lCellID_outlet;
+              aBasin[cParameter.nOutlet].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+              aBasin[cParameter.nOutlet].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+              aBasin[cParameter.nOutlet].dAccumulation_max = vCell_active[lCellIndex_self].dAccumulation;
+              cParameter.nOutlet++;
+            }
+          }
+
 
         }
       }
@@ -233,7 +273,6 @@ namespace hexwatershed
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
-
         lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
         watershed cWatershed;
         sWatershed = convert_long_to_string(lWatershed, 8); // increase to 8 to include 100 million rivers
@@ -341,8 +380,8 @@ namespace hexwatershed
         cWatershed.mCellIdToIndex[(vCell_active[lCellIndex_outlet]).lCellID] = lCellIndex_watershed;
         cWatershed.dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
         cWatershed.dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
-        //also need to copy the cParameter from compset to watershed object (mannually, because some parameter are already set)
-        //careful here
+        // also need to copy the cParameter from compset to watershed object (mannually, because some parameter are already set)
+        // careful here
 
         vWatershed.push_back(cWatershed);
       }

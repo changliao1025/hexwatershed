@@ -10,6 +10,7 @@ namespace hexwatershed
   subbasin::subbasin()
   {
     iFlag_outlet = 0;
+    lSubbasin = -1;
     lSubbasinIndex = -1;
     iFlag_headwater = 0;
     iFlag_hillslope = 0; //by default, the hillslope feature will not be turn on
@@ -31,7 +32,7 @@ namespace hexwatershed
   {
     int error_code = 1;
     int iFlag_checked;
-    
+
     int iFlag_left_hillslope, iFlag_right_hillslope, iFlag_headwater_hillslope;
     int iFlag_checked_downslope;
     long lCellID_upslope, lCellID_downslope;
@@ -413,7 +414,7 @@ namespace hexwatershed
         dWidth_hillslope_left = dWidth_hillslope_left + vCell[lCellIndex_buffer].dLength_edge_mean;
       }
     }
-   
+
     if (vCellID_buffer_right.empty())
     {
       iFlag_hillslope_right = 0;
@@ -549,7 +550,7 @@ namespace hexwatershed
         dArea = dArea + (*iIterator).dArea;
       }
     }
-    //check whether left and right actually exist 
+    //check whether left and right actually exist
     if (iFlag_hillslope_left==0)
     {
       //use the segment arae
@@ -608,7 +609,7 @@ namespace hexwatershed
     dSlope_mean = dSlope;
     if (iFlag_hillslope_left==0)
     {
-      dSlope_hillslope_left_mean = dSlope_stream_segment; //use stream channel slope 
+      dSlope_hillslope_left_mean = dSlope_stream_segment; //use stream channel slope
     }
     else
     {

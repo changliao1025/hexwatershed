@@ -277,6 +277,9 @@ namespace hexwatershed
 
     cCompset.sWorkspace_output_hexwatershed = sWorkspace_output_hexwatershed;
 
+    //txt
+    cCompset.sFilename_domain_characteristics = sWorkspace_output_hexwatershed + slash + "domain.txt";
+
     // vtk
     cCompset.sFilename_domain_vtk = sWorkspace_output_hexwatershed + slash + "hexwatershed.vtk";
 
@@ -284,6 +287,7 @@ namespace hexwatershed
 
     // others
     cCompset.sFilename_domain_json = sWorkspace_output_hexwatershed + slash + "hexwatershed.json";
+
 
     cCompset.sFilename_domain_animation_json = sWorkspace_output_hexwatershed + slash + "animation.json";
 
