@@ -72,7 +72,7 @@ namespace hexwatershed
     ofs_log << sLog << std::endl;
     ofs_log.flush();
     std::cout << sLog << std::endl;
-
+    iFlag_debug = 0;
     if (iFlag_global == 1)
     {
       // global simulation
@@ -86,14 +86,13 @@ namespace hexwatershed
           // pure dem-based watershed, so we need to manually define outlet first
           compset_stats_flow_accumulation();
         }
-        iFlag_debug = 0;
         compset_define_watershed_boundary();
         sTime = get_current_time();
         sLog = "Finished defining watershed boundary at " + sTime;
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
-        // start from here, we can actually run all the algorithm using the watershed object
+        // start from here, we run all the algorithm using the watershed object
         // if we want to use different threshold for different watersheds, then we need to redefine the stream grid here?
         // todo
         // multiple outlet case, do we need these information?
@@ -147,7 +146,6 @@ namespace hexwatershed
       }
       else
       {
-        iFlag_debug = 0;
         compset_stats_flow_accumulation(); // this function should be further simplified.
         // step 4
         compset_define_watershed_boundary();
@@ -156,7 +154,6 @@ namespace hexwatershed
         ofs_log << sLog << std::endl;
         ofs_log.flush();
         std::cout << sLog << std::endl;
-
         // step 5
         compset_define_stream_grid();
         sTime = get_current_time();

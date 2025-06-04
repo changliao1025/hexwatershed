@@ -511,9 +511,8 @@ namespace hexwatershed
           }
           else
           {
-            // this is the case if no nhd flowline is provided
+            // this is the case if no flowline is provided
             // set boundary as done first
-
             for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
             {
               lCellIndex_active = (*iIterator).lCellIndex;
@@ -532,12 +531,11 @@ namespace hexwatershed
 
         return error_code;
       }
-      else // multiple outlets
+      else // multiple outlets, whether they are provided or model-defined
       {
         std::cout << "This is a regional simulation with multiple outlets" << std::endl;
         if (iFlag_endorheic_basin == 0) // non endorheic basin
         {
-          //  case
           if (iFlag_flowline == 1) // with stream burning
           {
             if (iFlag_stream_burning_topology == 0)
@@ -569,34 +567,7 @@ namespace hexwatershed
               }
             }
             // depression filling
-            // the old method does not work nicely if there are holes in the mesh.
-            // a new method will be used, the old method is commented out below
-            /*
-            for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-            {
-              if ((*iIterator_self).iFlag_depression_filling_treated != 1)
-              {
-                if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
-                {
-                  vContinent_boundary.clear();
-                  compset_find_continent_boundary((*iIterator_self).lCellID);
-                  for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-                  {
-                    lCellIndex_active = (*iIterator).lCellIndex;
-                    vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                  }
-                  // start flooding
-                  if (vContinent_boundary.size() >= 3) // careful
-                  {
-                    priority_flood_depression_filling(vContinent_boundary);
-                  }
-                  // reset to the next continent
-                  vContinent_boundary.clear();
-                }
-              }
-            }
-            */
-            // the new method
+            // using the new method which support holes in meshes
             for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
             {
               lCellIndex_active = (*iIterator).lCellIndex;
@@ -611,33 +582,7 @@ namespace hexwatershed
           }
           else // pure dem based
           {
-            // find each watershed, old method
-            /*
-            for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-            {
-              if ((*iIterator_self).iFlag_depression_filling_treated != 1)
-              {
-                if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex)
-                {
-                  vContinent_boundary.clear();
-                  compset_find_continent_boundary((*iIterator_self).lCellID);
-                  for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-                  {
-                    lCellIndex_active = (*iIterator).lCellIndex;
-                    vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                  }
-
-                  // start flooding
-                  if (vContinent_boundary.size() >= 3) // careful
-                  {
-                    priority_flood_depression_filling(vContinent_boundary);
-                  }
-                  // reset to the next continent
-                  vContinent_boundary.clear();
-                }
-              }
-            }
-            */
+            // the new algorithm that supports holes in meshes
             for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
             {
               lCellIndex_active = (*iIterator).lCellIndex;
@@ -724,71 +669,21 @@ namespace hexwatershed
             compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
           }
         }
-        // depression filling for each watershed, this is the old method, which is commented out below
-        // a new method will be used instead
-        /*
-        for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-        {
-          if ((*iIterator_self).iFlag_depression_filling_treated != 1)
-          {
-            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) // only works for mpas/dggrid/hexagon alike mesh
-            {
-              vContinent_boundary.clear();
-              compset_find_continent_boundary((*iIterator_self).lCellID);
-              for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-              }
-              // start flooding
-              if (vContinent_boundary.size() >= 3) // careful
-              {
-                priority_flood_depression_filling(vContinent_boundary);
-              }
-              // reset to the next continent
-              vContinent_boundary.clear();
-            }
-          }
-        }
-         */
+        // depression filling a new method will be used instead
         // the new method starts from here
+        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+        {
+          lCellIndex_active = (*iIterator).lCellIndex;
+          vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+        }
+        priority_flood_depression_filling(vCell_boundary);
       }
       else // pure dem based
       {
-        // find each watershed, old method, not used anymore
-        /*
-        for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
-        {
-          if ((*iIterator_self).iFlag_depression_filling_treated != 1)
-          {
-            if ((*iIterator_self).nNeighbor_land < (*iIterator_self).nVertex) // only works for mpas/dggrid/hexagon alike mesh
-            {
-              vContinent_boundary.clear();
-              compset_find_continent_boundary((*iIterator_self).lCellID);
-              for (iIterator = vContinent_boundary.begin(); iIterator != vContinent_boundary.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-              }
-              // start flooding
-              if (vContinent_boundary.size() >= 3) // careful
-              {
-                priority_flood_depression_filling(vContinent_boundary);
-              }
-              // reset to the next continent
-              vContinent_boundary.clear();
-            }
-          }
-        }
-        */
         // the new method
         for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
         {
           lCellIndex_active = (*iIterator).lCellIndex;
-          if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
-          {
-            vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
-          }
           vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
         }
         // vCell_boundary may be the actual watershed boundary because pyflowline uses the boundary to generate the mesh
@@ -837,6 +732,11 @@ namespace hexwatershed
     return error_code;
   }
 
+  /**
+   * find the continent boundary, this method may NOT work with mesh with holes
+   * @param lCellID_in
+   * @return
+   */
   int compset::compset_find_continent_boundary(long lCellID_in)
   {
     int error_code = 1;
@@ -972,7 +872,7 @@ namespace hexwatershed
         }
       }
       lStep_count = lStep_count + 1;
-      std::flush(std::cout);
+      //std::flush(std::cout);
     }
     return error_code;
   }
@@ -985,7 +885,6 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_pit;
-
     long lCellID_lowest;
     long lCellIndex_neighbor;
     long lCellID_neighbor;
@@ -1088,7 +987,7 @@ namespace hexwatershed
         }
       }
       lStep_count = lStep_count + 1;
-      std::flush(std::cout);
+      //std::flush(std::cout);
     }
     return error_code;
   }

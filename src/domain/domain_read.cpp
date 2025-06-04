@@ -144,6 +144,12 @@ namespace hexwatershed
       cCompset.cParameter.iFlag_hillslope = pConfigDoc[sKey.c_str()].GetInt();
     }
 
+    sKey = "iFlag_export_individual_watershed";
+    if (pConfigDoc.HasMember(sKey.c_str()))
+    {
+      cCompset.cParameter.iFlag_export_individual_watershed = pConfigDoc[sKey.c_str()].GetInt();
+    }
+
     sKey = "dAccumulation_threshold";
     if (pConfigDoc.HasMember(sKey.c_str()))
     {

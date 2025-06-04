@@ -68,8 +68,8 @@ namespace hexwatershed
     int iFlag_force_watershed_boundary;
     int iFlag_endorheic_basin;
     int iFlag_accumulation_threshold_ratio;
+    int iFlag_export_individual_watershed;
     long nOutlet;
-
     // parameters
 
     float dBreach_threshold; // the threshold parameter for stream burning breaching algorithm

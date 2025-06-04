@@ -34,6 +34,7 @@ namespace hexwatershed
     iFlag_force_watershed_boundary = 0;
     iFlag_endorheic_basin = 0;
     iFlag_accumulation_threshold_ratio = 1;
+    iFlag_export_individual_watershed = 0; //whether to export individual watershed or not
     dAccumulation_threshold_ratio = 0.01;
     dAccumulation_threshold_value = 2.5E7;
 

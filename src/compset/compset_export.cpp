@@ -25,7 +25,7 @@ namespace hexwatershed
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_flowline = cParameter.iFlag_flowline;
-
+    int iFlag_export_individual_watershed = cParameter.iFlag_export_individual_watershed;
     std::string sFilename;
     // for details of the output, please refer to the official documentation
     // https://hexwatershed.readthedocs.io/en/latest/application/application.html#simulation-results
@@ -34,6 +34,11 @@ namespace hexwatershed
       sFilename = sFilename_domain_json;
       compset_export_domain_json(sFilename); // this one for domain
       compset_export_domain_characteristics();
+      if (iFlag_export_individual_watershed == 1)
+      {
+        compset_export_watershed_json(); // this one for each watershed
+        compset_export_watershed_characteristics();
+      }
     }
     else
     {
@@ -42,8 +47,11 @@ namespace hexwatershed
         sFilename = sFilename_domain_json;
         compset_export_domain_json(sFilename); // this one for domain
         compset_export_domain_characteristics();
-        compset_export_watershed_json();       // this one for each watershed
-        compset_export_watershed_characteristics();
+        if (iFlag_export_individual_watershed == 1)
+        {
+          compset_export_watershed_json(); // this one for each watershed
+          compset_export_watershed_characteristics();
+        }
       }
       else // single watershed
       {
@@ -51,26 +59,22 @@ namespace hexwatershed
         // now we will update some new result due to debug flag
         // main json file
         compset_export_watershed_json();
-
         // reserved for animation
         if (iFlag_animation == 1)
         {
           compset_export_watershed_animation_json(sFilename_domain_animation_json);
         }
-
         // vtk
         if (iFlag_vtk == 1)
         {
           compset_export_watershed_vtk(sFilename_domain_vtk);
         }
-
         // watershed level
         compset_export_watershed_characteristics();
       }
     }
 
     ofs_log.close();
-
     sTime = get_current_time();
     sLog = "Finished saving results! at " + sTime;
     std::cout << sLog << std::endl;
@@ -187,6 +191,7 @@ namespace hexwatershed
     {
       sLine = "Total number of outlets: " + convert_long_to_string(cParameter.nOutlet);
       ofs << sLine << std::endl;
+      // other attributes will be added upon development requests
       ofs.close();
     }
     return error_code;
@@ -235,6 +240,7 @@ namespace hexwatershed
     long lCellIndex;
     long nVertex, nHexagon, nBoundary;
     float dr, dx, dy, dz;
+    float dRatio_vtk_z_exaggerate = 100.0;
     std::string sDummy;
     std::string sLine;
     std::string sPoint, sCell, sCell_size;
@@ -242,10 +248,7 @@ namespace hexwatershed
     std::vector<hexagon>::iterator iIterator;
     std::vector<vertex>::iterator iIterator2;
 
-    float dRatio_vtk_z_exaggerate = 100.0;
-
     ofs_vtk.open(sFilename_in.c_str(), ios::out);
-
     sLine = "# vtk DataFile Version 2.0";
     ofs_vtk << sLine << std::endl;
     sLine = "Flow direction unstructured grid";
@@ -491,7 +494,6 @@ namespace hexwatershed
           ofs_vtk << sLine << std::endl;
         }
       }
-
       ofs_vtk.close();
     }
 
