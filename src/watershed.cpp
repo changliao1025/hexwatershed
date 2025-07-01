@@ -1115,18 +1115,14 @@ namespace hexwatershed
   int watershed::watershed_calculate_drainage_density()
   {
     int error_code = 1;
-
     float dRatio = 0.0;
-
     if (dLength_stream_conceptual > 0)
     {
       dRatio = dArea / dLength_stream_conceptual;
     }
-
     dArea_2_stream_ratio = dRatio;
     dLength_2_area_ratio = 1.0 / dRatio;
     dDrainage_density = dLength_2_area_ratio;
-
     return error_code;
   }
 

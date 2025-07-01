@@ -194,13 +194,11 @@ namespace hexwatershed
       }
 
       sKey = "sFilename_basins";
-
       if (pConfigDoc.HasMember(sKey.c_str()))
       {
         sFilename_basins = pConfigDoc[sKey.c_str()].GetString();
         // read basin info
         domain_read_basin_json(sFilename_basins);
-
         for (iIterator = cBasin.aBasin.begin(); iIterator != cBasin.aBasin.end(); ++iIterator)
         {
           // quality control of basin parameters

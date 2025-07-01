@@ -141,7 +141,7 @@ namespace hexwatershed
     float dAccumulation;
     float dAccumulation_min = 0.0;
     float dAccumulation_max = 0.0;
-    float dAccumulation_threshold=0.0;
+    float dAccumulation_threshold = 0.0;
     std::vector<hexagon>::iterator iIterator_self;
     if (iFlag_global != 1)
     {
@@ -200,7 +200,7 @@ namespace hexwatershed
         }
         else
         {
-          //pure dem based watershed definition
+          // pure dem based watershed definition
           dAccumulation_max = 0.0;
           for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
@@ -209,16 +209,16 @@ namespace hexwatershed
               dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
             }
           }
-          //now we can define the watershed based on the max accumulation?
-          //for a large scale simulation, we allow multiple watersheds,
-          //but smaller watershed do not have the large accumulation, so we use a threshold
+          // now we can define the watershed based on the max accumulation?
+          // for a large scale simulation, we allow multiple watersheds,
+          // but smaller watershed do not have the large accumulation, so we use a threshold
           dAccumulation_threshold = dAccumulation_max * 0.1;
-          //criteria for defining the watershed outlet: (1) has no downslope, (2) has accumulation larger than the threshold
+          // criteria for defining the watershed outlet: (1) has no downslope, (2) has accumulation larger than the threshold
           nOutlet = 0;
           cParameter.nOutlet = 0;
           for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
-            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold && (vCell_active[lCellIndex_self]).lCellID_downslope_dominant == -1 )
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold && (vCell_active[lCellIndex_self]).lCellID_downslope_dominant == -1)
             {
               // this is a potential outlet
               lCellID_outlet = vCell_active[lCellIndex_self].lCellID;
@@ -234,8 +234,6 @@ namespace hexwatershed
               cParameter.nOutlet++;
             }
           }
-
-
         }
       }
     }
@@ -301,7 +299,6 @@ namespace hexwatershed
           {
             continue;
           }
-
           lCellID_downslope = (vCell_active[lCellIndex_self]).lCellID_downslope_dominant;
           if (lCellID_downslope != -1)
           {
@@ -361,7 +358,6 @@ namespace hexwatershed
             }
           }
         }
-
         // in the last step, we then push in the outlet cell
         vCell_active[lCellIndex_outlet].iFlag_watershed = 1;
         vCell_active[lCellIndex_outlet].lWatershed = lWatershed;
@@ -370,7 +366,6 @@ namespace hexwatershed
         cWatershed.dAccumulation_max = vCell_active[lCellIndex_outlet].dAccumulation;
         // copy parameter as well
         cWatershed.cParameter.iFlag_stream_grid_option = cParameter.iFlag_stream_grid_option;
-
         cWatershed.cParameter.iFlag_flowline = aBasin[lWatershed - 1].iFlag_flowline; // this one is tricky, because not all have flowline
         cWatershed.cParameter.iFlag_accumulation_threshold_ratio = aBasin[lWatershed - 1].iFlag_accumulation_threshold_ratio;
         cWatershed.cParameter.dAccumulation_threshold_ratio = aBasin[lWatershed - 1].dAccumulation_threshold_ratio;
@@ -382,7 +377,6 @@ namespace hexwatershed
         cWatershed.dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
         // also need to copy the cParameter from compset to watershed object (mannually, because some parameter are already set)
         // careful here
-
         vWatershed.push_back(cWatershed);
       }
       // how about other auto-defined watershed?
@@ -403,15 +397,12 @@ namespace hexwatershed
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_flowline = cParameter.iFlag_flowline;
-
     int iFlag_accumulation_threshold_ratio = cParameter.iFlag_accumulation_threshold_ratio;
     int iFlag_accumulation_threshold_ratio_basin = 0;
     long lWatershed;
-
     float dAccumulation_threshold;
     float dAccumulation_threshold_ratio = cParameter.dAccumulation_threshold_ratio;
     float dAccumulation_threshold_value = cParameter.dAccumulation_threshold_value;
-
     if (iFlag_global != 1)
     {
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
@@ -581,6 +572,7 @@ namespace hexwatershed
             vCell_active[lCellIndex].lSubbasin = (*iIterator1).lSubbasin;
             vCell_active[lCellIndex].lSegment = (*iIterator1).lSegment;
             vCell_active[lCellIndex].dDistance_to_subbasin_outlet = (*iIterator1).dDistance_to_subbasin_outlet;
+            //additional attributes may be added here
           }
         }
       }

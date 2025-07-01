@@ -114,6 +114,8 @@ namespace hexwatershed
     int compset_calculate_flow_accumulation();
     int compset_stats_flow_accumulation();
     int compset_define_watershed_boundary();
+
+    int compset_run_watershed();
     int compset_define_stream_grid();
     int compset_define_stream_confluence();
     int compset_define_stream_segment();

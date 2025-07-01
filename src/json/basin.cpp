@@ -64,7 +64,8 @@ namespace jsonmodel
         }
       }
     }
-    else{
+    else
+    {
       iFlag_accumulation_threshold_provided = 0;
     }
 

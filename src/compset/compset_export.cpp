@@ -59,8 +59,7 @@ namespace hexwatershed
         // now we will update some new result due to debug flag
         // main json file
         compset_export_watershed_json();
-        // reserved for animation
-        if (iFlag_animation == 1)
+        if (iFlag_animation == 1) // reserved for animation
         {
           compset_export_watershed_animation_json(sFilename_domain_animation_json);
         }
