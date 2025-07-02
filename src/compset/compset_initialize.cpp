@@ -71,6 +71,7 @@ namespace hexwatershed
       pHexagon.lStream_segment_burned = pCell.lStream_segment_burned;
       pHexagon.iStream_order_burned = pCell.iStream_order_burned;
       pHexagon.lCellID_downstream_burned = pCell.lCellID_downstream_burned;
+      pHexagon.iFlag_watershed_boundary_burned = pCell.iFlag_watershed_boundary_burned;
 
       if (pHexagon.lStream_segment_burned > 0) // check it starts with 1
       {

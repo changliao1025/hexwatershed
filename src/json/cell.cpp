@@ -7,6 +7,7 @@ namespace jsonmodel
 	{
 		lStream_segment_burned = -1;
 		iStream_order_burned = -1;
+		iFlag_watershed_boundary_burned=0;
 		dAccumulation = 0.0;
 		lCellID = -1;
 		lCellID_downslope = -1;
@@ -101,6 +102,11 @@ namespace jsonmodel
 		if (obj.HasMember(sKey.c_str()))
 		{
 			this->iStream_order_burned = obj[sKey.c_str()].GetInt();
+		}
+		sKey = "iFlag_watershed_boundary_burned";
+		if (obj.HasMember(sKey.c_str()))
+		{
+			this->iFlag_watershed_boundary_burned = obj[sKey.c_str()].GetInt();
 		}
 		sKey = "nEdge";
 		if (obj.HasMember(sKey.c_str()))

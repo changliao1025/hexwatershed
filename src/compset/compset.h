@@ -17,6 +17,7 @@
 #include <map>
 #include <algorithm>
 #include <numeric>
+#include <set>
 #include <cmath> // abs, floor
 #include <unordered_map>
 #include <queue>
@@ -141,6 +142,7 @@ namespace hexwatershed
     //others
     std::vector<hexagon> compset_obtain_boundary(std::vector<hexagon> vCell_in);
     std::vector<hexagon> compset_obtain_stream(std::vector<hexagon> vCell_in);
+    std::vector<hexagon> compset_obtain_stream_and_riparian_zone(std::vector<hexagon> vCell_in);
     inline long compset_find_index_by_cell_id(long lCellID);
 
     int compset_find_continent_boundary(long lCellID_in);

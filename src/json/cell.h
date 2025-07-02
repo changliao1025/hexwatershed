@@ -10,9 +10,9 @@ namespace jsonmodel
   class cell : public JSONBase
   {
   public:
-    cell();		    
+    cell();
     virtual ~cell();
-    
+
     virtual bool Deserialize(const rapidjson::Value& obj);
     virtual bool Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) const;
 
@@ -23,7 +23,7 @@ namespace jsonmodel
     std::vector<long> aNeighbor_ocean;/*!<ocean neighbor ID*/
     std::vector<float> aNeighbor_distance;  /*!<neighbor distance*/
     std::vector<vertex> vVertex;
-    
+
     float dElevation_mean; /*!<average elevation*/
     float dElevation_profile0; /*!<elevation profile*/
     float dElevation_raw;  /*!<original elevation*/
@@ -46,23 +46,24 @@ namespace jsonmodel
     float dDistance_to_subbasin_outlet; /*!< distance to subbasin outlet*/
     float dDistance_to_watershed_outlet; /*!< distance to watershed outlet*/
     float dDistance_to_channel; /*!<distance to channel*/
-   
+
     int nEdge;
     int nNeighbor;
     int nNeighbor_land;
     int nNeighbor_ocean;
     int nVertex; /*!<number of vertex*/
     int iStream_order_burned;
+    int iFlag_watershed_boundary_burned;
     long lStream_segment_burned;
-    
+
     long lStream_segment;
     long lSubbasin;
     long lHillslope;
     long lCellID; /*!<global cell ID*/
     long lCellID_downstream_burned;/*!<pre-descibed global downstream cell ID*/
     long lCellID_downslope;/*!<global downslope cell ID*/
-    
+
   private:
-    
-  };	
+
+  };
 }
