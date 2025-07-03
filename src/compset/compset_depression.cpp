@@ -441,8 +441,16 @@ namespace hexwatershed
             lCellIndex_active = aIndex[1]; // local id
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
             vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); // for animation only
-
             // new simplified approach
+            if (iFlag_force_watershed_boundary != 1) //reset it because the data read in has 1s
+            {
+              // set all cell's watershed boundary flag as 0
+              for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
+              {
+                lCellIndex_active = (*iIterator).lCellIndex;
+                vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 0;
+              }
+            }
             if (iFlag_stream_burning_topology == 0)
             {
               // rasterization based stream burning
@@ -460,63 +468,47 @@ namespace hexwatershed
               vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
               compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
             }
-            if (iFlag_force_watershed_boundary == 1)
+
+            // a new algorithm will be used from this point
+            // this algorithm should start from the river riparian zone + boundary for the priority flood algorithm
+            // the watershed boundary is already in the cell info
+            // step 1: set boundary as depression treated
+            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
             {
-              // a new algorithm will be used from this point
-              // this algorithm should start from the river riparian zone + boundary for the priority flood algorithm
-              // the watershed boundary is already in the cell info
-              // step 1: set boundary as depression treated
-              for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+              if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
               {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
-                {
-                  vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
-                }
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
               }
-              // step 2: find the stream as the new boundary zone
-              vCell_stream = compset_obtain_stream(vCell_active); //does not include riparian zone
-              for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-              }
-              // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated cells
-              // Add boundary cells first
-              for (const auto &boundary_cell : vCell_boundary)
-              {
-                if (seen_cell_ids.insert(boundary_cell.lCellID).second)
-                {
-                  vCell_combined.push_back(boundary_cell);
-                }
-              }
-              // Add stream cells, avoiding duplicates
-              for (const auto &stream_cell : vCell_stream)
-              {
-                if (seen_cell_ids.insert(stream_cell.lCellID).second)
-                {
-                  vCell_combined.push_back(stream_cell);
-                }
-              }
-              priority_flood_depression_filling(vCell_combined);
             }
-            else
+            // step 2: find the stream as the new boundary zone
+            vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active); // does include riparian zone
+            for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
             {
-              // the initial boundary may be modified after stream burning, because cells may be next to stream channels.
-              for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
-                {
-                  vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
-                }
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-              }
-              // vCell_boundary may be the actual watershed boundary because pyflowline uses the boundary to generate the mesh
-              priority_flood_depression_filling(vCell_boundary);
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
             }
+            // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated cells
+            // Add boundary cells first
+            for (const auto &boundary_cell : vCell_boundary)
+            {
+              if (seen_cell_ids.insert(boundary_cell.lCellID).second)
+              {
+                vCell_combined.push_back(boundary_cell);
+              }
+            }
+            // Add stream cells, avoiding duplicates
+            for (const auto &stream_cell : vCell_stream)
+            {
+              if (seen_cell_ids.insert(stream_cell.lCellID).second)
+              {
+                vCell_combined.push_back(stream_cell);
+              }
+            }
+            priority_flood_depression_filling(vCell_combined);
           }
+
           else
           {
             std::cout << " You failed to assign the correct outlet mesh ID!" << std::endl;
@@ -590,51 +582,51 @@ namespace hexwatershed
                 compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
               }
             }
-            if (iFlag_force_watershed_boundary == 1)
-            {
-              // in this case, the model need to know which cells are watershed boundary
-              // following the example for the single watershed
 
-              priority_flood_depression_filling(vCell_boundary);
-            }
-            else
+            if (iFlag_force_watershed_boundary != 1)
             {
-              for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+              // set all cell's watershed boundary flag as 0
+              for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
               {
                 lCellIndex_active = (*iIterator).lCellIndex;
-                if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
-                {
-                  vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
-                }
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 0;
               }
-              // add all the stream cells to the priority flood queue, again, avoid duplicated cells
-              vCell_stream = compset_obtain_stream(vCell_active);
-              for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-              }
-              // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated cells
-              // Add boundary cells first
-              for (const auto &boundary_cell : vCell_boundary)
-              {
-                if (seen_cell_ids.insert(boundary_cell.lCellID).second)
-                {
-                  vCell_combined.push_back(boundary_cell);
-                }
-              }
-              // Add stream cells, avoiding duplicates
-              for (const auto &stream_cell : vCell_stream)
-              {
-                if (seen_cell_ids.insert(stream_cell.lCellID).second)
-                {
-                  vCell_combined.push_back(stream_cell);
-                }
-              }
-              // depression filling  using the new method which support holes in meshes
-              priority_flood_depression_filling(vCell_combined);
             }
+            for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1)
+              {
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]); // animation
+              }
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+            }
+            // add all the stream cells to the priority flood queue, again, avoid duplicated cells
+            vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
+            for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
+            {
+              lCellIndex_active = (*iIterator).lCellIndex;
+              vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+            }
+            // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated cells
+            // Add boundary cells first
+            for (const auto &boundary_cell : vCell_boundary)
+            {
+              if (seen_cell_ids.insert(boundary_cell.lCellID).second)
+              {
+                vCell_combined.push_back(boundary_cell);
+              }
+            }
+            // Add stream cells, avoiding duplicates
+            for (const auto &stream_cell : vCell_stream)
+            {
+              if (seen_cell_ids.insert(stream_cell.lCellID).second)
+              {
+                vCell_combined.push_back(stream_cell);
+              }
+            }
+            // depression filling  using the new method which support holes in meshes
+            priority_flood_depression_filling(vCell_combined);
           }
           else // pure dem based
           {
@@ -675,7 +667,7 @@ namespace hexwatershed
               vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 1;
             }
             // step 2: find the stream as the new boundary zone
-            vCell_stream = compset_obtain_stream(vCell_active);
+            vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
             for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++)
             {
               lCellIndex_active = (*iIterator).lCellIndex;

@@ -38,7 +38,22 @@ namespace hexwatershed
       {
         if ((*iIterator1).iFlag_stream_burning_treated == 1) // or vertex
         {
-          vCell_out.push_back(*iIterator1);
+          if ((*iIterator1).iFlag_stream_burned == 1)
+          {
+            vCell_out.push_back(*iIterator1);
+          }
+          else
+          {
+            if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
+            {
+              vCell_out.push_back(*iIterator1);
+            }
+            else
+            {
+              //do not push land cells that are also watershed boundary cells
+            }
+          }
+
         }
       }
       return vCell_out;
@@ -165,6 +180,7 @@ namespace hexwatershed
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_stream_burned_neighbor;
     int iFlag_stream_burning_treated_neighbor;
+    int iFlag_watershed_boundary_burned_neighbor = 0;
     int iStream_order_center;
     int iStream_order_neighbor;
     long lCellIndex_neighbor;
@@ -259,7 +275,7 @@ namespace hexwatershed
       lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
-
+      iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
       if (iFlag_stream_burned_neighbor != 1)
       {
         if (iFlag_stream_burning_treated_neighbor != 1)
