@@ -18,14 +18,14 @@ namespace hexwatershed
     eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon> vCell_out;
-      for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
+    for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
+    {
+      if ((*iIterator1).iFlag_stream_burned == 1) // or vertex
       {
-        if ((*iIterator1).iFlag_stream_burned == 1) // or vertex
-        {
-          vCell_out.push_back(*iIterator1);
-        }
+        vCell_out.push_back(*iIterator1);
       }
-      return vCell_out;
+    }
+    return vCell_out;
   }
 
   std::vector<hexagon> compset::compset_obtain_stream_and_riparian_zone(std::vector<hexagon> vCell_in)
@@ -34,29 +34,28 @@ namespace hexwatershed
     eMesh_type pMesh_type = this->cParameter.pMesh_type;
     std::vector<hexagon>::iterator iIterator1;
     std::vector<hexagon> vCell_out;
-      for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
+    for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++)
+    {
+      if ((*iIterator1).iFlag_stream_burning_treated == 1) // or vertex
       {
-        if ((*iIterator1).iFlag_stream_burning_treated == 1) // or vertex
+        if ((*iIterator1).iFlag_stream_burned == 1)
         {
-          if ((*iIterator1).iFlag_stream_burned == 1)
+          vCell_out.push_back(*iIterator1);
+        }
+        else
+        {
+          if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
           {
             vCell_out.push_back(*iIterator1);
           }
           else
           {
-            if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
-            {
-              vCell_out.push_back(*iIterator1);
-            }
-            else
-            {
-              //do not push land cells that are also watershed boundary cells
-            }
+            // do not push land cells that are also watershed boundary cells
           }
-
         }
       }
-      return vCell_out;
+    }
+    return vCell_out;
   }
   /**
    * @brief
@@ -180,6 +179,7 @@ namespace hexwatershed
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_stream_burned_neighbor;
     int iFlag_stream_burning_treated_neighbor;
+    int iFlag_watershed_boundary_burned = 0;
     int iFlag_watershed_boundary_burned_neighbor = 0;
     int iStream_order_center;
     int iStream_order_neighbor;
@@ -196,6 +196,7 @@ namespace hexwatershed
     float dElevation_profile0_neighbor;
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator_neighbor;
+    iFlag_watershed_boundary_burned = vCell_active[lCellIndex_center].iFlag_watershed_boundary_burned;
     vCell_active[lCellIndex_center].iFlag_stream_burning_treated = 1;
     vNeighbor_land = vCell_active[lCellIndex_center].vNeighbor_land;
     dElevation_mean_center = vCell_active[lCellIndex_center].dElevation_mean;
@@ -204,7 +205,7 @@ namespace hexwatershed
     iStream_order_center = vCell_active[lCellIndex_center].iStream_order_burned;
     lCellID_current = vCell_active[lCellIndex_center].lCellID;
     // stream first
-    //std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
+    // std::cout << lCellID_current << ": " << dElevation_mean_center << std::endl;
     for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor < vNeighbor_land.end(); iIterator_neighbor++)
     {
       lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
@@ -213,7 +214,7 @@ namespace hexwatershed
       {
         iStream_order_neighbor = vCell_active[lCellIndex_neighbor].iStream_order_burned;
         dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-        vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  //animation
+        vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);                // animation
         vCell_active[lCellIndex_neighbor].dElevation_downstream = dElevation_mean_center; // need update after modification
         dDifference_dummy = dElevation_mean_neighbor - dElevation_mean_center;
         if (dDifference_dummy > 0) // should not be equally to 0.0
@@ -276,34 +277,82 @@ namespace hexwatershed
       iFlag_stream_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burned;
       iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
       iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
-      if (iFlag_stream_burned_neighbor != 1)
+      if (iFlag_watershed_boundary_burned == 1)
       {
-        if (iFlag_stream_burning_treated_neighbor != 1)
+        // if the stream is already on the watershed boundary, we need special consideration
+        if (iFlag_watershed_boundary_burned_neighbor == 1)
         {
-          vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); //animation
-          dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-          if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
+          // both are at the edge
+        }
+        else
+        {
+          // neighbor is not on the watershed boundary, this is ok
+          if (iFlag_stream_burned_neighbor != 1)
           {
-            vCell_active[lCellIndex_neighbor].dElevation_mean =
-                dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
-          }
-          else
-          {
-            if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
+            if (iFlag_stream_burning_treated_neighbor != 1)
             {
-              vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
+              vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+              dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+              if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
+              {
+                vCell_active[lCellIndex_neighbor].dElevation_mean =
+                    dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
+              }
+              else
+              {
+                if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
+                {
+                  vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
+                }
+              }
+              vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
+
+              // if elevation profile is turned on
+              if (iFlag_elevation_profile == 1)
+              {
+                dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                if (dElevation_profile0_neighbor < dElevation_profile0_center)
+                {
+                  vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                      dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                }
+              }
             }
           }
-          vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
-
-          // if elevation profile is turned on
-          if (iFlag_elevation_profile == 1)
+        }
+      }
+      else
+      {
+        // if center is not on the edge, then we don't need to check whether the neighbor is on the edge
+        if (iFlag_stream_burned_neighbor != 1)
+        {
+          if (iFlag_stream_burning_treated_neighbor != 1)
           {
-            dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
-            if (dElevation_profile0_neighbor < dElevation_profile0_center)
+            vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+            dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+            if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
             {
-              vCell_active[lCellIndex_neighbor].dElevation_profile0 =
-                  dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+              vCell_active[lCellIndex_neighbor].dElevation_mean =
+                  dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
+            }
+            else
+            {
+              if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
+              {
+                vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
+              }
+            }
+            vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
+
+            // if elevation profile is turned on
+            if (iFlag_elevation_profile == 1)
+            {
+              dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+              if (dElevation_profile0_neighbor < dElevation_profile0_center)
+              {
+                vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                    dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+              }
             }
           }
         }

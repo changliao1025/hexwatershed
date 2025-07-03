@@ -407,6 +407,16 @@ namespace hexwatershed
     std::set<long> seen_cell_ids;
     std::vector<hexagon> vCell_combined;
 
+    //reset the watershed boundary flag 
+    if (iFlag_force_watershed_boundary != 1) // reset it because the data read in has 1s
+    {
+      // set all cell's watershed boundary flag as 0
+      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
+      {
+        lCellIndex_active = (*iIterator).lCellIndex;
+        vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 0;
+      }
+    }
     // this call will include all the mesh cell
     // that are on the edges, including holes
     vCell_boundary = compset_obtain_boundary(vCell_active);
@@ -442,15 +452,7 @@ namespace hexwatershed
             dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
             vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]); // for animation only
             // new simplified approach
-            if (iFlag_force_watershed_boundary != 1) //reset it because the data read in has 1s
-            {
-              // set all cell's watershed boundary flag as 0
-              for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-              {
-                lCellIndex_active = (*iIterator).lCellIndex;
-                vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 0;
-              }
-            }
+
             if (iFlag_stream_burning_topology == 0)
             {
               // rasterization based stream burning
@@ -864,6 +866,7 @@ namespace hexwatershed
       for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
       {
         lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+        lCellID_neighbor = vCell_active[lCellIndex_neighbor].lCellID;
         iFlag_depression_filling_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
         iFlag_stream_burning_treated_neighbor = vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated;
         iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;

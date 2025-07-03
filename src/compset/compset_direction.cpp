@@ -28,6 +28,8 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
+    int iFlag_watershed_boundary_burned;
+    int iFlag_watershed_boundary_burned_neighbor;
     long iNeighborIndex;
     long lCellID_lowest;
     long lCellID_highest;
@@ -142,6 +144,7 @@ namespace hexwatershed
           vNeighbor_land = (vCell_active[lCellIndex_self]).vNeighbor_land;
           lCellID_lowest = -1;
           lCellID_highest = -1;
+          iFlag_watershed_boundary_burned = vCell_active[lCellIndex_self].iFlag_watershed_boundary_burned;
 
           dElevation_mean = (vCell_active[lCellIndex_self]).dElevation_mean;
           dElevation_profile0 = (vCell_active[lCellIndex_self]).dElevation_profile0;
