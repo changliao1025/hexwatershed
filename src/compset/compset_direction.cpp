@@ -156,13 +156,39 @@ namespace hexwatershed
           dDistance_downslope = dDistance_initial;
 
           iFlag_has_stream = 0;
-          for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
+          if (iFlag_watershed_boundary_burned == 1)
           {
-            lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
-            if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
+            // if the center cell is on watershed boundary, that is ok
+            for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
-              iFlag_has_stream = 1;
-              break;
+              lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+              iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
+              if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
+              {
+                iFlag_has_stream = 1;
+                break;
+              }
+            }
+          }
+          else
+          {
+            // if the center is not edge
+            for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
+            {
+              lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+              iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
+              if (iFlag_watershed_boundary_burned_neighbor == 1)
+              {
+                // the neighbor is on the edge, we dont want the center flows to the edge
+              }
+              else
+              {
+                if (vCell_active[lCellIndex_neighbor].iFlag_stream_burned == 1)
+                {
+                  iFlag_has_stream = 1;
+                  break;
+                }
+              }
             }
           }
 
@@ -234,9 +260,27 @@ namespace hexwatershed
             for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
             {
               lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+              iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
+              if (iFlag_watershed_boundary_burned == 1)
+              {
+                //it is ok if the center is on the edge
+                if (iFlag_watershed_boundary_burned_neighbor == 1)
+                {
+                  continue; // skip the watershed boundary burned neighbor
+                }
+              }
+              else
+              {
+                if (iFlag_watershed_boundary_burned_neighbor == 1)
+                {
+                  continue; // skip the watershed boundary burned neighbor
+                }
+              }
+
               dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
               // get distance
               iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));
+
               iNeighborIndex = std::distance(vNeighbor.begin(), iIterator);
               dDistance_neighbor = vNeighbor_distance[iNeighborIndex];
               dSlope_new = dElevation_diff / dDistance_neighbor;
@@ -341,7 +385,6 @@ namespace hexwatershed
               }
             }
           }
-
           else
           {
             // normal land grid neighbor, this cell maybe on the edge, if so, we can set it manually as beach next to ocean
