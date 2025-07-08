@@ -55,6 +55,9 @@ namespace hexwatershed
       }
       else // single watershed
       {
+
+        sFilename = sFilename_domain_json;
+        compset_export_domain_json(sFilename); // this one for domain
         // when there is only single watershed, we will only output watershed level output because domain-scale is the same
         // now we will update some new result due to debug flag
         // main json file
@@ -174,6 +177,26 @@ namespace hexwatershed
       else // single watershed
       {
         // skip it because we have a dedicated watershed json file
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
+        {
+          cell pCell;
+          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+          pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+          pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
+          // pCell.dSlope_within = (*iIterator).dSlope_within;
+          pCell.dElevation_mean = (*iIterator).dElevation_mean;
+          pCell.dElevation_raw = (*iIterator).dElevation_raw;
+          pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+          pCell.lCellID = (*iIterator).lCellID;
+          pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+          pCell.dArea = (*iIterator).dArea;
+          pCell.dAccumulation = (*iIterator).dAccumulation;
+          pCell.vVertex = (*iIterator).vVertex;
+          pCell.nVertex = pCell.vVertex.size();
+          cMesh.aCell.push_back(pCell);
+        }
+        cMesh.SerializeToFile(sFilename_in);
       }
     }
 

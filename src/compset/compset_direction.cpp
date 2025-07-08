@@ -266,7 +266,7 @@ namespace hexwatershed
                 //it is ok if the center is on the edge
                 if (iFlag_watershed_boundary_burned_neighbor == 1)
                 {
-                  continue; // skip the watershed boundary burned neighbor
+                  //allow boundary to boundary flow
                 }
               }
               else

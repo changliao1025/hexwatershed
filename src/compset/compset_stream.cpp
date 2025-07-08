@@ -44,14 +44,15 @@ namespace hexwatershed
         }
         else
         {
-          if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
-          {
-            vCell_out.push_back(*iIterator1);
-          }
-          else
-          {
-            // do not push land cells that are also watershed boundary cells
-          }
+          vCell_out.push_back(*iIterator1);
+          //if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
+          //{
+          //  vCell_out.push_back(*iIterator1);
+          //}
+          //else
+          //{
+          //  // do not push land cells that are also watershed boundary cells
+          //}
         }
       }
     }
@@ -284,6 +285,38 @@ namespace hexwatershed
         if (iFlag_watershed_boundary_burned_neighbor == 1)
         {
           // both are at the edge, should we check the elevations?
+          if (iFlag_stream_burned_neighbor != 1)
+          {
+            if (iFlag_stream_burning_treated_neighbor != 1)
+            {
+              vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+              dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+              if (dElevation_mean_neighbor <= dElevation_mean_center) // should not be equally to 0.0 as well
+              {
+                vCell_active[lCellIndex_neighbor].dElevation_mean =
+                    dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
+              }
+              else
+              {
+                if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold)
+                {
+                  vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
+                }
+              }
+              vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
+
+              // if elevation profile is turned on
+              if (iFlag_elevation_profile == 1)
+              {
+                dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                if (dElevation_profile0_neighbor < dElevation_profile0_center)
+                {
+                  vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                      dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                }
+              }
+            }
+          }
         }
         else
         {

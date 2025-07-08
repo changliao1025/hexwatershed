@@ -407,7 +407,7 @@ namespace hexwatershed
     std::set<long> seen_cell_ids;
     std::vector<hexagon> vCell_combined;
 
-    //reset the watershed boundary flag 
+    // reset the watershed boundary flag
     if (iFlag_force_watershed_boundary != 1) // reset it because the data read in has 1s
     {
       // set all cell's watershed boundary flag as 0
@@ -805,6 +805,7 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
+    int iFlag_watershed_boundary_burned;
     int iFlag_watershed_boundary_burned_neighbor = 0;
     int iFlag_pit = 0;
     long lCellID_lowest;
@@ -854,6 +855,7 @@ namespace hexwatershed
         pq.pop();
       }
       // get Cell id
+      iFlag_watershed_boundary_burned = pCell_min.iFlag_watershed_boundary_burned;
       lCellID_lowest = pCell_min.lCellID;
       lCellIndex_active = pCell_min.lCellIndex;
       dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
@@ -873,81 +875,142 @@ namespace hexwatershed
         dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
         if (iFlag_depression_filling_treated_neighbor != 1) // not depression filling treated yet
         {
-          if (iFlag_watershed_boundary_burned_neighbor == 1)
+          if (iFlag_watershed_boundary_burned == 1)
           {
-            // reaching the edge
-            if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
+            if (iFlag_watershed_boundary_burned_neighbor == 1)
             {
-              vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-            }
-            else
-            {
-              vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
-              if (dElevation_mean_neighbor <= dElevation_mean_center)
+              // both are on the watershed boundary, then no need to change the elevation?
+              if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
               {
-                iFlag_pit = 1;
-                vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
               }
               else
               {
-                iFlag_pit = 0;
-              }
-              // elevation profile case
-              if (iFlag_elevation_profile == 1)
-              {
-                dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
-                if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+                if (dElevation_mean_neighbor <= dElevation_mean_center)
                 {
-                  vCell_active[lCellIndex_neighbor].dElevation_profile0 =
-                      dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                  iFlag_pit = 1;
+                  vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
                 }
+                else
+                {
+                  iFlag_pit = 0;
+                }
+                // elevation profile case
+                if (iFlag_elevation_profile == 1)
+                {
+                  dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                  if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+                  {
+                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                        dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                  }
+                }
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
               }
-              vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+            }
+            else
+            {
+              // we dont want to let a non-watershed boudnary cell flows to the watershed boundary cell
+              if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
+              {
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+                pq.push(vCell_active[lCellIndex_neighbor]);
+              }
+              else
+              {
+                // this cell might be outside the watershed, so we should not modify its elevation now, let the cell on the other side to consider it
+                continue;
+              }
             }
           }
           else
           {
-            // normal condition
-            if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
+            if (iFlag_watershed_boundary_burned_neighbor == 1)
             {
-              vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-              // replace with pq
-              // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
-              pq.push(vCell_active[lCellIndex_neighbor]);
-              // std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) << std::endl;
+              // reaching the edge
+              if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
+              {
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+              }
+              else
+              {
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+                if (dElevation_mean_neighbor <= dElevation_mean_center)
+                {
+                  iFlag_pit = 1;
+                  vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                }
+                else
+                {
+                  iFlag_pit = 0;
+                }
+                // elevation profile case
+                if (iFlag_elevation_profile == 1)
+                {
+                  dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                  if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+                  {
+                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                        dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                  }
+                }
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+                //push into the queue
+                if (iFlag_pit == 1)
+                {
+                  pq_pit.push(vCell_active[lCellIndex_neighbor]);
+                }
+                else
+                {
+                  pq.push(vCell_active[lCellIndex_neighbor]); // be careful
+                }
+              }
             }
             else
             {
-              vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
-              if (dElevation_mean_neighbor <= dElevation_mean_center)
+              // normal condition
+              if (iFlag_stream_burning_treated_neighbor == 1) // but was treated by stream burning already
               {
-                iFlag_pit = 1;
-                vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+                // replace with pq
+                // vCell_boundary_in.push_back(vCell_active[lCellIndex_neighbor]);
+                pq.push(vCell_active[lCellIndex_neighbor]);
+                // std::cout << "Depression filling pushed (type 1) : " << (*iIterator_neighbor) << std::endl;
               }
               else
               {
-                iFlag_pit = 0;
-              }
-              // elevation profile case
-              if (iFlag_elevation_profile == 1)
-              {
-                dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
-                if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+                vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]); // animation
+                if (dElevation_mean_neighbor <= dElevation_mean_center)
                 {
-                  vCell_active[lCellIndex_neighbor].dElevation_profile0 =
-                      dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                  iFlag_pit = 1;
+                  vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
                 }
+                else
+                {
+                  iFlag_pit = 0;
+                }
+                // elevation profile case
+                if (iFlag_elevation_profile == 1)
+                {
+                  dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                  if (dElevation_profile0_neighbor <= dElevation_profile0_center)
+                  {
+                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                        dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                  }
+                }
+                vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+                if (iFlag_pit == 1)
+                {
+                  pq_pit.push(vCell_active[lCellIndex_neighbor]);
+                }
+                else
+                {
+                  pq.push(vCell_active[lCellIndex_neighbor]); // be careful
+                }
+                // std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
               }
-              vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
-              if (iFlag_pit == 1)
-              {
-                pq_pit.push(vCell_active[lCellIndex_neighbor]);
-              }
-              else
-              {
-                pq.push(vCell_active[lCellIndex_neighbor]); // be careful
-              }
-              // std::cout << "Depression filling pushed (type 2) : " << (*iIterator_neighbor) << std::endl;
             }
           }
         }
