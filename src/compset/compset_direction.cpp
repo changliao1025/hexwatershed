@@ -263,10 +263,10 @@ namespace hexwatershed
               iFlag_watershed_boundary_burned_neighbor = vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
               if (iFlag_watershed_boundary_burned == 1)
               {
-                //it is ok if the center is on the edge
+                // it is ok if the center is on the edge
                 if (iFlag_watershed_boundary_burned_neighbor == 1)
                 {
-                  //allow boundary to boundary flow
+                  // allow boundary to boundary flow
                 }
               }
               else
@@ -416,6 +416,66 @@ namespace hexwatershed
                 {
                   // this cell is not on the edge, so it must has one
                   std::cout << "It should have one downslope!" << vCell_active[lCellIndex_self].lCellID << std::endl;
+                  // now we will fix it because it is not an actual depression
+                  for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
+                  {
+                    lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+                    dElevation_diff = dElevation_mean - vCell_active[lCellIndex_neighbor].dElevation_mean;
+                    // get distance
+                    iIterator = std::find(vNeighbor.begin(), vNeighbor.end(), (*iIterator_neighbor));
+
+                    iNeighborIndex = std::distance(vNeighbor.begin(), iIterator);
+                    dDistance_neighbor = vNeighbor_distance[iNeighborIndex];
+                    dSlope_new = dElevation_diff / dDistance_neighbor;
+                    if (dSlope_new > 0.0)
+                    {
+                      // this is a downslope
+                      (vCell_active[lCellIndex_self]).vDownslope.push_back(*iIterator_neighbor);
+                      if (dSlope_new > dSlope_downslope) // downslope
+                      {
+                        dSlope_downslope = dSlope_new;
+                        lCellID_lowest = *iIterator_neighbor;
+                        dDistance_downslope = dDistance_neighbor;
+                        lCellIndex_neighbor_lowest = lCellIndex_neighbor;
+                      }
+                    }
+                    else
+                    {
+                      // this should be a upslope
+                      (vCell_active[lCellIndex_self]).vUpslope.push_back(*iIterator_neighbor);
+                      if (dSlope_new < dSlope_upslope)
+                      {
+                        // this maybe a dominant upslope
+                        dSlope_upslope = dSlope_new;
+                        lCellID_highest = *iIterator_neighbor;
+                        lCellIndex_neighbor_highest = lCellIndex_self;
+                      }
+                    }
+                  }
+                  if (lCellID_lowest != -1)
+                  {
+                    (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+                    // before define stream, we cannot establish upslope relationship
+                    (vCell_active[lCellIndex_self]).dSlope_max_downslope = dSlope_downslope;
+                    (vCell_active[lCellIndex_self]).dDistance_to_downslope = dDistance_downslope;
+
+                    // elevation profile
+                    if (iFlag_elevation_profile == 1)
+                    {
+                      dElevation_diff = dElevation_profile0 - vCell_active[lCellIndex_neighbor_lowest].dElevation_profile0;
+                      dSlope_elevation_profile0 = dElevation_diff / (vCell_active[lCellIndex_self]).dLength_stream_burned;
+                      if (dSlope_elevation_profile0 <= 0.0001)
+                      {
+                        dSlope_elevation_profile0 = 0.0001;
+                      }
+                      (vCell_active[lCellIndex_self]).dSlope_elevation_profile0 = dSlope_elevation_profile0;
+                    }
+                    std::cout << "It has a downslope and was fixed!" << vCell_active[lCellIndex_self].lCellID << std::endl;
+                  }
+                  else
+                  {
+                    std::cout << "It should have one downslope and cannot be fixed!" << vCell_active[lCellIndex_self].lCellID << std::endl;
+                  }
                 }
               }
               else
@@ -424,8 +484,16 @@ namespace hexwatershed
                 {
                   if (iFlag_force_watershed_boundary == 1)
                   {
-                    // in this case, we dont push them out of the domain
-                    (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+                    if (iFlag_watershed_boundary_burned == 1)
+                    {
+                      // in this case, we dont push them out of the domain
+                      (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
+                    }
+                    else
+                    {
+                      //coastal line, we can set it as -1
+                      (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
+                    }
                   }
                   else
                   {

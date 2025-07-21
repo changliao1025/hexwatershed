@@ -38,21 +38,20 @@ namespace hexwatershed
     {
       if ((*iIterator1).iFlag_stream_burning_treated == 1) // or vertex
       {
-        if ((*iIterator1).iFlag_stream_burned == 1)
+        if ((*iIterator1).iFlag_stream_burned == 1) // stream cells, but it can be on the watershed edge as well
         {
           vCell_out.push_back(*iIterator1);
         }
         else
         {
-          vCell_out.push_back(*iIterator1);
-          //if ((*iIterator1).iFlag_watershed_boundary_burned != 1)
-          //{
-          //  vCell_out.push_back(*iIterator1);
-          //}
-          //else
-          //{
-          //  // do not push land cells that are also watershed boundary cells
-          //}
+          if ((*iIterator1).iFlag_watershed_boundary_burned != 1) // need to be sure this one does not across the watershed boundary
+          {
+            vCell_out.push_back(*iIterator1);
+          }
+          else
+          {
+            // do not push land cells that are also watershed boundary cells
+          }
         }
       }
     }
@@ -317,10 +316,14 @@ namespace hexwatershed
               }
             }
           }
+          else
+          {
+            // do nothing here
+          }
         }
         else
         {
-          // neighbor is not on the watershed boundary, but it can be on either side
+          //neighbor is not on the watershed boundary, but it can be on either side
         }
       }
       else
