@@ -458,10 +458,8 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-
     if (iFlag_global != 1)
     {
-
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         vWatershed[lWatershed - 1].watershed_define_stream_segment();
@@ -476,10 +474,8 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
-
     if (iFlag_global != 1)
     {
-
       for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
       {
         vWatershed[lWatershed - 1].watershed_build_stream_topology();

@@ -270,7 +270,7 @@ namespace hexwatershed
    * @param vCell_in :the grid
    * @return
    */
-  std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon> vCell_in)
+  std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCell_in)
   {
     int error_code = 1;
     int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
@@ -844,21 +844,8 @@ namespace hexwatershed
       pq.push(*iIterator);
     }
 
-    if (iFlag_force_watershed_boundary == 1)
-    {
-      // this will be only used to process the watershed boundary cells
-    }
-
     while (pq.size() > 3 or pq_pit.size() > 0)
     {
-      // std::cout << "Depression filling step: " << lStep_count << std::endl;
-      //  the old method with manually priority queue
-      //  aIndex_search = compset_find_lowest_cell_in_priority_queue(vCell_boundary_in);
-      //  lCellIndex_boundary = aIndex_search[0]; // local index in boundary
-      //  lCellIndex_active = aIndex_search[1];
-      //  lCellID_lowest = aIndex_search[2];
-      // hexagon pCell_min = pq.top();
-
       if (pq_pit.size() > 0)
       {
         pCell_min = pq_pit.front();
@@ -929,7 +916,6 @@ namespace hexwatershed
                 */
               }
               //we should not push it in the initial queue if we don't change the elevation
-
             }
             else
             {

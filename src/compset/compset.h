@@ -140,7 +140,7 @@ namespace hexwatershed
     int compset_export_watershed_animation_json(const std::string &sFilename_in);
 
     //others
-    std::vector<hexagon> compset_obtain_boundary(std::vector<hexagon> vCell_in);
+    std::vector<hexagon> compset_obtain_boundary(std::vector<hexagon>& vCell_in);
     std::vector<hexagon> compset_obtain_stream(std::vector<hexagon> vCell_in);
     std::vector<hexagon> compset_obtain_stream_and_riparian_zone(std::vector<hexagon> vCell_in);
     inline long compset_find_index_by_cell_id(long lCellID);
