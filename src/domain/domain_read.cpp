@@ -319,9 +319,6 @@ namespace hexwatershed
   int domain::domain_read_input_data()
   {
     int error_code = 1;
-    // eMesh_type pMesh_type = cCompset.cParameter.pMesh_type;
-    // int iFlag_flowline = cCompset.cParameter.iFlag_flowline;
-    // int iFlag_stream_burning_topology = cCompset.cParameter.iFlag_stream_burning_topology;
     std::vector<hexagon>::iterator iIterator;
     domain_read_elevation_json(sFilename_mesh_info);
     for (auto &it : cMesh.aCell)

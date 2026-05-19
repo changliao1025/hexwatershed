@@ -28,18 +28,16 @@ namespace hexwatershed
 
     std::vector<hexagon>::iterator iIterator_self;
     std::vector<int> vFlag(vCell_active.size());
-    std::vector<int> vFinished(vCell_active.size());
     std::fill(vFlag.begin(), vFlag.end(), 0);
-    std::fill(vFinished.begin(), vFinished.end(), 0);
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator_neighbor;
 
-    // the initial run
+    // track progress with a counter instead of scanning the whole vector each iteration
+    long lFlag_total_prev = -1;
 
-    lFlag_total = std::accumulate(vFlag.begin(), vFlag.end(), 0);
-
-    while (lFlag_total != vCell_active.size())
+    while (lFlag_total != (long)vCell_active.size())
     {
+      lFlag_total_prev = lFlag_total;
       for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
       {
 
@@ -56,24 +54,23 @@ namespace hexwatershed
           vNeighbor_land = (*iIterator_self).vNeighbor_land;
           for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
           {
-
-            lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+            // use find() instead of operator[] to avoid inserting default entries
+            // for neighbors that are outside the active domain
+            auto it = mCellIdToIndex.find(*iIterator_neighbor);
+            if (it == mCellIdToIndex.end())
+            {
+              continue; // neighbor not in active domain, skip
+            }
+            lCellIndex_neighbor = it->second;
             lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
             if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
             {
               // there is one upslope neighbor found
               iFlag_has_upslope = 1;
-              if (vFlag[lCellIndex_neighbor] == 1)
-              {
-                // std::cout << "==" << lCellIndex_neighbor << std::endl;
-              }
-              else
+              if (vFlag[lCellIndex_neighbor] != 1)
               {
                 iFlag_all_upslope_done = 0;
               }
-            }
-            else
-            {
             }
           }
 
@@ -82,6 +79,7 @@ namespace hexwatershed
           if (iFlag_has_upslope == 0)
           {
             vFlag[(*iIterator_self).lCellIndex] = 1;
+            lFlag_total++;
           }
           else
           {
@@ -91,32 +89,50 @@ namespace hexwatershed
               // and they are finished scanning
               for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end(); iIterator_neighbor++)
               {
-                lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+                auto it = mCellIdToIndex.find(*iIterator_neighbor);
+                if (it == mCellIdToIndex.end())
+                {
+                  continue; // neighbor not in active domain, skip
+                }
+                lCellIndex_neighbor = it->second;
                 lCellID_downslope_neighbor = (vCell_active[lCellIndex_neighbor]).lCellID_downslope_dominant;
 
                 if (lCellID_downslope_neighbor == (*iIterator_self).lCellID)
                 {
-                  // std::cout << "===" << lCellIndex_neighbor << std::endl;
-                  // std::cout << "====" << lCellID_downslope_neighbor << std::endl;
                   // this one accepts upslope and the upslope is done
                   (*iIterator_self).dAccumulation =
                       (*iIterator_self).dAccumulation + vCell_active[lCellIndex_neighbor].dAccumulation;
                 }
-                else
-                {
-                  // this neighbor does not flow here, sorry
-                }
               }
               vFlag[(*iIterator_self).lCellIndex] = 1;
+              lFlag_total++;
             }
             else
             {
-              // we have wait temporally
+              // we have to wait temporarily
             }
           }
         }
       }
-      lFlag_total = std::accumulate(vFlag.begin(), vFlag.end(), 0);
+      // Safety check: if no progress was made in this full pass, there is a cycle
+      // in the flow-direction graph that cannot be resolved. Break to avoid an
+      // infinite loop and warn the user.
+      if (lFlag_total == lFlag_total_prev)
+      {
+        std::cout << "Warning: flow accumulation stalled with "
+                  << (vCell_active.size() - lFlag_total)
+                  << " cell(s) unresolved. A cycle may exist in the flow direction graph. "
+                  << "Forcing remaining cells to complete." << std::endl;
+        // Force-complete all remaining cells so the program can continue
+        for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
+        {
+          if (vFlag[(*iIterator_self).lCellIndex] != 1)
+          {
+            vFlag[(*iIterator_self).lCellIndex] = 1;
+            lFlag_total++;
+          }
+        }
+      }
     }
     return error_code;
   }
