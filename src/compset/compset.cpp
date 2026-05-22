@@ -43,7 +43,6 @@ namespace hexwatershed
     int iFlag_export_individual_watershed = cParameter.iFlag_export_individual_watershed;
     int iFlag_debug = cParameter.iFlag_debug;
     std::string sFilename;
-
     // step 1
     error_code = compset_priority_flood_depression_filling();
     if (error_code != 1)
@@ -81,7 +80,6 @@ namespace hexwatershed
       {
         if (iFlag_export_individual_watershed == 1)
         {
-          // pure dem-based watershed, so we need to manually define outlet first
           compset_stats_flow_accumulation();
           compset_define_watershed_boundary();
           sTime = get_current_time();
@@ -89,8 +87,33 @@ namespace hexwatershed
           ofs_log << sLog << std::endl;
           ofs_log.flush();
           std::cout << sLog << std::endl;
-          //once watershed is defined, all the the algorithm should be run within the watershed object
+          // once watershed is defined, all the the algorithm should be run within the watershed object
           compset_run_watershed();
+        }
+        else
+        {
+          //normally we dont need run individual watershed because models like MOSART dont need this information
+        }
+      }
+      else
+      {
+        //either dem-based or single watershed based.
+        // only one watershed is constrained
+        if (iFlag_export_individual_watershed == 1)
+        {
+          compset_stats_flow_accumulation();
+          compset_define_watershed_boundary();
+          sTime = get_current_time();
+          sLog = "Finished defining watershed boundary at " + sTime;
+          ofs_log << sLog << std::endl;
+          ofs_log.flush();
+          std::cout << sLog << std::endl;
+          // once watershed is defined, all the the algorithm should be run within the watershed object
+          compset_run_watershed();
+        }
+        else
+        {
+          //normally we dont need run individual watershed because models like MOSART dont need this information
         }
       }
     }
@@ -108,12 +131,13 @@ namespace hexwatershed
           ofs_log << sLog << std::endl;
           ofs_log.flush();
           std::cout << sLog << std::endl;
-          //once watershed is defined, all the the algorithm should be run within the watershed object
+          // once watershed is defined, all the the algorithm should be run within the watershed object
           compset_run_watershed();
         }
       }
       else
       {
+        //we have at least one watershed, regardless of dem-based or user-defined flowline, so we can directly run the watershed algorithm
         compset_stats_flow_accumulation();
         compset_define_watershed_boundary();
         sTime = get_current_time();
@@ -131,14 +155,14 @@ namespace hexwatershed
   }
 
   /*
-    * this function is used to run the watershed algorithm, it will run all the watershed algorithm
-    * including stream grid, confluence, segment, topology, order, subbasin and watershed characteristics
-    * start from here, we run all the algorithm using the watershed object
-    * @return
-  */
+   * this function is used to run the watershed algorithm, it will run all the watershed algorithm
+   * including stream grid, confluence, segment, topology, order, subbasin and watershed characteristics
+   * start from here, we run all the algorithm using the watershed object
+   * @return
+   */
   int compset::compset_run_watershed()
   {
-    int error_code = 1;    //
+    int error_code = 1; //
     // if we want to use different threshold for different watersheds, then we need to redefine the stream grid here?
     compset_define_stream_grid();
     sTime = get_current_time();

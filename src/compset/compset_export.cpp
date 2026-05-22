@@ -55,7 +55,6 @@ namespace hexwatershed
       }
       else // single watershed
       {
-
         sFilename = sFilename_domain_json;
         compset_export_domain_json(sFilename); // this one for domain
         // when there is only single watershed, we will only output watershed level output because domain-scale is the same

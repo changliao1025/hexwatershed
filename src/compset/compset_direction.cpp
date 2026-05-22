@@ -24,7 +24,6 @@ namespace hexwatershed
     int iFlag_has_stream;
     int iFlag_flowline = cParameter.iFlag_flowline;
     int iFlag_stream_burning_topology = cParameter.iFlag_stream_burning_topology;
-    int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
     int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
