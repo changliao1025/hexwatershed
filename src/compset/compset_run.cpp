@@ -192,46 +192,9 @@ namespace hexwatershed
     float dAccumulation_max = 0.0;
     float dAccumulation_threshold = 0.0;
     std::vector<hexagon>::iterator iIterator_self;
-    if (iFlag_multiple_outlet == 0) // only one outlet
+    if (iFlag_global == 1)
     {
-      if (iFlag_flowline == 1) // user provided flowline
-      {
-        // maybe we can just get the flow accumulation directly
-        aBasin[0].iFlag_flowline = 1;
-        lCellIndex_outlet = mCellIdToIndex[aBasin[0].lCellID_outlet];
-        dAccumulation_max = (vCell_active[lCellIndex_outlet]).dAccumulation;
-        // no watershed yet, so we have to use the basin to save the max accumulation
-        aBasin[0].dAccumulation_max = dAccumulation_max;
-      }
-      else // no flowline provided, so it is based on DEM
-      {
-        dAccumulation_max = 0.0;
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
-        {
-          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
-          {
-            dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
-            lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
-          }
-        }
-        // also set the outlet id
-        lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
-        // should we update at least one watershed?
-        basin pBasin;
-        aBasin.clear();
-        aBasin.push_back(pBasin);
-        // set the id and outlet
-        aBasin[0].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
-        aBasin[0].lCellID_outlet = lCellID_outlet;
-        aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
-        aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
-        aBasin[0].dAccumulation_max = dAccumulation_max;
-        // we also need to update the nOutlet, this is key for the following watershed algorithm
-        cParameter.nOutlet = 1;
-      }
-    }
-    else
-    {
+      // global simulation, so we have to define at least one watershed
       if (iFlag_flowline == 1) // user provided more than 1 outlet/flowline
       {
         for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
@@ -247,39 +210,100 @@ namespace hexwatershed
       }
       else
       {
-        // pure dem based watershed definition
-        dAccumulation_max = 0.0;
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        //pure dem based watershed definition
+      }
+    }
+    else
+    {
+      if (iFlag_multiple_outlet == 1)
+      {
+        if (iFlag_flowline == 1) // user provided more than 1 outlet/flowline
         {
-          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
+          for (long lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
           {
-            dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+            lCellID_outlet = aBasin[lWatershed - 1].lCellID_outlet;
+            lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
+            aBasin[lWatershed - 1].iFlag_flowline = 1;
+            // set the id and outlet
+            aBasin[lWatershed - 1].lCellID_outlet = lCellID_outlet;
+            aBasin[lWatershed - 1].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+            aBasin[lWatershed - 1].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
           }
         }
-        // now we can define the watershed based on the max accumulation?
-        // for a large scale simulation, we allow multiple watersheds,
-        // but smaller watershed do not have the large accumulation, so we use a threshold
-        dAccumulation_threshold = dAccumulation_max * 0.1;
-        // criteria for defining the watershed outlet: (1) has no downslope, (2) has accumulation larger than the threshold
-        nOutlet = 0;
-        cParameter.nOutlet = 0;
-        for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+        else
         {
-          if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold && (vCell_active[lCellIndex_self]).lCellID_downslope_dominant == -1)
+          // pure dem based watershed definition
+          dAccumulation_max = 0.0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
           {
-            // this is a potential outlet
-            lCellID_outlet = vCell_active[lCellIndex_self].lCellID;
-            lCellIndex_outlet = vCell_active[lCellIndex_self].lCellIndex;
-            // we can define a basin here
-            basin pBasin;
-            aBasin.push_back(pBasin);
-            aBasin[cParameter.nOutlet].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
-            aBasin[cParameter.nOutlet].lCellID_outlet = lCellID_outlet;
-            aBasin[cParameter.nOutlet].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
-            aBasin[cParameter.nOutlet].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
-            aBasin[cParameter.nOutlet].dAccumulation_max = vCell_active[lCellIndex_self].dAccumulation;
-            cParameter.nOutlet++;
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
+            {
+              dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+            }
           }
+          // now we can define the watershed based on the max accumulation?
+          // for a large scale simulation, we allow multiple watersheds,
+          // but smaller watershed do not have the large accumulation, so we use a threshold
+          dAccumulation_threshold = dAccumulation_max * 0.1;
+          // criteria for defining the watershed outlet: (1) has no downslope, (2) has accumulation larger than the threshold
+          nOutlet = 0;
+          cParameter.nOutlet = 0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          {
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_threshold && (vCell_active[lCellIndex_self]).lCellID_downslope_dominant == -1)
+            {
+              // this is a potential outlet
+              lCellID_outlet = vCell_active[lCellIndex_self].lCellID;
+              lCellIndex_outlet = vCell_active[lCellIndex_self].lCellIndex;
+              // we can define a basin here
+              basin pBasin;
+              aBasin.push_back(pBasin);
+              aBasin[cParameter.nOutlet].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
+              aBasin[cParameter.nOutlet].lCellID_outlet = lCellID_outlet;
+              aBasin[cParameter.nOutlet].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+              aBasin[cParameter.nOutlet].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+              aBasin[cParameter.nOutlet].dAccumulation_max = vCell_active[lCellIndex_self].dAccumulation;
+              cParameter.nOutlet++;
+            }
+          }
+        }
+      }
+      else
+      {
+        if (iFlag_flowline == 1) // user provided flowline
+        {
+          // maybe we can just get the flow accumulation directly
+          aBasin[0].iFlag_flowline = 1;
+          lCellIndex_outlet = mCellIdToIndex[aBasin[0].lCellID_outlet];
+          dAccumulation_max = (vCell_active[lCellIndex_outlet]).dAccumulation;
+          // no watershed yet, so we have to use the basin to save the max accumulation
+          aBasin[0].dAccumulation_max = dAccumulation_max;
+        }
+        else // no flowline provided, so it is based on DEM
+        {
+          dAccumulation_max = 0.0;
+          for (lCellIndex_self = 0; lCellIndex_self < vCell_active.size(); lCellIndex_self++)
+          {
+            if ((vCell_active[lCellIndex_self]).dAccumulation >= dAccumulation_max)
+            {
+              dAccumulation_max = (vCell_active[lCellIndex_self]).dAccumulation;
+              lCellIndex_outlet = (vCell_active[lCellIndex_self]).lCellIndex;
+            }
+          }
+          // also set the outlet id
+          lCellID_outlet = vCell_active[lCellIndex_outlet].lCellID;
+          // should we update at least one watershed?
+          basin pBasin;
+          aBasin.clear();
+          aBasin.push_back(pBasin);
+          // set the id and outlet
+          aBasin[0].iFlag_flowline = 0; // the model will define a watershed, but it has no user provided flowline
+          aBasin[0].lCellID_outlet = lCellID_outlet;
+          aBasin[0].dLongitude_outlet_degree = vCell_active[lCellIndex_outlet].dLongitude_center_degree;
+          aBasin[0].dLatitude_outlet_degree = vCell_active[lCellIndex_outlet].dLatitude_center_degree;
+          aBasin[0].dAccumulation_max = dAccumulation_max;
+          // we also need to update the nOutlet, this is key for the following watershed algorithm
+          cParameter.nOutlet = 1;
         }
       }
     }
@@ -530,7 +554,6 @@ namespace hexwatershed
     int error_code = 1;
     long lWatershed;
     int iFlag_hillslope = cParameter.iFlag_hillslope;
-
     for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
     {
       vWatershed[lWatershed - 1].iFlag_hillslope = iFlag_hillslope;

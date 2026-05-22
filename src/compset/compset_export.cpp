@@ -92,9 +92,17 @@ namespace hexwatershed
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
     jsonmodel::mesh cMesh;
-    if (iFlag_global != 1)
+    if (iFlag_global == 1)
     {
-      if (iFlag_multiple_outlet != 1)
+
+    }
+    else
+    {
+      if (iFlag_multiple_outlet == 1)
+      {
+
+      }
+      else
       {
         // animation
         for (iIterator = vCell_priority_flood.begin(); iIterator != vCell_priority_flood.end(); iIterator++)
@@ -109,7 +117,6 @@ namespace hexwatershed
           pCell.nVertex = pCell.vVertex.size();
           cMesh.aCell.push_back(pCell);
         }
-
         cMesh.SerializeToFile(sFilename_in);
       }
     }
@@ -145,7 +152,6 @@ namespace hexwatershed
         pCell.nVertex = pCell.vVertex.size();
         cMesh.aCell.push_back(pCell);
       }
-
       cMesh.SerializeToFile(sFilename_in.c_str());
     }
     else

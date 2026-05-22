@@ -75,46 +75,23 @@ namespace hexwatershed
     iFlag_debug = 0;
     if (iFlag_global == 1)
     {
-      // global simulation
-      if (iFlag_multiple_outlet == 1) // user defined multiple outlets? how about pure dem-based
+      // either dem-based or single watershed based.
+      //  only one watershed is constrained
+      if (iFlag_export_individual_watershed == 1)
       {
-        if (iFlag_export_individual_watershed == 1)
-        {
-          compset_stats_flow_accumulation();
-          compset_define_watershed_boundary();
-          sTime = get_current_time();
-          sLog = "Finished defining watershed boundary at " + sTime;
-          ofs_log << sLog << std::endl;
-          ofs_log.flush();
-          std::cout << sLog << std::endl;
-          // once watershed is defined, all the the algorithm should be run within the watershed object
-          compset_run_watershed();
-        }
-        else
-        {
-          //normally we dont need run individual watershed because models like MOSART dont need this information
-        }
+        compset_stats_flow_accumulation();
+        compset_define_watershed_boundary();
+        sTime = get_current_time();
+        sLog = "Finished defining watershed boundary at " + sTime;
+        ofs_log << sLog << std::endl;
+        ofs_log.flush();
+        std::cout << sLog << std::endl;
+        // once watershed is defined, all the the algorithm should be run within the watershed object
+        compset_run_watershed();
       }
       else
       {
-        //either dem-based or single watershed based.
-        // only one watershed is constrained
-        if (iFlag_export_individual_watershed == 1)
-        {
-          compset_stats_flow_accumulation();
-          compset_define_watershed_boundary();
-          sTime = get_current_time();
-          sLog = "Finished defining watershed boundary at " + sTime;
-          ofs_log << sLog << std::endl;
-          ofs_log.flush();
-          std::cout << sLog << std::endl;
-          // once watershed is defined, all the the algorithm should be run within the watershed object
-          compset_run_watershed();
-        }
-        else
-        {
-          //normally we dont need run individual watershed because models like MOSART dont need this information
-        }
+        // normally we dont need run individual watershed because models like MOSART dont need this information
       }
     }
     else
@@ -137,7 +114,7 @@ namespace hexwatershed
       }
       else
       {
-        //we have at least one watershed, regardless of dem-based or user-defined flowline, so we can directly run the watershed algorithm
+        // we have at least one watershed, regardless of dem-based or user-defined flowline, so we can directly run the watershed algorithm
         compset_stats_flow_accumulation();
         compset_define_watershed_boundary();
         sTime = get_current_time();

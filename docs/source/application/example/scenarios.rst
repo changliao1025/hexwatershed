@@ -132,7 +132,7 @@ Configuration for pure DEM-based global simulation without flowline (simplest gl
    {
      "iFlag_flowline": 0,
      "iFlag_global": 1,
-     "iFlag_multiple_outlet": 1,
+     "iFlag_multiple_outlet": 0,
      "iFlag_create_mesh": 0,
      "iFlag_use_mesh_dem": 1,
      "iMesh_type": 5,
@@ -168,7 +168,7 @@ Configuration for global-scale simulation with multiple basins and flowline burn
    {
      "iFlag_flowline": 1,
      "iFlag_global": 1,
-     "iFlag_multiple_outlet": 1,
+     "iFlag_multiple_outlet": 0,
      "iFlag_create_mesh": 0,
      "iFlag_use_mesh_dem": 1,
      "iMesh_type": 5,
