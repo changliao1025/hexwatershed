@@ -77,6 +77,22 @@ namespace hexwatershed
     if (iFlag_global == 1)
     {
       // global simulation
+      if (iFlag_multiple_outlet == 1) // user defined multiple outlets? how about pure dem-based
+      {
+        if (iFlag_export_individual_watershed == 1)
+        {
+          // pure dem-based watershed, so we need to manually define outlet first
+          compset_stats_flow_accumulation();
+          compset_define_watershed_boundary();
+          sTime = get_current_time();
+          sLog = "Finished defining watershed boundary at " + sTime;
+          ofs_log << sLog << std::endl;
+          ofs_log.flush();
+          std::cout << sLog << std::endl;
+          //once watershed is defined, all the the algorithm should be run within the watershed object
+          compset_run_watershed();
+        }
+      }
     }
     else
     {

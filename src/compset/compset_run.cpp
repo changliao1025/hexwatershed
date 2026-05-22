@@ -119,10 +119,43 @@ namespace hexwatershed
       // infinite loop and warn the user.
       if (lFlag_total == lFlag_total_prev)
       {
+        long lUnresolved = (long)vCell_active.size() - lFlag_total;
         std::cout << "Warning: flow accumulation stalled with "
-                  << (vCell_active.size() - lFlag_total)
+                  << lUnresolved
                   << " cell(s) unresolved. A cycle may exist in the flow direction graph. "
                   << "Forcing remaining cells to complete." << std::endl;
+
+        // Diagnostic: print details of each unresolved cell to help identify the cycle
+        std::cout << "=== Diagnostic: unresolved cells ===" << std::endl;
+        std::cout << "CellID\tElev\tDepFilled\tStreamBurned\tWsBndBurned\tStreamBurnTreated\tDownslopeDominant\tNeighbors(ID->theirDownslope)" << std::endl;
+        for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
+        {
+          if (vFlag[(*iIterator_self).lCellIndex] != 1)
+          {
+            const hexagon& cell = *iIterator_self;
+            std::cout << cell.lCellID
+                      << "\t" << cell.dElevation_mean
+                      << "\t" << cell.iFlag_depression_filling_treated
+                      << "\t" << cell.iFlag_stream_burned
+                      << "\t" << cell.iFlag_watershed_boundary_burned
+                      << "\t" << cell.iFlag_stream_burning_treated
+                      << "\t" << cell.lCellID_downslope_dominant
+                      << "\t[";
+            // Print each land neighbor and where that neighbor flows
+            for (auto nbr_id : cell.vNeighbor_land)
+            {
+              auto it2 = mCellIdToIndex.find(nbr_id);
+              if (it2 != mCellIdToIndex.end())
+              {
+                long nbr_idx = it2->second;
+                std::cout << nbr_id << "->" << vCell_active[nbr_idx].lCellID_downslope_dominant << " ";
+              }
+            }
+            std::cout << "]" << std::endl;
+          }
+        }
+        std::cout << "=== End diagnostic ===" << std::endl;
+
         // Force-complete all remaining cells so the program can continue
         for (iIterator_self = vCell_active.begin(); iIterator_self != vCell_active.end(); iIterator_self++)
         {

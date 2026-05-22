@@ -844,7 +844,7 @@ namespace hexwatershed
       pq.push(*iIterator);
     }
 
-    while (pq.size() > 3 or pq_pit.size() > 0)
+    while (pq.size() > 0 || pq_pit.size() > 0)
     {
       if (pq_pit.size() > 0)
       {
@@ -856,13 +856,13 @@ namespace hexwatershed
         pCell_min = pq.top();
         pq.pop();
       }
-      // get Cell id
-      iFlag_watershed_boundary_burned = pCell_min.iFlag_watershed_boundary_burned;
+      // get Cell id — re-read all mutable fields from vCell_active to avoid stale snapshot values
       lCellID_lowest = pCell_min.lCellID;
       lCellIndex_active = pCell_min.lCellIndex;
-      dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
-      dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
-      vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
+      iFlag_watershed_boundary_burned = vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned;
+      dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
+      dElevation_profile0_center = vCell_active[lCellIndex_active].dElevation_profile0;
+      vNeighbor_land = vCell_active[lCellIndex_active].vNeighbor_land;
       // remove it from the queue
       // vCell_boundary_in.erase(vCell_boundary_in.begin() + lCellIndex_boundary);
       // pq.pop();
@@ -1052,7 +1052,7 @@ namespace hexwatershed
         pq.push(*iIterator);
       }
 
-      while (pq.size() > 3 or pq_pit.size() > 0)
+      while (pq.size() > 0 || pq_pit.size() > 0)
       {
         // in this loop, we do not need to check the watershed boundary flag anymore, only foucs on the depression flag
         if (pq_pit.size() > 0)
@@ -1154,7 +1154,7 @@ namespace hexwatershed
       pq.push(*iIterator);
     }
 
-    while (pq.size() > 3 or pq_pit.size() > 0)
+    while (pq.size() > 0 || pq_pit.size() > 0)
     {
       hexagon pCell_min;
       if (pq_pit.size() > 0)
