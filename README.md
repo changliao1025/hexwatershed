@@ -1,6 +1,6 @@
 ## `HexWatershed`
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6512369.svg)](https://doi.org/10.5281/zenodo.6512369)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6512368.svg)](https://doi.org/10.5281/zenodo.6512368)
 
 HexWatershed: a mesh independent flow direction model for hydrologic models.
 
@@ -42,9 +42,9 @@ https://doi.org/10.1016/j.advwatres.2021.104099.
 * Liao. C. (2022) Pyflowline: a mesh independent river network generator for hydrologic models. Zenodo.
 https://doi.org/10.5281/zenodo.6407299
 
-* Liao. C. (2022). HexWatershed: a mesh independent flow direction model for hydrologic models (0.1.1). Zenodo. https://doi.org/10.5281/zenodo.6425881
+* Liao. C. (2022). HexWatershed: a mesh independent flow direction model for hydrologic models (0.1.1). Zenodo. https://doi.org/10.5281/zenodo.6425880
 
-* Liao. C. (2022). The C++ backend of HexWatershed: a mesh independent flow direction model for hydrologic models (3.0). Zenodo. https://doi.org/10.5281/zenodo.6512369
+* Liao. C. (2022). The C++ backend of HexWatershed: a mesh independent flow direction model for hydrologic models (3.0). Zenodo. https://doi.org/10.5281/zenodo.6512368
 
 
 ## Contact
