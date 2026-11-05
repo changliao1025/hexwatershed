@@ -434,13 +434,8 @@ int compset::compset_calculate_flow_direction() {
                         } else {  // this is a edge node
                             if (lCellID_lowest != -1) {
                                 if (iFlag_force_watershed_boundary == 1) {
-                                    if (iFlag_watershed_boundary_burned == 1) {
-                                        // in this case, we dont push them out of the domain
-                                        (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
-                                    } else {
-                                        // coastal line, we can set it as -1
-                                        (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
-                                    }
+                                    // in this case, we dont push them out of the domain
+                                    (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = lCellID_lowest;
                                 } else {
                                     (vCell_active[lCellIndex_self]).lCellID_downslope_dominant = -1;
                                 }

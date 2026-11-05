@@ -232,7 +232,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
             for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++) {
                 if ((*iIterator1).nNeighbor_land < (*iIterator1).nVertex)  // or vertex
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -242,7 +246,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
             for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++) {
                 if ((*iIterator1).nNeighbor_land < 8)  //
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -252,7 +260,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
             for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++) {
                 if ((*iIterator1).nNeighbor_land < 8)  // because the diagonal is counted as neighbors
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -262,7 +274,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
             for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++) {
                 if ((*iIterator1).nNeighbor_land < (*iIterator1).nVertex)  // or vertex
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -272,7 +288,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
             for (iIterator1 = vCell_in.begin(); iIterator1 != vCell_in.end(); iIterator1++) {
                 if ((*iIterator1).nNeighbor_land < (*iIterator1).nVertex)  // or vertex
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -283,7 +303,11 @@ std::vector<hexagon> compset::compset_obtain_boundary(std::vector<hexagon>& vCel
                 if ((*iIterator1).nNeighbor_land <
                     3)  // be careful, since we haven't defined the tin neighbor clearly yet
                 {
-                    (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    if (iFlag_force_watershed_boundary == 1) {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 1;
+                    } else {
+                        (*iIterator1).iFlag_watershed_boundary_burned = 0;
+                    }
                     vCell_out.push_back(*iIterator1);
                 }
             }
@@ -412,37 +436,55 @@ int compset::compset_priority_flood_depression_filling() {
                         compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
                     }
 
-                    // a new algorithm will be used from this point
-                    // this algorithm should start from the river riparian zone + boundary for the priority flood
-                    // algorithm the watershed boundary is already in the cell info step 1: set boundary as depression
-                    // treated
-                    for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
-                        lCellIndex_active = (*iIterator).lCellIndex;
-                        vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                        if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1) {
-                            vCell_priority_flood.push_back(vCell_active[lCellIndex_active]);  // animation
+                    if (iFlag_force_watershed_boundary == 1) {
+                        // when forcing watershed boundary, boundary cells are ridges (watershed divide),
+                        // not sinks! Depression filling must start from the stream network only.
+                        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 1;
                         }
-                    }
-                    // step 2: find the stream and riparian zone land cell as the new boundary zone
-                    vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);  // does include riparian zone
-                    for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
-                        lCellIndex_active = (*iIterator).lCellIndex;
-                        vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                    }
-                    // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated
-                    // cells Add boundary cells first
-                    for (const auto& boundary_cell : vCell_boundary) {
-                        if (seen_cell_ids.insert(boundary_cell.lCellID).second) {
-                            vCell_combined.push_back(boundary_cell);
+                        // step 2: find the stream and riparian zone land cell as the starting zone for flood
+                        vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
+                        for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
                         }
-                    }
-                    // Add stream cells, avoiding duplicates
-                    for (const auto& stream_cell : vCell_stream) {
-                        if (seen_cell_ids.insert(stream_cell.lCellID).second) {
-                            vCell_combined.push_back(stream_cell);
+                        // step 3: start the flood algorithm starting ONLY from the stream
+                        priority_flood_depression_filling_endorheic(vCell_stream);
+                    } else {
+                        // a new algorithm will be used from this point
+                        // this algorithm should start from the river riparian zone + boundary for the priority flood
+                        // algorithm the watershed boundary is already in the cell info step 1: set boundary as
+                        // depression treated
+                        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                            if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1) {
+                                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]);  // animation
+                            }
                         }
+                        // step 2: find the stream and riparian zone land cell as the new boundary zone
+                        vCell_stream =
+                            compset_obtain_stream_and_riparian_zone(vCell_active);  // does include riparian zone
+                        for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                        }
+                        // step 3: start the flood algorithm using combined stream and boundary, dont need to add
+                        // duplicated cells Add boundary cells first
+                        for (const auto& boundary_cell : vCell_boundary) {
+                            if (seen_cell_ids.insert(boundary_cell.lCellID).second) {
+                                vCell_combined.push_back(boundary_cell);
+                            }
+                        }
+                        // Add stream cells, avoiding duplicates
+                        for (const auto& stream_cell : vCell_stream) {
+                            if (seen_cell_ids.insert(stream_cell.lCellID).second) {
+                                vCell_combined.push_back(stream_cell);
+                            }
+                        }
+                        priority_flood_depression_filling(vCell_combined);
                     }
-                    priority_flood_depression_filling(vCell_combined);
                 }
 
                 else {
@@ -514,34 +556,47 @@ int compset::compset_priority_flood_depression_filling() {
                             vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 0;
                         }
                     }
-                    for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
-                        lCellIndex_active = (*iIterator).lCellIndex;
-                        if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1) {
-                            vCell_priority_flood.push_back(vCell_active[lCellIndex_active]);  // animation
+                    if (iFlag_force_watershed_boundary == 1) {
+                        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_watershed_boundary_burned = 1;
                         }
-                        vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                    }
-                    // add all the stream cells to the priority flood queue, again, avoid duplicated cells
-                    vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
-                    for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
-                        lCellIndex_active = (*iIterator).lCellIndex;
-                        vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
-                    }
-                    // step 3: start the flood algorithm using combined stream and boundary, dont need to add duplicated
-                    // cells Add boundary cells first
-                    for (const auto& boundary_cell : vCell_boundary) {
-                        if (seen_cell_ids.insert(boundary_cell.lCellID).second) {
-                            vCell_combined.push_back(boundary_cell);
+                        vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
+                        for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
                         }
-                    }
-                    // Add stream cells, avoiding duplicates
-                    for (const auto& stream_cell : vCell_stream) {
-                        if (seen_cell_ids.insert(stream_cell.lCellID).second) {
-                            vCell_combined.push_back(stream_cell);
+                        priority_flood_depression_filling_endorheic(vCell_stream);
+                    } else {
+                        for (iIterator = vCell_boundary.begin(); iIterator != vCell_boundary.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            if (vCell_active[lCellIndex_active].iFlag_stream_burning_treated != 1) {
+                                vCell_priority_flood.push_back(vCell_active[lCellIndex_active]);  // animation
+                            }
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
                         }
+                        // add all the stream cells to the priority flood queue, again, avoid duplicated cells
+                        vCell_stream = compset_obtain_stream_and_riparian_zone(vCell_active);
+                        for (iIterator = vCell_stream.begin(); iIterator != vCell_stream.end(); iIterator++) {
+                            lCellIndex_active = (*iIterator).lCellIndex;
+                            vCell_active[lCellIndex_active].iFlag_depression_filling_treated = 1;
+                        }
+                        // step 3: start the flood algorithm using combined stream and boundary, dont need to add
+                        // duplicated cells Add boundary cells first
+                        for (const auto& boundary_cell : vCell_boundary) {
+                            if (seen_cell_ids.insert(boundary_cell.lCellID).second) {
+                                vCell_combined.push_back(boundary_cell);
+                            }
+                        }
+                        // Add stream cells, avoiding duplicates
+                        for (const auto& stream_cell : vCell_stream) {
+                            if (seen_cell_ids.insert(stream_cell.lCellID).second) {
+                                vCell_combined.push_back(stream_cell);
+                            }
+                        }
+                        // depression filling  using the new method which support holes in meshes
+                        priority_flood_depression_filling(vCell_combined);
                     }
-                    // depression filling  using the new method which support holes in meshes
-                    priority_flood_depression_filling(vCell_combined);
                 } else  // pure dem based
                 {
                     // the new algorithm that supports holes in meshes
@@ -964,6 +1019,7 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     int iFlag_elevation_profile = cParameter.iFlag_elevation_profile;
+    int iFlag_force_watershed_boundary = cParameter.iFlag_force_watershed_boundary;
     int iFlag_pit;
     long lCellID_lowest;
     long lCellIndex_neighbor;
@@ -976,12 +1032,14 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
     float dElevation_profile0_center;
     float dElevation_profile0_neighbor;
     int iFlag_depression_filling_treated_neighbor;
+    int iFlag_watershed_boundary_burned;
     int iFlag_watershed_boundary_burned_neighbor;
 
     std::array<long, 3> aIndex_search;
     std::vector<long> vNeighbor_land;
     std::vector<long>::iterator iIterator_neighbor;
     std::vector<hexagon>::iterator iIterator;
+    std::vector<hexagon> vCell_watershed_boundary;
 
     // push into the priority queue using std::priority_queue
     // Creating the priority queue with the custom comparator
@@ -1004,6 +1062,7 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
         // get Cell id
         lCellID_lowest = pCell_min.lCellID;
         lCellIndex_active = pCell_min.lCellIndex;
+        iFlag_watershed_boundary_burned = (vCell_active[lCellIndex_active]).iFlag_watershed_boundary_burned;
         dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
         dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
         vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
@@ -1017,6 +1076,12 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
             iFlag_watershed_boundary_burned_neighbor =
                 vCell_active[lCellIndex_neighbor].iFlag_watershed_boundary_burned;
             dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+            if (iFlag_force_watershed_boundary == 1) {
+                if (iFlag_watershed_boundary_burned == 1 && iFlag_watershed_boundary_burned_neighbor == 0) {
+                    // A watershed boundary (ridge) cell must never expand into interior non-boundary cells!
+                    continue;
+                }
+            }
             if (iFlag_depression_filling_treated_neighbor != 1)  // not depression filling treated yet
             {
                 if (iFlag_stream_burning_treated_neighbor ==
@@ -1043,6 +1108,9 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
                     }
                     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
                     // stop here, we don't push boundary into the queue, why?
+                    if (iFlag_watershed_boundary_burned_neighbor == 1) {
+                        vCell_watershed_boundary.push_back(vCell_active[lCellIndex_neighbor]);
+                    }
                     if (iFlag_pit == 1) {
                         pq_pit.push(vCell_active[lCellIndex_neighbor]);
                     } else {
@@ -1055,6 +1123,69 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
         }
         lStep_count = lStep_count + 1;
         // std::flush(std::cout);
+    }
+
+    // should we re-check the missing cells?
+    // there is a chance that some cells are never visited because they are surrounded by watershed boundary cells
+    if (iFlag_force_watershed_boundary == 1) {
+        while (!pq.empty()) {
+            pq.pop();
+        }
+        while (!pq_pit.empty()) {
+            pq_pit.pop();
+        }
+        for (iIterator = vCell_watershed_boundary.begin(); iIterator != vCell_watershed_boundary.end(); iIterator++) {
+            pq.push(*iIterator);
+        }
+
+        while (pq.size() > 0 || pq_pit.size() > 0) {
+            // in this second stage, we do not restrict boundary-to-interior flow anymore so that any
+            // isolated interior pockets surrounded by ridges are guaranteed to be visited and filled
+            hexagon pCell_min;
+            if (pq_pit.size() > 0) {
+                pCell_min = pq_pit.front();
+                pq_pit.pop();
+            } else {
+                pCell_min = pq.top();
+                pq.pop();
+            }
+            lCellID_lowest = pCell_min.lCellID;
+            lCellIndex_active = pCell_min.lCellIndex;
+            dElevation_mean_center = (vCell_active[lCellIndex_active]).dElevation_mean;
+            dElevation_profile0_center = (vCell_active[lCellIndex_active]).dElevation_profile0;
+            vNeighbor_land = (vCell_active[lCellIndex_active]).vNeighbor_land;
+            for (iIterator_neighbor = vNeighbor_land.begin(); iIterator_neighbor != vNeighbor_land.end();
+                 iIterator_neighbor++) {
+                lCellIndex_neighbor = mCellIdToIndex[*iIterator_neighbor];
+                lCellID_neighbor = vCell_active[lCellIndex_neighbor].lCellID;
+                iFlag_depression_filling_treated_neighbor =
+                    vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated;
+                dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+                if (iFlag_depression_filling_treated_neighbor != 1)  // not depression filling treated yet
+                {
+                    if (dElevation_mean_neighbor <= dElevation_mean_center) {
+                        iFlag_pit = 1;
+                        vCell_active[lCellIndex_neighbor].dElevation_mean =
+                            dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                    } else {
+                        iFlag_pit = 0;
+                    }
+                    if (iFlag_elevation_profile == 1) {
+                        dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                        if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
+                            vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                                dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                        }
+                    }
+                    vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
+                    if (iFlag_pit == 1) {
+                        pq_pit.push(vCell_active[lCellIndex_neighbor]);
+                    } else {
+                        pq.push(vCell_active[lCellIndex_neighbor]);
+                    }
+                }
+            }
+        }
     }
     return error_code;
 }
