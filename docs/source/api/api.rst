@@ -8,6 +8,3 @@ API Reference
    :numbered:
 
    cplus/cplus
-
-   
-

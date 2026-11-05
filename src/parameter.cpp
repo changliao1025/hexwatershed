@@ -12,18 +12,11 @@
 
 #include "parameter.h"
 
-namespace hexwatershed
-{
-  std::map<std::string, eMesh_type> mMesh_type = {
-      {"hexagon", eM_hexagon},
-      {"square", eM_square},
-      {"latlon", eM_latlon},
-      {"mpas", eM_mpas},
-      {"dggrid", eM_dggrid},
-      {"tin", eM_tin}};
+namespace hexwatershed {
+std::map<std::string, eMesh_type> mMesh_type = {{"hexagon", eM_hexagon}, {"square", eM_square}, {"latlon", eM_latlon},
+                                                {"mpas", eM_mpas},       {"dggrid", eM_dggrid}, {"tin", eM_tin}};
 
-  parameter::parameter()
-  {
+parameter::parameter() {
     iFlag_global = 0;
     iFlag_vtk = 0;
     iFlag_animation = 1;
@@ -31,30 +24,27 @@ namespace hexwatershed
     iFlag_multiple_outlet = 0;
     iFlag_elevation_profile = 0;
     iFlag_stream_grid_option = 3;
-    iFlag_accumulation_threshold_ratio = 0;
-    dAccumulation_threshold_ratio = 0.001;
+    iFlag_force_watershed_boundary = 0;
+    iFlag_endorheic_basin = 0;
+    iFlag_accumulation_threshold_ratio = 1;
+    iFlag_export_individual_watershed = 0;  // whether to export individual watershed or not
+    dAccumulation_threshold_ratio = 0.01;
     dAccumulation_threshold_value = 2.5E7;
-    
-    dBreach_threshold = 5.0; // unit in meter
+
+    dBreach_threshold = 5.0;  // unit in meter
     nOutlet = 1;
-  }
+}
 
-  parameter::~parameter()
-  {
-  }
+parameter::~parameter() {}
 
-  eMesh_type parameter::define_mesh_type(const std::string &sMesh_type)
-  {
-    if (mMesh_type.find(sMesh_type) != mMesh_type.end())
-    {
-      this->pMesh_type = mMesh_type[sMesh_type];
-      return mMesh_type[sMesh_type];
+eMesh_type parameter::define_mesh_type(const std::string& sMeshType) {
+    if (mMesh_type.find(sMeshType) != mMesh_type.end()) {
+        this->pMesh_type = mMesh_type[sMeshType];
+        return mMesh_type[sMeshType];
+    } else {
+        this->pMesh_type = static_cast<eMesh_type>(-1);
+        return static_cast<eMesh_type>(-1);  // Indicates not found
     }
-    else
-    {
-      this->pMesh_type = static_cast<eMesh_type>(-1);
-      return static_cast<eMesh_type>(-1); // Indicates not found
-    }
-  }
+}
 
-} // namespace hexwatershed
+}  // namespace hexwatershed

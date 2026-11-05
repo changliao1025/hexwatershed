@@ -30,9 +30,9 @@ Note that depending on the configuration, not all the input files are needed, or
 Data preparation
 ****************
 
-Because the core algorithms within HexWatershed assume that all the data are on the Geographic Coordinate System (GCS), most input and output data use GCS. 
+Because the core algorithms within HexWatershed assume that all the data are on the Geographic Coordinate System (GCS), most input and output data use GCS.
 
-However, since most DEM data use the Projected Coordinate System (PCS), a reprojection is sometimes required. 
+However, since most DEM data use the Projected Coordinate System (PCS), a reprojection is sometimes required.
 
 Besides, depending on the simulation configuration, different data are needed. Below are some instructions for different scenarios.
 
@@ -43,7 +43,7 @@ Single watershed
 
 .. Boundary
 .. ########
-.. The domain boundary file can be defined using a vector-based watershed boundary file. 
+.. The domain boundary file can be defined using a vector-based watershed boundary file.
 
 River network
 -------------
@@ -126,8 +126,8 @@ It is recommended to assign/inject elevation within the mesh similart to MPAS.
      - Yes if mesh type is not MPAS
      - Yes if mesh type is not MPAS
    * - Boudnary
-     - Yes, it will be used to generate mesh 
-     - Yes, it will be used to generate mesh 
+     - Yes, it will be used to generate mesh
+     - Yes, it will be used to generate mesh
      - No, so far global mesh is pre-defined
 
 
@@ -154,7 +154,7 @@ Each domain may contain one or more basins.
      - Description
    * - sFilename_model_configuration
      - string
-     - 
+     -
      - The full path to the main configuration file
    * - sModel
      - string
@@ -162,36 +162,36 @@ Each domain may contain one or more basins.
      - The model name
    * - sRegion
      - string
-     - 
+     -
      - The study region
    * - sWorkspace_bin
      - string
-     - 
+     -
      - The directory of the complied HexWatershed binary
    * - sWorkspace_input
      - string
-     - 
+     -
      - The directory of the input
    * - sWorkspace_output
      - string
-     - 
+     -
      - The directory of the output
    * - sJob
      - string
-     - 
-     - The job name for HPC   
+     -
+     - The job name for HPC
    * - iFlag_create_mesh
      - int
      - 0 or 1
-     - Flag to generate mesh 
+     - Flag to generate mesh
    * - iFlag_save_mesh
      - int
      - 0 or 1
-     - Flag to save mesh 
+     - Flag to save mesh
    * - iFlag_simplification
      - int
      - 0 or 1
-     - Flag for flowline simplication 
+     - Flag for flowline simplication
    * - iFlag_intersect
      - int
      - 0 or 1
@@ -199,19 +199,19 @@ Each domain may contain one or more basins.
    * - iFlag_resample_method
      - int
      - 1 or 2
-     - Method for DEM resampling 
+     - Method for DEM resampling
    * - iFlag_flowline
      - int
      - 0 or 1
-     - Flag for flowline 
+     - Flag for flowline
    * - iFlag_global
      - int
      - 0 or 1
-     - Flag for global simulation 
+     - Flag for global simulation
    * - iFlag_multiple_outlet
      - int
      - 0 or 1
-     - Flag for multiple basin simulation   
+     - Flag for multiple basin simulation
    * - iFlag_use_mesh_dem
      - int
      - 0 or 1
@@ -219,11 +219,11 @@ Each domain may contain one or more basins.
    * - iFlag_elevation_profile
      - int
      - 0 or 1
-     - Flag to turn on elevation profile 
+     - Flag to turn on elevation profile
    * - iFlag_rotation
      - int
      - 0 or 1
-     - Flag for mesh generation using rotation 
+     - Flag for mesh generation using rotation
    * - iFlag_stream_burning_topology
      - int
      - 0 or 1
@@ -231,26 +231,26 @@ Each domain may contain one or more basins.
    * - iFlag_save_elevation
      - int
      - 0 or 1
-     - Flag to save elevation 
+     - Flag to save elevation
    * - iCase_index
      - int
-     - 
+     -
      - ID of case
    * - iMesh_type
      - int
      - 1 to 5
-     - Mesh type 
+     - Mesh type
    * - dMissing_value_dem
      - float
-     - 
+     -
      - The missing value in the DEM
    * - dBreach_threshold
      - float
-     - 
+     -
      - The threshold parameter for the hybrid breaching filling algorithm
    * - dAccumulation_threshold_ratio
      - float
-     - 
+     -
      - The accumulation parameter to define stream cell
    * - dLongitude_left
      - float
@@ -258,27 +258,27 @@ Each domain may contain one or more basins.
      - The domain left boundary
    * - dLongitude_right
      - float
-     - 
+     -
      - The domain right boundary
    * - dLatitude_bot
      - float
-     - 
+     -
      - The domain bottom boundary
    * - dLatitude_top
      - float
-     - 
+     -
      - The domain top boundary
    * - dResolution_degree
      - float
-     - 
+     -
      - Mesh resolution in degree
    * - dResolution_meter
      - float
-     - 
+     -
      - Mesh resolution in meter
    * - sDate
      - string
-     - 
+     -
      - The date of the simulation
    * - sMesh_type
      - string
@@ -286,24 +286,24 @@ Each domain may contain one or more basins.
      - The mesh type
    * - sFilename_hexwatershed
      - string
-     - 
-     - The filename of the binary 
+     -
+     - The filename of the binary
    * - sFilename_spatial_reference
      - string
-     - 
-     - The spatial reference of the river network 
+     -
+     - The spatial reference of the river network
    * - sFilename_dem
      - string
-     - 
+     -
      - The filename of the DEM
    * - sFilename_mesh_netcdf
      - float
-     - 
+     -
      - The filename of the MPAS netcdf file
    * - sFilename_basins
      - string
-     - 
-     - The full path of the basin configuration file 
+     -
+     - The full path of the basin configuration file
 
 Basin configuration
 ###################
@@ -321,20 +321,20 @@ The basin configuration file contains one or more block of JSON basin object. Ea
      - Description
    * - dLatitude_outlet_degree
      - float
-     - 
+     -
      - The outlet latitude
    * - dLongitude_outlet_degree
      - float
      - 0 or 1
-     - The outlet longitude 
+     - The outlet longitude
    * - dAccumulation_threshold_ratio
      - float
-     - 
+     -
      - The accumulation parameter to define the stream cell
    * - dThreshold_small_river
      - float
-     - 
-     - The threshold parameter to remove small river 
+     -
+     - The threshold parameter to remove small river
    * - iFlag_dam
      - int
      - 0
@@ -345,23 +345,23 @@ The basin configuration file contains one or more block of JSON basin object. Ea
      - Reserved for disconnected flowline
    * - lBasinID
      - long
-     - 
+     -
      - The basin ID
    * - sFilename_dam
      - string
-     - 
+     -
      - Reserved for dam burning
    * - sFilename_flowline_filter
      - string
-     - 
-     - The filename of the stream vector 
+     -
+     - The filename of the stream vector
    * - sFilename_flowline_raw
      - string
-     - 
-     - The filename of the raw stream vector 
+     -
+     - The filename of the raw stream vector
    * - sFilename_flowline_topo
      - string
-     - 
+     -
      - Reserved for dam burning
 
 ****************

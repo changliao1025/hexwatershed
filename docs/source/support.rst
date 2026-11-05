@@ -9,6 +9,3 @@ Limited support is provided through Issue_:
 and Slack_:
 
 .. _Slack: https://hexwatershed.slack.com/
-
-
-

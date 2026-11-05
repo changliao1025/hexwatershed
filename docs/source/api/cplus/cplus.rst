@@ -16,7 +16,7 @@ JSON
 
 .. doxygenclass:: jsonmodel::vertex
    :members:
-   
+
 
 
 Domain

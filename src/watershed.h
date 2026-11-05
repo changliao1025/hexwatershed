@@ -12,37 +12,36 @@
  *
  */
 #pragma once
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
+#include "./json/JSONBase.h"
+#include "./json/basin.h"
+#include "./json/cell.h"
+#include "./json/mesh.h"
+#include "./json/multibasin.h"
+#include "./parameter.h"
 #include "conversion.h"
 #include "hexagon.h"
 #include "segment.h"
 #include "subbasin.h"
-
-#include "./json/JSONBase.h"
-#include "./json/mesh.h"
-#include "./json/cell.h"
-#include "./json/basin.h"
-#include "./json/multibasin.h"
 using namespace std;
 
-namespace hexwatershed
-{
-  // some improvements are needed in next development
-  class watershed
-  {
-  public:
+namespace hexwatershed {
+// some improvements are needed in next development
+class watershed {
+   public:
     watershed();
 
     ~watershed();
 
     int iFlag_hillslope;
 
-    long lWatershed; // id of watershed 
+    long lWatershed;  // id of watershed
     long lSegment_current;
     double dArea;
     float dSlope;
@@ -54,41 +53,48 @@ namespace hexwatershed
     long nSubbasin;
     long nConfluence;
 
-    long lCellID_outlet; // the mesh ID of the outlet
+    long lCellID_outlet;  // the mesh ID of the outlet
 
     float dLongitude_outlet_degree;
     float dLatitude_outlet_degree;
 
-    float dArea_2_stream_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
-    float dLength_2_area_ratio; // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
-    float dDrainage_density;
-    float dLongest_length_stream;    // the length of longest stream segment
-    float dLength_stream_conceptual; // total stream length
+    // int iFlag_accumulation_threshold_ratio;
+    // float dAccumulation_threshold_value;
+    // float dAccumulation_threshold_ratio;
+    float dAccumulation_max;
 
-    //hillslope attribute
-    //one single hillslope for left
+    float dArea_2_stream_ratio;  // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
+    float dLength_2_area_ratio;  // the drainage density: https://en.wikipedia.org/wiki/Drainage_density
+    float dDrainage_density;
+    float dLongest_length_stream;     // the length of longest stream segment
+    float dLength_stream_conceptual;  // total stream length
+
+    // hillslope attribute
+    // one single hillslope for left
     float dArea_hillslope_left_mean;
     float dLength_hillslope_left_mean;
     float dWidth_hillslope_left_mean;
     float dSlope_hillslope_left_mean;
 
-    //one single hillslope for right
+    // one single hillslope for right
     float dArea_hillslope_right_mean;
     float dLength_hillslope_right_mean;
     float dWidth_hillslope_right_mean;
     float dSlope_hillslope_right_mean;
 
-    //one single hillslope for headwater
+    // one single hillslope for headwater
     float dArea_hillslope_headwater_mean;
     float dLength_hillslope_headwater_mean;
     float dWidth_hillslope_headwater_mean;
     float dSlope_hillslope_headwater_mean;
 
-    //one single conceputal hillslope
+    // one single conceputal hillslope
     float dArea_hillslope_mean;
     float dLength_hillslope_mean;
     float dWidth_hillslope_mean;
     float dSlope_hillslope_mean;
+
+    parameter cParameter;
 
     std::string sWorkspace_output_watershed;
     std::string sFilename_watershed_characteristics;
@@ -99,25 +105,25 @@ namespace hexwatershed
     std::string sFilename_watershed_json;
     std::string sFilename_watershed_stream_edge_json;
 
-
     std::vector<hexagon> vCell;
     std::vector<segment> vSegment;
     std::vector<subbasin> vSubbasin;
     std::vector<hexagon> vConfluence;
 
-    //add an unordered map for index searching
+    // add an unordered map for index searching
     std::unordered_map<long, long> mCellIdToIndex;
     std::unordered_map<long, long> mSegmentIdToIndex;
     std::unordered_map<long, long> mSubbasinIdToIndex;
 
     // function
+    int watershed_define_stream_grid();
 
     int watershed_define_stream_confluence();
     int watershed_define_stream_segment();
-    int watershed_tag_confluence_upstream( long lCellID_confluence);
+    int watershed_tag_confluence_upstream(long lCellID_confluence);
 
     int watershed_build_stream_topology();
-    int watershed_define_stream_order();    
+    int watershed_define_stream_order();
     int watershed_define_subbasin();
     int watershed_define_hillslope();
     int watershed_update_attribute();
@@ -132,7 +138,6 @@ namespace hexwatershed
     int watershed_calculate_topographic_wetness_index();
     int watershed_calculate_travel_distance();
 
-
     int watershed_export_characteristics();
     int watershed_export_segment_characteristics();
     int watershed_export_subbasin_characteristics();
@@ -143,6 +148,5 @@ namespace hexwatershed
     long watershed_find_index_by_cell_id(long lCellID);
     long watershed_find_index_by_segment_id(long lSegment);
     long watershed_find_index_by_subbasin_id(long lSubbasin);
-
-  };
-}
+};
+}  // namespace hexwatershed

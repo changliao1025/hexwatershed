@@ -1,0 +1,26 @@
+exclude: '^(external/|retired/|\.idea/|\.scannerwork/)'
+
+repos:
+  - repo: local
+    hooks:
+      - id: clang-format
+        name: clang-format
+        entry: clang-format -i
+        language: system
+        types_or: [c++, c]
+
+      - id: cppcheck
+        name: cppcheck
+        entry: cppcheck
+        language: system
+        types_or: [c++, c]
+        args: [
+          "--enable=warning,style,performance,portability",
+          "--suppress=missingIncludeSystem",
+          "--suppress=preprocessorErrorDirective",
+          "--suppress=unmatchedSuppression",
+          "--inline-suppr",
+          "--std=c++11",
+          "-Isrc",
+          "-Iexternal/rapidjson"
+        ]
