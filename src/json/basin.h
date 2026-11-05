@@ -1,13 +1,12 @@
 #pragma once
 
-#include "JSONBase.h"
 #include <list>
 #include <vector>
-namespace jsonmodel
-{
-  class basin : public JSONBase
-  {
-  public:
+
+#include "JSONBase.h"
+namespace jsonmodel {
+class basin : public JSONBase {
+   public:
     basin();
     virtual ~basin();
 
@@ -29,8 +28,6 @@ namespace jsonmodel
     long lCellID_outlet;
     long lBasinID;
 
-
-  private:
-
-  };
-}
+   private:
+};
+}  // namespace jsonmodel

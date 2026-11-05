@@ -11,7 +11,7 @@ Overview
 
 **HexWatershed** was originally released in C++ 11.
 
-Since HexWatershed v3.0, it was redesigned using a **hybrid** Python (frontend) and C++ (backend) approach. 
+Since HexWatershed v3.0, it was redesigned using a **hybrid** Python (frontend) and C++ (backend) approach.
 Only the HexWatershed v3.0 will be maintained and supported.
 
 The Python frontend is used to generate the mesh, build the topological relationship, and a list of other pre and post-processing algorithms.
@@ -66,7 +66,7 @@ Conda
 =====
 The **Conda** platform is recommended to install the dependency Python package.
 Conda can be installed throught either `<https://docs.conda.io/en/latest/miniconda.html>`_
-or 
+or
 `<https://anaconda.org/>`_.
 
 
@@ -83,13 +83,13 @@ The Python **pip** is used to install the HexWatershed Python package.
 Pip is installed along with the Python.
 
 
-Step by step instruction 
+Step by step instruction
 ########################
 
 Only an exmaple on Mac is provided below:
 
 - Open the terminal, cd to a desired directory and create a folder for this project::
-    
+
     mkdir hexwatershed_tutorial
 
     cd hexwatershed_tutorial
@@ -99,13 +99,13 @@ Only an exmaple on Mac is provided below:
     git clone https://github.com/changliao1025/hexwatershed.git
 
     cd hexwatershed
- 
+
 - Go into the build folder and run cmake::
 
     cd build
 
     cmake CMakeLists.txt -DCMAKE_CXX_COMPILER=g++-10
- 
+
 - Build and install the HexWatershed C++ program::
 
     make install
@@ -122,7 +122,7 @@ Only an exmaple on Mac is provided below:
 
     conda install -c conda-forge hexwatershed
 
-Because the **GDAL** library is used by this project and the **proj** library is often not configured correctly automatically. 
+Because the **GDAL** library is used by this project and the **proj** library is often not configured correctly automatically.
 
 On Linux or Mac, you can set it up like this, .bash_profile as an example:
 
@@ -138,5 +138,3 @@ By now, your should have installed both the C++ and Python components of the Hex
 
 Next, you can test the model with the example following this instruction.
 `<https://github.com/changliao1025/pyhexwatershed/>`_
-
-

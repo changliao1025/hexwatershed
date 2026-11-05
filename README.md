@@ -4,7 +4,7 @@
 
 HexWatershed: a mesh independent flow direction model for hydrologic models.
 
-This is the C++ backend of the HexWatershed Python package (https://github.com/changliao1025/pyhexwatershed). 
+This is the C++ backend of the HexWatershed Python package (https://github.com/changliao1025/pyhexwatershed).
 
 The HexWatershed Version v1.0 has been moved under the PNNL Github account at:
 https://github.com/pnnl/hexwatershed
@@ -13,7 +13,7 @@ Currently, only HexWatershed v3.0 is maintained and supported.
 
 ### `Acknowledgement`
 
-This work was supported by the Earth System Model Development program areas of the U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research as part of the multi-program, collaborative Integrated Coastal Modeling (ICoM) project. 
+This work was supported by the Earth System Model Development program areas of the U.S. Department of Energy, Office of Science, Office of Biological and Environmental Research as part of the multi-program, collaborative Integrated Coastal Modeling (ICoM) project.
 
 ### `License`
 
@@ -34,7 +34,7 @@ Copyright © 2022, Battelle Memorial Institute
 
 There are a number of publications that describe the algorithms used in `HexWatershed` in detail. If you make use of `HexWatershed` in your work, please consider including a reference to the following:
 
-* Liao, Chang, Tian Zhou, Donghui Xu, Richard Barnes, Gautam Bisht, Hong-Yi Li, Zeli Tan, et al. (02/2022AD) 2022. “Advances In Hexagon Mesh-Based Flow Direction Modeling”. Advances In Water Resources 160. Elsevier BV: 104099. 
+* Liao, Chang, Tian Zhou, Donghui Xu, Richard Barnes, Gautam Bisht, Hong-Yi Li, Zeli Tan, et al. (02/2022AD) 2022. “Advances In Hexagon Mesh-Based Flow Direction Modeling”. Advances In Water Resources 160. Elsevier BV: 104099.
 https://doi.org/10.1016/j.advwatres.2021.104099.
 
 * Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020). Watershed delineation on a hexagonal mesh grid. Environmental Modelling & Software, 128, 104702. https://doi.org/10.1016/j.envsoft.2020.104702
@@ -52,5 +52,3 @@ https://doi.org/10.5281/zenodo.6407299
 Please using the Github issue for Q&A. Please navigate to https://github.com/changliao1025/pyhexwatershed/issues if you have technical issues.
 
 For other types of questions, you can ask in the Slack hexwatershed channel. Send an email to changliao.climate@gmail.com with your preferred email address.
-
-

@@ -8,23 +8,20 @@
 #include <vector>
 using namespace std;
 
-namespace hexwatershed
-{
+namespace hexwatershed {
 
-  enum eMesh_type
-  {
+enum eMesh_type {
     eM_hexagon = 1,
     eM_square = 2,
     eM_latlon = 3,
     eM_mpas = 4,
     eM_dggrid = 5,
     eM_tin = 6,
-  };
+};
 
-  extern std::map<std::string, eMesh_type> mMesh_type;
+extern std::map<std::string, eMesh_type> mMesh_type;
 
-  enum eVariable
-  {
+enum eVariable {
     eV_elevation,
     eV_flow_direction,
     eV_flow_accumulation,
@@ -37,12 +34,10 @@ namespace hexwatershed
     eV_slope_within,
     eV_stream_order,
     eV_wetness_index,
-  };
+};
 
-  class parameter
-  {
-
-  public:
+class parameter {
+   public:
     parameter();
 
     ~parameter();
@@ -58,10 +53,10 @@ namespace hexwatershed
     eMesh_type pMesh_type;
 
     int iFlag_global;
-    int iFlag_multiple_outlet; // multiple outlet in one simulation
+    int iFlag_multiple_outlet;  // multiple outlet in one simulation
     int iFlag_resample_method;
-    int iFlag_flowline;                // has stream burning or not
-    int iFlag_stream_burning_topology; // whethet to use topology for stream burning
+    int iFlag_flowline;                 // has stream burning or not
+    int iFlag_stream_burning_topology;  // whethet to use topology for stream burning
     int iFlag_stream_grid_option;
     int iFlag_slope_provided;
     int iFlag_merge_reach;
@@ -72,14 +67,14 @@ namespace hexwatershed
     long nOutlet;
     // parameters
 
-    float dBreach_threshold; // the threshold parameter for stream burning breaching algorithm
+    float dBreach_threshold;  // the threshold parameter for stream burning breaching algorithm
     float dMissing_value_dem;
-    //float dAccumulation_threshold; //real accumuation
-    float dAccumulation_threshold_ratio; //the ratio of accumulation compared with max accumulation
-    float dAccumulation_threshold_value; //the value of accumulation
+    // float dAccumulation_threshold; //real accumuation
+    float dAccumulation_threshold_ratio;  // the ratio of accumulation compared with max accumulation
+    float dAccumulation_threshold_value;  // the value of accumulation
     std::string sMesh_type;
     std::string sFilename_configuration;
     std::string sMissing_value_default;
-    eMesh_type define_mesh_type(const std::string &sMeshType);
-  };
-}
+    eMesh_type define_mesh_type(const std::string& sMeshType);
+};
+}  // namespace hexwatershed

@@ -87,7 +87,7 @@ In the zonal mean resampling, the model defines the cell elevation in the follow
 Stream burning
 ##############
 
-A topological relationship-based stream burning algorithm is implemented in HexWatershed v3.0. 
+A topological relationship-based stream burning algorithm is implemented in HexWatershed v3.0.
 
 Depression filling
 ##################

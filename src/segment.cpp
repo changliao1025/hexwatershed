@@ -11,10 +11,8 @@
  */
 #include "segment.h"
 
-namespace hexwatershed
-{
-  segment::segment()
-  {
+namespace hexwatershed {
+segment::segment() {
     iFlag_headwater = 0;
     lSegment = 0;
     lSegmentIndex = -1;
@@ -25,74 +23,61 @@ namespace hexwatershed
     iFlag_has_downstream = -1;
     nSegment_upstream = -1;
     dDistance_to_watershed_outlet = 0.0;
-  }
+}
 
-  segment::~segment()
-  {
-  }
+segment::~segment() {}
 
-  bool segment::operator<(const segment &cSegment)
-  {
-    return (this->lSegment < cSegment.lSegment);
-  }
+bool segment::operator<(const segment& cSegment) { return (this->lSegment < cSegment.lSegment); }
 
-  /**
-   * @brief
-   *
-   * @return int
-   */
-  int segment::segment_calculate_stream_segment_characteristics()
-  {
+/**
+ * @brief
+ *
+ * @return int
+ */
+int segment::segment_calculate_stream_segment_characteristics() {
     int error_code = 1;
     segment_calculate_stream_segment_length();
     segment_calculate_stream_segment_slope();
     return error_code;
-  }
+}
 
-  /**
-   * @brief calculate stream segment length
-   *
-   * @return int
-   */
-  int segment::segment_calculate_stream_segment_length()
-  {
+/**
+ * @brief calculate stream segment length
+ *
+ * @return int
+ */
+int segment::segment_calculate_stream_segment_length() {
     int error_code = 1;
     dLength = 0.0;
     dArea = 0.0;
     std::vector<hexagon>::iterator iIterator;
-    for (iIterator = vReach_segment.begin(); iIterator != vReach_segment.end(); iIterator++)
-    {
-      dLength = dLength + (*iIterator).dLength_stream_conceptual;
-      dArea = dArea + (*iIterator).dArea; //area of the cell
+    for (iIterator = vReach_segment.begin(); iIterator != vReach_segment.end(); iIterator++) {
+        dLength = dLength + (*iIterator).dLength_stream_conceptual;
+        dArea = dArea + (*iIterator).dArea;  // area of the cell
     }
     return error_code;
-  }
+}
 
-  int segment::segment_calculate_stream_segment_slope()
-  {
+int segment::segment_calculate_stream_segment_slope() {
     int error_code = 1;
     float dElevation_diff;
     float dElevation_min, dElevation_max;
-    if (nReach == 1)
-    {
-      // there is only reach
-      dSlope_mean = vReach_segment[0].dSlope_max_downslope;
-      dElevation_drop = dSlope_mean * dLength;
-    }
-    else
-    {
-      dElevation_max = vReach_segment.front().dElevation_mean;
-      dElevation_min = vReach_segment.back().dElevation_mean;
-      dElevation_diff = dElevation_max - dElevation_min;
-      dElevation_drop = dElevation_diff;
-      dSlope_mean = dElevation_diff / dLength;
+    if (nReach == 1) {
+        // there is only reach
+        dSlope_mean = vReach_segment[0].dSlope_max_downslope;
+        dElevation_drop = dSlope_mean * dLength;
+    } else {
+        dElevation_max = vReach_segment.front().dElevation_mean;
+        dElevation_min = vReach_segment.back().dElevation_mean;
+        dElevation_diff = dElevation_max - dElevation_min;
+        dElevation_drop = dElevation_diff;
+        dSlope_mean = dElevation_diff / dLength;
     }
 
     return error_code;
-  }
-  int segment::segment_calculate_travel_distance()
-  {
+}
+int segment::segment_calculate_travel_distance() {
     int error_code = 1;
     return error_code;
-  }
-} // namespace hexwatershed
+}
+}  // namespace hexwatershed

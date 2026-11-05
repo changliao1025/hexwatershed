@@ -4,40 +4,40 @@
  * @brief Header file of the flowline class
  * @version 0.1
  * @date 2019-08-02
- * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020). 
+ * @citation Liao, C., Tesfa, T., Duan, Z., & Leung, L. R. (2020).
  * Watershed delineation on a hexagonal mesh grid. Environmental Modelling & Software, 104702.
  * https://www.sciencedirect.com/science/article/pii/S1364815219308278
  * @github page https://github.com/changliao1025/hexwatershed
  * @copyright Copyright (c) 2019
- * 
+ *
  */
 #pragma once
 
 #include <cmath>
 #include <vector>
+
 #include "json/vertex.h"
 
 using namespace std;
 using namespace jsonmodel;
-namespace hexwatershed
-{
-    class edge {
-     public:
-      edge ();
+namespace hexwatershed {
+class edge {
+   public:
+    edge();
 
-      ~edge ();
+    ~edge();
 
-      float dLength;
+    float dLength;
 
-      vertex cVertex_start;
-      vertex cVertex_end;
+    vertex cVertex_start;
+    vertex cVertex_end;
 
-      int calculate_length ();
+    int calculate_length();
 
-      int check_point_overlap (vertex pt) const;
+    int check_point_overlap(vertex pt) const;
 
-      int check_overlap (vertex pt_start, const vertex &pt_end);
+    int check_overlap(vertex pt_start, const vertex& pt_end);
 
-      int check_shared (const edge &ed);
-    };
-} // namespace hexwatershed
+    int check_shared(const edge& ed);
+};
+}  // namespace hexwatershed

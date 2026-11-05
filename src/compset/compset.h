@@ -12,47 +12,45 @@
  *
  */
 #pragma once
-#include <list>
-#include <vector>
-#include <map>
 #include <algorithm>
-#include <numeric>
-#include <set>
-#include <cmath> // abs, floor
-#include <unordered_map>
-#include <queue>
 #include <chrono>
-#include <ctime> //for timing recording
-#include "../system.h"
-#include "../hexagon.h"
-#include "../flowline.h"
-#include "../conversion.h"
-#include "../watershed.h"
-#include "../parameter.h"
+#include <cmath>  // abs, floor
+#include <ctime>  //for timing recording
+#include <list>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <set>
+#include <unordered_map>
+#include <vector>
 
+#include "../conversion.h"
+#include "../flowline.h"
+#include "../hexagon.h"
 #include "../json/JSONBase.h"
-#include "../json/mesh.h"
-#include "../json/cell.h"
 #include "../json/basin.h"
+#include "../json/cell.h"
+#include "../json/mesh.h"
 #include "../json/multibasin.h"
+#include "../parameter.h"
+#include "../system.h"
+#include "../watershed.h"
 
 using namespace std;
 using namespace rapidjson;
 using namespace jsonmodel;
 
-namespace hexwatershed
-{
+namespace hexwatershed {
 
-  class compset
-  {
-  public:
+class compset {
+   public:
     compset();
 
     ~compset();
 
     int nWatershed_total;
-    int nSegment_total;    // the total number of stream segment
-    int nConfluence_total; // the total number of stream confluence
+    int nSegment_total;     // the total number of stream segment
+    int nConfluence_total;  // the total number of stream confluence
 
     std::string sWorkspace_input;
     std::string sWorkspace_output;
@@ -78,22 +76,22 @@ namespace hexwatershed
     std::string sDate_default;
     std::string sDate;
     std::string sTime;
-    std::ofstream ofs_log;               // used for IO starlog file
-    std::string sFilename_netcdf_output; // if model use netcdf, we can put all results into one single netcdf file,
+    std::ofstream ofs_log;                // used for IO starlog file
+    std::string sFilename_netcdf_output;  // if model use netcdf, we can put all results into one single netcdf file,
     // except the txt based results.
     std::string sFilename_hexagon_netcdf;
 
-    std::vector<float> vElevation; // vector to store the DEM raster data
-    std::vector<hexagon> vCell_active;         // all calls has elevation (not missing value)
-    std::vector<hexagon> vCell_priority_flood; // animation purpose
+    std::vector<float> vElevation;              // vector to store the DEM raster data
+    std::vector<hexagon> vCell_active;          // all calls has elevation (not missing value)
+    std::vector<hexagon> vCell_priority_flood;  // animation purpose
     // watershed cWatershed;
-    std::vector<watershed> vWatershed; //for oop functions
-    std::vector<vertex> vVertex_active; // for vtk support, it store all the vertex in 3D
-    std::vector<cell> aCell; //for json
-    std::vector<basin> aBasin; //for json
+    std::vector<watershed> vWatershed;   // for oop functions
+    std::vector<vertex> vVertex_active;  // for vtk support, it store all the vertex in 3D
+    std::vector<cell> aCell;             // for json
+    std::vector<basin> aBasin;           // for json
     std::vector<hexagon> vContinent_boundary;
 
-    std::unordered_map<long, long> mCellIdToIndex; // a map for fast search
+    std::unordered_map<long, long> mCellIdToIndex;  // a map for fast search
     std::unordered_map<long, long> mVertexIdToIndex;
 
     parameter cParameter;
@@ -127,19 +125,19 @@ namespace hexwatershed
     int compset_define_subbasin();
     int compset_calculate_watershed_characteristics();
 
-    //domain export functions
-    int compset_export_domain_json(const std::string &sFilename_in);
+    // domain export functions
+    int compset_export_domain_json(const std::string& sFilename_in);
     int compset_export_domain_characteristics();
 
-    //watershed export functions
+    // watershed export functions
     int compset_export_watershed_json();
     int compset_export_watershed_characteristics();
     int compset_transfer_watershed_to_domain();
 
-    int compset_export_watershed_vtk(const std::string &sFilename_in); // only for watershed?
-    int compset_export_watershed_animation_json(const std::string &sFilename_in);
+    int compset_export_watershed_vtk(const std::string& sFilename_in);  // only for watershed?
+    int compset_export_watershed_animation_json(const std::string& sFilename_in);
 
-    //others
+    // others
     std::vector<hexagon> compset_obtain_boundary(std::vector<hexagon>& vCell_in);
     std::vector<hexagon> compset_obtain_stream(std::vector<hexagon> vCell_in);
     std::vector<hexagon> compset_obtain_stream_and_riparian_zone(std::vector<hexagon> vCell_in);
@@ -148,13 +146,13 @@ namespace hexwatershed
     int compset_find_continent_boundary(long lCellID_in);
     int compset_find_land_ocean_interface_neighbors(long lCellID_in);
 
-    int priority_flood_depression_filling(std::vector<hexagon> &vCell_in);
-    int priority_flood_depression_filling_endorheic(std::vector<hexagon> &vCell_in);
+    int priority_flood_depression_filling(std::vector<hexagon>& vCell_in);
+    int priority_flood_depression_filling_endorheic(std::vector<hexagon>& vCell_in);
     int compset_update_cell_elevation();
     int compset_update_vertex_elevation();
 
     int compset_check_digital_elevation_model_depression(std::vector<hexagon> vCell_in);
 
-    std::array<long, 3> compset_find_lowest_cell_in_priority_queue(const std::vector<hexagon> &vCell_in);
-  };
-} // namespace hexwatershed
+    std::array<long, 3> compset_find_lowest_cell_in_priority_queue(const std::vector<hexagon>& vCell_in);
+};
+}  // namespace hexwatershed

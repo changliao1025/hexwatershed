@@ -25,12 +25,8 @@ Spatial discretization is the cornerstone of all spatially-distributed numerical
 
 * It cannot be coupled with other unstructured mesh-based models such as the oceanic models.
 
-Therefore, we developed a watershed delineation model (HexWatershed) based on the hexagon mesh spatial discretization. 
+Therefore, we developed a watershed delineation model (HexWatershed) based on the hexagon mesh spatial discretization.
 
 We further improve HexWatershed to fully unstructured mesh-based to support variable-resolution meshes such as the MPAS mesh.
 
 We propose that spatially distributed hydrologic simulations should consider using a hexagon grid spatial discretization.
-
-
-
-

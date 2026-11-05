@@ -12,60 +12,54 @@
  *
  */
 
- #pragma once
+#pragma once
+#include <algorithm>
 #include <cmath>
 #include <ctime>
-#include <string>
 #include <fstream>
 #include <iostream>
-#include <vector>
 #include <map>
-#include <algorithm>
-#include <queue>
 #include <numeric>
+#include <queue>
+#include <string>
 #include <utility>
-
-#include "../system.h"
-#include "../compset/compset.h"
-
+#include <vector>
 
 #include "../../external/rapidjson/document.h"
-#include "../../external/rapidjson/writer.h"
-#include "../../external/rapidjson/stringbuffer.h"
 #include "../../external/rapidjson/istreamwrapper.h"
-
+#include "../../external/rapidjson/stringbuffer.h"
+#include "../../external/rapidjson/writer.h"
+#include "../compset/compset.h"
 #include "../json/JSONBase.h"
-#include "../json/mesh.h"
-#include "../json/cell.h"
 #include "../json/basin.h"
+#include "../json/cell.h"
+#include "../json/mesh.h"
 #include "../json/multibasin.h"
-
+#include "../system.h"
 
 using namespace std;
 using namespace rapidjson;
 using namespace jsonmodel;
 
-
-namespace hexwatershed
-{
-  class domain {
-  public:
-    domain ();
-    domain (const std::string &sFilename_configuration_in);
-    ~domain ();
+namespace hexwatershed {
+class domain {
+   public:
+    domain();
+    domain(const std::string& sFilename_configuration_in);
+    ~domain();
 
     std::string sWorkspace_input;
     std::string sWorkspace_output;
     std::string sWorkspace_output_pyflowline;
     std::string sWorkspace_output_hexwatershed;
-    
+
     std::string sFilename_log;
     std::string sLog;
     std::string sTime;
 
     std::string sFilename_mesh_info;
     std::string sFilename_flowline_info;
-    //polygon vector filename
+    // polygon vector filename
     std::string sFilename_elevation_polygon;
     std::string sFilename_elevation_polygon_debug;
 
@@ -89,7 +83,7 @@ namespace hexwatershed
 
     std::string sFilename_wetness_index_polygon;
 
-    //polyline
+    // polyline
     std::string sFilename_stream_segment_polyline;
     std::string sFilename_stream_segment_merge_polyline;
     std::string sFilename_flow_direction_polyline;
@@ -98,49 +92,45 @@ namespace hexwatershed
 
     std::string sFilename_basins;
 
-    //vtk support
+    // vtk support
     std::string sFilename_vtk;
-    std::string sFilename_vtk_debug;      
+    std::string sFilename_vtk_debug;
 
-
-
-    //others
+    // others
     std::string sDate_default;
     std::string sDate;
-    
+
     std::string sFilename_mesh;
 
     std::string sExtension_json;
 
-    std::ofstream ofs_log; // used for IO starlog file
- 
-    //rapidjson object
+    std::ofstream ofs_log;  // used for IO starlog file
+
+    // rapidjson object
     jsonmodel::mesh cMesh;
     jsonmodel::multibasin cBasin;
 
     rapidjson::Document pConfigDoc;
     rapidjson::Document pConfigDoc_basin;
 
-    //for global
+    // for global
     std::vector<long> lCellIndex_outlet;
     std::vector<long> lCellID_outlet;
 
-    compset cCompset; //currently we only support one compset per run
-    //function
-    int domain_read ();
-    int domain_read_configuration_file ();
-    int domain_read_elevation_json(const std::string &sFilename_elevation_in);
-    int domain_read_basin_json(const std::string &sFilename_basin_in);
+    compset cCompset;  // currently we only support one compset per run
+    // function
+    int domain_read();
+    int domain_read_configuration_file();
+    int domain_read_elevation_json(const std::string& sFilename_elevation_in);
+    int domain_read_basin_json(const std::string& sFilename_basin_in);
 
-    //int domain_assign_parameter ();
+    // int domain_assign_parameter ();
     int domain_read_input_data();
-    int domain_initialize ();
+    int domain_initialize();
     int domain_retrieve_user_input();
-    int domain_run ();
-    int domain_export ();
-    int domain_cleanup ();
+    int domain_run();
+    int domain_export();
+    int domain_cleanup();
     int domain_setup();
-
-
-  };
-} // namespace hexwatershed
+};
+}  // namespace hexwatershed

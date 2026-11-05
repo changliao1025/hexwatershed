@@ -4,22 +4,16 @@
 
 #include "hillslope.h"
 
-namespace hexwatershed
-{
+namespace hexwatershed {
 
-  hillslope::hillslope()
-  {
-    
+hillslope::hillslope() {
     iFlag_headwater = 0;
     vCell.clear();
-  }
-  hillslope::~hillslope()
-  {
-  }
+}
+hillslope::~hillslope() {}
 
-  int hillslope::hillslope_calculate_characteristics()
-  {
+int hillslope::hillslope_calculate_characteristics() {
     int error_code = 0;
     return error_code;
-  }
 }
+}  // namespace hexwatershed

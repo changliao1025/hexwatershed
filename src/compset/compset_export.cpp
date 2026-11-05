@@ -10,15 +10,13 @@
  */
 #include "./compset.h"
 
-namespace hexwatershed
-{
+namespace hexwatershed {
 
-  /**
-   * save all the model outputs
-   * @return
-   */
-  int compset::compset_export_model()
-  {
+/**
+ * save all the model outputs
+ * @return
+ */
+int compset::compset_export_model() {
     int error_code = 1;
     int iFlag_animation = cParameter.iFlag_animation;
     int iFlag_vtk = cParameter.iFlag_vtk;
@@ -29,50 +27,43 @@ namespace hexwatershed
     std::string sFilename;
     // for details of the output, please refer to the official documentation
     // https://hexwatershed.readthedocs.io/en/latest/application/application.html#simulation-results
-    if (iFlag_global == 1) // global simulation
+    if (iFlag_global == 1)  // global simulation
     {
-      sFilename = sFilename_domain_json;
-      compset_export_domain_json(sFilename); // this one for domain
-      compset_export_domain_characteristics();
-      if (iFlag_export_individual_watershed == 1)
-      {
-        compset_export_watershed_json(); // this one for each watershed
-        compset_export_watershed_characteristics();
-      }
-    }
-    else
-    {
-      if (iFlag_multiple_outlet == 1) // multiple watershed, so there is also non-watershed cells
-      {
         sFilename = sFilename_domain_json;
-        compset_export_domain_json(sFilename); // this one for domain
+        compset_export_domain_json(sFilename);  // this one for domain
         compset_export_domain_characteristics();
-        if (iFlag_export_individual_watershed == 1)
-        {
-          compset_export_watershed_json(); // this one for each watershed
-          compset_export_watershed_characteristics();
+        if (iFlag_export_individual_watershed == 1) {
+            compset_export_watershed_json();  // this one for each watershed
+            compset_export_watershed_characteristics();
         }
-      }
-      else // single watershed
-      {
-        sFilename = sFilename_domain_json;
-        compset_export_domain_json(sFilename); // this one for domain
-        // when there is only single watershed, we will only output watershed level output because domain-scale is the same
-        // now we will update some new result due to debug flag
-        // main json file
-        compset_export_watershed_json();
-        if (iFlag_animation == 1) // reserved for animation
+    } else {
+        if (iFlag_multiple_outlet == 1)  // multiple watershed, so there is also non-watershed cells
         {
-          compset_export_watershed_animation_json(sFilename_domain_animation_json);
-        }
-        // vtk
-        if (iFlag_vtk == 1)
+            sFilename = sFilename_domain_json;
+            compset_export_domain_json(sFilename);  // this one for domain
+            compset_export_domain_characteristics();
+            if (iFlag_export_individual_watershed == 1) {
+                compset_export_watershed_json();  // this one for each watershed
+                compset_export_watershed_characteristics();
+            }
+        } else  // single watershed
         {
-          compset_export_watershed_vtk(sFilename_domain_vtk);
+            sFilename = sFilename_domain_json;
+            compset_export_domain_json(sFilename);  // this one for domain
+            // when there is only single watershed, we will only output watershed level output because domain-scale is
+            // the same now we will update some new result due to debug flag main json file
+            compset_export_watershed_json();
+            if (iFlag_animation == 1)  // reserved for animation
+            {
+                compset_export_watershed_animation_json(sFilename_domain_animation_json);
+            }
+            // vtk
+            if (iFlag_vtk == 1) {
+                compset_export_watershed_vtk(sFilename_domain_vtk);
+            }
+            // watershed level
+            compset_export_watershed_characteristics();
         }
-        // watershed level
-        compset_export_watershed_characteristics();
-      }
     }
 
     ofs_log.close();
@@ -83,48 +74,37 @@ namespace hexwatershed
     std::flush(std::cout);
 
     return error_code;
-  }
+}
 
-  int compset::compset_export_watershed_animation_json(const std::string &sFilename_in)
-  {
+int compset::compset_export_watershed_animation_json(const std::string& sFilename_in) {
     int error_code = 1;
     int iFlag_global = cParameter.iFlag_global;
     int iFlag_multiple_outlet = cParameter.iFlag_multiple_outlet;
     std::vector<hexagon>::iterator iIterator;
     jsonmodel::mesh cMesh;
-    if (iFlag_global == 1)
-    {
-
-    }
-    else
-    {
-      if (iFlag_multiple_outlet == 1)
-      {
-
-      }
-      else
-      {
-        // animation
-        for (iIterator = vCell_priority_flood.begin(); iIterator != vCell_priority_flood.end(); iIterator++)
-        {
-          cell pCell;
-          pCell.lCellID = (*iIterator).lCellID;
-          pCell.dElevation_raw = (*iIterator).dElevation_raw;
-          pCell.dElevation_mean = (*iIterator).dElevation_mean;
-          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-          pCell.vVertex = (*iIterator).vVertex;
-          pCell.nVertex = pCell.vVertex.size();
-          cMesh.aCell.push_back(pCell);
+    if (iFlag_global == 1) {
+    } else {
+        if (iFlag_multiple_outlet == 1) {
+        } else {
+            // animation
+            for (iIterator = vCell_priority_flood.begin(); iIterator != vCell_priority_flood.end(); iIterator++) {
+                cell pCell;
+                pCell.lCellID = (*iIterator).lCellID;
+                pCell.dElevation_raw = (*iIterator).dElevation_raw;
+                pCell.dElevation_mean = (*iIterator).dElevation_mean;
+                pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+                pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+                pCell.vVertex = (*iIterator).vVertex;
+                pCell.nVertex = pCell.vVertex.size();
+                cMesh.aCell.push_back(pCell);
+            }
+            cMesh.SerializeToFile(sFilename_in);
         }
-        cMesh.SerializeToFile(sFilename_in);
-      }
     }
     return error_code;
-  }
+}
 
-  int compset::compset_export_domain_json(const std::string &sFilename_in)
-  {
+int compset::compset_export_domain_json(const std::string& sFilename_in) {
     int error_code = 1;
     long lWatershed;
     int iFlag_global = cParameter.iFlag_global;
@@ -132,133 +112,119 @@ namespace hexwatershed
     int iFlag_flowline = cParameter.iFlag_flowline;
     std::vector<hexagon>::iterator iIterator;
     jsonmodel::mesh cMesh;
-    if (iFlag_global == 1)
-    {
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        cell pCell;
-        pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-        pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-        pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
-        pCell.dSlope_within = (*iIterator).dSlope_within;
-        pCell.dElevation_raw = (*iIterator).dElevation_raw;
-        pCell.dElevation_mean = (*iIterator).dElevation_mean;
-        pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-        pCell.dArea = (*iIterator).dArea;
-        pCell.dAccumulation = (*iIterator).dAccumulation;
-        pCell.lCellID = (*iIterator).lCellID;
-        pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-        pCell.vVertex = (*iIterator).vVertex;
-        pCell.nVertex = pCell.vVertex.size();
-        cMesh.aCell.push_back(pCell);
-      }
-      cMesh.SerializeToFile(sFilename_in.c_str());
-    }
-    else
-    {
-      if (iFlag_multiple_outlet == 1) // multiple watershed, so there is also non-watershed cells
-      {
-        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-        {
-          cell pCell;
-          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-          pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
-          pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-          // pCell.dSlope_within = (*iIterator).dSlope_within;
-          pCell.dElevation_mean = (*iIterator).dElevation_mean;
-          pCell.dElevation_raw = (*iIterator).dElevation_raw;
-          pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-          pCell.lCellID = (*iIterator).lCellID;
-          pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-          pCell.dArea = (*iIterator).dArea;
-          pCell.dAccumulation = (*iIterator).dAccumulation;
-          pCell.vVertex = (*iIterator).vVertex;
-          pCell.nVertex = pCell.vVertex.size();
-          cMesh.aCell.push_back(pCell);
+    if (iFlag_global == 1) {
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            cell pCell;
+            pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+            pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+            pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+            pCell.dSlope_within = (*iIterator).dSlope_within;
+            pCell.dElevation_raw = (*iIterator).dElevation_raw;
+            pCell.dElevation_mean = (*iIterator).dElevation_mean;
+            pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+            pCell.dArea = (*iIterator).dArea;
+            pCell.dAccumulation = (*iIterator).dAccumulation;
+            pCell.lCellID = (*iIterator).lCellID;
+            pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+            pCell.vVertex = (*iIterator).vVertex;
+            pCell.nVertex = pCell.vVertex.size();
+            cMesh.aCell.push_back(pCell);
         }
-        cMesh.SerializeToFile(sFilename_in);
-      }
-      else // single watershed
-      {
-        // skip it because we have a dedicated watershed json file
-        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
+        cMesh.SerializeToFile(sFilename_in.c_str());
+    } else {
+        if (iFlag_multiple_outlet == 1)  // multiple watershed, so there is also non-watershed cells
         {
-          cell pCell;
-          pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
-          pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
-          pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
-          pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
-          // pCell.dSlope_within = (*iIterator).dSlope_within;
-          pCell.dElevation_mean = (*iIterator).dElevation_mean;
-          pCell.dElevation_raw = (*iIterator).dElevation_raw;
-          pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
-          pCell.lCellID = (*iIterator).lCellID;
-          pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
-          pCell.dArea = (*iIterator).dArea;
-          pCell.dAccumulation = (*iIterator).dAccumulation;
-          pCell.vVertex = (*iIterator).vVertex;
-          pCell.nVertex = pCell.vVertex.size();
-          cMesh.aCell.push_back(pCell);
+            for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+                cell pCell;
+                pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+                pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+                pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+                pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
+                // pCell.dSlope_within = (*iIterator).dSlope_within;
+                pCell.dElevation_mean = (*iIterator).dElevation_mean;
+                pCell.dElevation_raw = (*iIterator).dElevation_raw;
+                pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+                pCell.lCellID = (*iIterator).lCellID;
+                pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+                pCell.dArea = (*iIterator).dArea;
+                pCell.dAccumulation = (*iIterator).dAccumulation;
+                pCell.vVertex = (*iIterator).vVertex;
+                pCell.nVertex = pCell.vVertex.size();
+                cMesh.aCell.push_back(pCell);
+            }
+            cMesh.SerializeToFile(sFilename_in);
+        } else  // single watershed
+        {
+            // skip it because we have a dedicated watershed json file
+            for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+                cell pCell;
+                pCell.dLongitude_center_degree = (*iIterator).dLongitude_center_degree;
+                pCell.dLatitude_center_degree = (*iIterator).dLatitude_center_degree;
+                pCell.dSlope_between = (*iIterator).dSlope_max_downslope;
+                pCell.dSlope_profile = (*iIterator).dSlope_elevation_profile0;
+                // pCell.dSlope_within = (*iIterator).dSlope_within;
+                pCell.dElevation_mean = (*iIterator).dElevation_mean;
+                pCell.dElevation_raw = (*iIterator).dElevation_raw;
+                pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+                pCell.lCellID = (*iIterator).lCellID;
+                pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
+                pCell.dArea = (*iIterator).dArea;
+                pCell.dAccumulation = (*iIterator).dAccumulation;
+                pCell.vVertex = (*iIterator).vVertex;
+                pCell.nVertex = pCell.vVertex.size();
+                cMesh.aCell.push_back(pCell);
+            }
+            cMesh.SerializeToFile(sFilename_in);
         }
-        cMesh.SerializeToFile(sFilename_in);
-      }
     }
 
     return error_code;
-  }
+}
 
-  int compset::compset_export_domain_characteristics()
-  {
+int compset::compset_export_domain_characteristics() {
     int error_code = 1;
     std::string sLine;
     std::ofstream ofs;
     ofs.open(sFilename_domain_characteristics.c_str(), ios::out);
-    if (ofs.good())
-    {
-      sLine = "Total number of outlets: " + convert_long_to_string(cParameter.nOutlet);
-      ofs << sLine << std::endl;
-      // other attributes will be added upon development requests
-      ofs.close();
+    if (ofs.good()) {
+        sLine = "Total number of outlets: " + convert_long_to_string(cParameter.nOutlet);
+        ofs << sLine << std::endl;
+        // other attributes will be added upon development requests
+        ofs.close();
     }
     return error_code;
-  }
+}
 
-  /**
-   * save the watershed characteristics in the output
-   * @return
-   */
-  int compset::compset_export_watershed_json()
-  {
+/**
+ * save the watershed characteristics in the output
+ * @return
+ */
+int compset::compset_export_watershed_json() {
     int error_code = 1;
     long lWatershed;
-    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-    {
-      vWatershed[lWatershed - 1].watershed_export_json();
-      vWatershed[lWatershed - 1].watershed_export_stream_edge_json();
+    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++) {
+        vWatershed[lWatershed - 1].watershed_export_json();
+        vWatershed[lWatershed - 1].watershed_export_stream_edge_json();
     }
     return error_code;
-  }
+}
 
-  /**
-   * save the watershed characteristics in the output
-   * @return
-   */
-  int compset::compset_export_watershed_characteristics()
-  {
+/**
+ * save the watershed characteristics in the output
+ * @return
+ */
+int compset::compset_export_watershed_characteristics() {
     int error_code = 1;
     long lWatershed;
-    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++)
-    {
-      vWatershed[lWatershed - 1].watershed_export_characteristics();
-      vWatershed[lWatershed - 1].watershed_export_segment_characteristics();
-      vWatershed[lWatershed - 1].watershed_export_subbasin_characteristics();
+    for (lWatershed = 1; lWatershed <= cParameter.nOutlet; lWatershed++) {
+        vWatershed[lWatershed - 1].watershed_export_characteristics();
+        vWatershed[lWatershed - 1].watershed_export_segment_characteristics();
+        vWatershed[lWatershed - 1].watershed_export_subbasin_characteristics();
     }
     return error_code;
-  }
+}
 
-  int compset::compset_export_watershed_vtk(const std::string &sFilename_in)
-  {
+int compset::compset_export_watershed_vtk(const std::string& sFilename_in) {
     int error_code = 1;
     int iVertex;
     int iFlag_debug = cParameter.iFlag_debug;
@@ -285,245 +251,212 @@ namespace hexwatershed
     sLine = "DATASET UNSTRUCTURED_GRID";
     ofs_vtk << sLine << std::endl;
 
-    if (iFlag_debug == 1)
-    {
-      // point
-      nHexagon = vCell_active.size();
-      nVertex = vVertex_active.size();
+    if (iFlag_debug == 1) {
+        // point
+        nHexagon = vCell_active.size();
+        nVertex = vVertex_active.size();
 
-      // we consider both vertex and the center of hexagon
-      sPoint = convert_long_to_string(nVertex + nHexagon);
+        // we consider both vertex and the center of hexagon
+        sPoint = convert_long_to_string(nVertex + nHexagon);
 
-      sLine = "POINTS " + sPoint + " float";
-      ofs_vtk << sLine << std::endl;
-
-      // hexagon center first
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-
-        dx = (*iIterator).dx;
-        dy = (*iIterator).dy;
-        dz = (*iIterator).dz * dRatio_vtk_z_exaggerate;
-        sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+        sLine = "POINTS " + sPoint + " float";
         ofs_vtk << sLine << std::endl;
-      }
-      // then hexagon vertex
-      // because the vertex index start from 0, we need to add the nhexagon to have unique index
-      for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); iIterator2++)
-      {
-        dx = (*iIterator2).dx;
-        dy = (*iIterator2).dy;
-        dz = (*iIterator2).dz * dRatio_vtk_z_exaggerate;
 
-        sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+        // hexagon center first
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            dx = (*iIterator).dx;
+            dy = (*iIterator).dy;
+            dz = (*iIterator).dz * dRatio_vtk_z_exaggerate;
+            sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+            ofs_vtk << sLine << std::endl;
+        }
+        // then hexagon vertex
+        // because the vertex index start from 0, we need to add the nhexagon to have unique index
+        for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); iIterator2++) {
+            dx = (*iIterator2).dx;
+            dy = (*iIterator2).dy;
+            dz = (*iIterator2).dz * dRatio_vtk_z_exaggerate;
+
+            sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+            ofs_vtk << sLine << std::endl;
+        }
+
+        // then cell (polygon + polyline)
+        // we need to execlude boundary because they have no downslope for line feature
+        nBoundary = 0;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant == -1) {
+                nBoundary = nBoundary + 1;
+            }
+        }
+        sCell = convert_long_to_string(nHexagon + (nHexagon - nBoundary));
+        lCount = 0;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            lCount = lCount + (*iIterator).nVertex + 1;
+        }
+        sCell_size = convert_long_to_string(lCount + (nHexagon - nBoundary) * 3);
+
+        sLine = "CELLS " + sCell + " " + sCell_size;
         ofs_vtk << sLine << std::endl;
-      }
-
-      // then cell (polygon + polyline)
-      // we need to execlude boundary because they have no downslope for line feature
-      nBoundary = 0;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant == -1)
-        {
-          nBoundary = nBoundary + 1;
+        // hexagon polygon
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            iVertex = (*iIterator).nVertex;
+            sLine = convert_integer_to_string(iVertex) + " ";
+            for (iIterator2 = (*iIterator).vVertex.begin(); iIterator2 != (*iIterator).vVertex.end(); iIterator2++) {
+                sLine = sLine + convert_long_to_string((*iIterator2).lVertexIndex + nHexagon) + " ";
+            }
+            ofs_vtk << sLine << std::endl;
         }
-      }
-      sCell = convert_long_to_string(nHexagon + (nHexagon - nBoundary));
-      lCount = 0;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        lCount = lCount + (*iIterator).nVertex + 1;
-      }
-      sCell_size = convert_long_to_string(lCount + (nHexagon - nBoundary) * 3);
 
-      sLine = "CELLS " + sCell + " " + sCell_size;
-      ofs_vtk << sLine << std::endl;
-      // hexagon polygon
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        iVertex = (*iIterator).nVertex;
-        sLine = convert_integer_to_string(iVertex) + " ";
-        for (iIterator2 = (*iIterator).vVertex.begin(); iIterator2 != (*iIterator).vVertex.end(); iIterator2++)
-        {
-          sLine = sLine + convert_long_to_string((*iIterator2).lVertexIndex + nHexagon) + " ";
+        // polyline
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = "2 ";
+                lCellIndex = (*iIterator).lCellIndex;
+                sLine =
+                    sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
+                ofs_vtk << sLine << std::endl;
+            }
         }
+        // cell type information
+
+        sLine = "CELL_TYPES " + sCell;
         ofs_vtk << sLine << std::endl;
-      }
-
-      // polyline
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = "2 ";
-          lCellIndex = (*iIterator).lCellIndex;
-          sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
-          ofs_vtk << sLine << std::endl;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            sLine = "7";
+            ofs_vtk << sLine << std::endl;
         }
-      }
-      // cell type information
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = "3";
+                ofs_vtk << sLine << std::endl;
+            }
+        }
+        // attributes
 
-      sLine = "CELL_TYPES " + sCell;
-      ofs_vtk << sLine << std::endl;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        sLine = "7";
+        sLine = "CELL_DATA " + sCell;  // convert_long_to_string(nHexagon); //CELL_DATA
         ofs_vtk << sLine << std::endl;
-      }
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = "3";
-          ofs_vtk << sLine << std::endl;
-        }
-      }
-      // attributes
-
-      sLine = "CELL_DATA " + sCell; // convert_long_to_string(nHexagon); //CELL_DATA
-      ofs_vtk << sLine << std::endl;
-      sLine = "SCALARS elevation float 1";
-      ofs_vtk << sLine << std::endl;
-      sLine = "LOOKUP_TABLE default";
-
-      ofs_vtk << sLine << std::endl;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        sLine = convert_float_to_string((*iIterator).dElevation_mean);
+        sLine = "SCALARS elevation float 1";
         ofs_vtk << sLine << std::endl;
-      }
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = convert_float_to_string((*iIterator).dElevation_mean);
-          ofs_vtk << sLine << std::endl;
-        }
-      }
+        sLine = "LOOKUP_TABLE default";
 
-      ofs_vtk.close();
-    }
-    else
-    {
-      nHexagon = vCell_active.size();
-      nVertex = vVertex_active.size();
-
-      // we consider both vertex and the center of hexagon
-      sPoint = convert_long_to_string(nVertex + nHexagon);
-
-      sLine = "POINTS " + sPoint + " float";
-      ofs_vtk << sLine << std::endl;
-
-      // hexagon center first
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        dx = (*iIterator).dx;
-        dy = (*iIterator).dy;
-        dz = (*iIterator).dz * dRatio_vtk_z_exaggerate;
-        sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
         ofs_vtk << sLine << std::endl;
-      }
-      // then hexagon vertex
-      // because the vertex index start from 0, we need to add the nhexagon to have unique index
-      for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); iIterator2++)
-      {
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            sLine = convert_float_to_string((*iIterator).dElevation_mean);
+            ofs_vtk << sLine << std::endl;
+        }
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = convert_float_to_string((*iIterator).dElevation_mean);
+                ofs_vtk << sLine << std::endl;
+            }
+        }
 
-        dx = (*iIterator2).dx;
-        dy = (*iIterator2).dy;
-        dz = (*iIterator2).dz * dRatio_vtk_z_exaggerate;
+        ofs_vtk.close();
+    } else {
+        nHexagon = vCell_active.size();
+        nVertex = vVertex_active.size();
 
-        sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+        // we consider both vertex and the center of hexagon
+        sPoint = convert_long_to_string(nVertex + nHexagon);
+
+        sLine = "POINTS " + sPoint + " float";
         ofs_vtk << sLine << std::endl;
-      }
 
-      // then cell (polygon + polyline)
-      // we need to execlude boundary because they have no downslope
-      nBoundary = 0;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant == -1)
-        {
-          nBoundary = nBoundary + 1;
+        // hexagon center first
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            dx = (*iIterator).dx;
+            dy = (*iIterator).dy;
+            dz = (*iIterator).dz * dRatio_vtk_z_exaggerate;
+            sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+            ofs_vtk << sLine << std::endl;
         }
-      }
-      sCell = convert_long_to_string(nHexagon + (nHexagon - nBoundary));
+        // then hexagon vertex
+        // because the vertex index start from 0, we need to add the nhexagon to have unique index
+        for (iIterator2 = vVertex_active.begin(); iIterator2 != vVertex_active.end(); iIterator2++) {
+            dx = (*iIterator2).dx;
+            dy = (*iIterator2).dy;
+            dz = (*iIterator2).dz * dRatio_vtk_z_exaggerate;
 
-      lCount = 0;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        lCount = lCount + (*iIterator).nVertex + 1;
-      }
-      sCell_size = convert_long_to_string(lCount + (nHexagon - nBoundary) * 3);
-
-      sLine = "CELLS " + sCell + " " + sCell_size;
-      ofs_vtk << sLine << std::endl;
-      // hexagon polygon
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        iVertex = (*iIterator).nVertex;
-        sLine = convert_integer_to_string(iVertex) + " ";
-        for (iIterator2 = (*iIterator).vVertex.begin(); iIterator2 != (*iIterator).vVertex.end(); iIterator2++)
-        {
-          sLine = sLine + convert_long_to_string((*iIterator2).lVertexIndex + nHexagon) + " ";
+            sLine = convert_float_to_string(dx) + " " + convert_float_to_string(dy) + " " + convert_float_to_string(dz);
+            ofs_vtk << sLine << std::endl;
         }
+
+        // then cell (polygon + polyline)
+        // we need to execlude boundary because they have no downslope
+        nBoundary = 0;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant == -1) {
+                nBoundary = nBoundary + 1;
+            }
+        }
+        sCell = convert_long_to_string(nHexagon + (nHexagon - nBoundary));
+
+        lCount = 0;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            lCount = lCount + (*iIterator).nVertex + 1;
+        }
+        sCell_size = convert_long_to_string(lCount + (nHexagon - nBoundary) * 3);
+
+        sLine = "CELLS " + sCell + " " + sCell_size;
         ofs_vtk << sLine << std::endl;
-      }
-
-      // polyline
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = "2 ";
-          lCellIndex = (*iIterator).lCellIndex;
-          sLine = sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
-          ofs_vtk << sLine << std::endl;
+        // hexagon polygon
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            iVertex = (*iIterator).nVertex;
+            sLine = convert_integer_to_string(iVertex) + " ";
+            for (iIterator2 = (*iIterator).vVertex.begin(); iIterator2 != (*iIterator).vVertex.end(); iIterator2++) {
+                sLine = sLine + convert_long_to_string((*iIterator2).lVertexIndex + nHexagon) + " ";
+            }
+            ofs_vtk << sLine << std::endl;
         }
-      }
-      // cell type information
 
-      sLine = "CELL_TYPES " + sCell;
-      ofs_vtk << sLine << std::endl;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        sLine = "7";
+        // polyline
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = "2 ";
+                lCellIndex = (*iIterator).lCellIndex;
+                sLine =
+                    sLine + convert_long_to_string((*iIterator).lCellIndex) + " " + convert_long_to_string(lCellIndex);
+                ofs_vtk << sLine << std::endl;
+            }
+        }
+        // cell type information
+
+        sLine = "CELL_TYPES " + sCell;
         ofs_vtk << sLine << std::endl;
-      }
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = "3";
-          ofs_vtk << sLine << std::endl;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            sLine = "7";
+            ofs_vtk << sLine << std::endl;
         }
-      }
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = "3";
+                ofs_vtk << sLine << std::endl;
+            }
+        }
 
-      // attributes
+        // attributes
 
-      sLine = "CELL_DATA " + sCell; // convert_long_to_string(nHexagon); //CELL_DATA
-      ofs_vtk << sLine << std::endl;
-      sLine = "SCALARS elevation float 1";
-      ofs_vtk << sLine << std::endl;
-      sLine = "LOOKUP_TABLE default";
-
-      ofs_vtk << sLine << std::endl;
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        sLine = convert_float_to_string((*iIterator).dElevation_mean);
+        sLine = "CELL_DATA " + sCell;  // convert_long_to_string(nHexagon); //CELL_DATA
         ofs_vtk << sLine << std::endl;
-      }
-      for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++)
-      {
-        if ((*iIterator).lCellID_downslope_dominant != -1)
-        {
-          sLine = convert_float_to_string((*iIterator).dElevation_mean);
-          ofs_vtk << sLine << std::endl;
+        sLine = "SCALARS elevation float 1";
+        ofs_vtk << sLine << std::endl;
+        sLine = "LOOKUP_TABLE default";
+
+        ofs_vtk << sLine << std::endl;
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            sLine = convert_float_to_string((*iIterator).dElevation_mean);
+            ofs_vtk << sLine << std::endl;
         }
-      }
-      ofs_vtk.close();
+        for (iIterator = vCell_active.begin(); iIterator != vCell_active.end(); iIterator++) {
+            if ((*iIterator).lCellID_downslope_dominant != -1) {
+                sLine = convert_float_to_string((*iIterator).dElevation_mean);
+                ofs_vtk << sLine << std::endl;
+            }
+        }
+        ofs_vtk.close();
     }
 
     return error_code;
-  }
 }
+}  // namespace hexwatershed
