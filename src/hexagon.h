@@ -152,7 +152,7 @@ class hexagon {
     int calculate_average_edge_length();
     int calculate_effective_resolution();
     int update_location();
-    void update_elevation_profile(float new_profile0);
+    void update_elevation_profile(float new_profile0 = -9999.0f, float new_mean = -9999.0f);
 
     bool operator>(const hexagon& other) const;
 };

@@ -896,22 +896,23 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
                         } else {
                             vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  // animation
+                            float new_mean = dElevation_mean_neighbor;
                             if (dElevation_mean_neighbor <= dElevation_mean_center) {
                                 iFlag_pit = 1;
-                                vCell_active[lCellIndex_neighbor].dElevation_mean =
-                                    dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                                new_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
                             } else {
                                 iFlag_pit = 0;
                             }
+                            float new_p0 = -9999.0f;
                             // elevation profile case
                             if (iFlag_elevation_profile == 1) {
                                 dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                                 if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                                    float new_p0 =
+                                    new_p0 =
                                         dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
-                                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                                 }
                             }
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
                             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
                             // push into the queue
                             if (iFlag_pit == 1) {
@@ -934,22 +935,23 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                             // std::endl;
                         } else {
                             vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  // animation
+                            float new_mean = dElevation_mean_neighbor;
                             if (dElevation_mean_neighbor <= dElevation_mean_center) {
                                 iFlag_pit = 1;
-                                vCell_active[lCellIndex_neighbor].dElevation_mean =
-                                    dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                                new_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
                             } else {
                                 iFlag_pit = 0;
                             }
+                            float new_p0 = -9999.0f;
                             // elevation profile case
                             if (iFlag_elevation_profile == 1) {
                                 dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                                 if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                                    float new_p0 =
+                                    new_p0 =
                                         dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
-                                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                                 }
                             }
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
                             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
                             if (iFlag_pit == 1) {
                                 pq_pit.push(vCell_active[lCellIndex_neighbor]);
@@ -1010,22 +1012,22 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                 dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
                 if (iFlag_depression_filling_treated_neighbor != 1)  // not depression filling treated yet
                 {
+                    float new_mean = dElevation_mean_neighbor;
                     if (dElevation_mean_neighbor <= dElevation_mean_center) {
                         iFlag_pit = 1;
-                        vCell_active[lCellIndex_neighbor].dElevation_mean =
-                            dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
+                        new_mean = dElevation_mean_center + 0.001 + abs(dElevation_mean_neighbor) * 0.0001;
                     } else {
                         iFlag_pit = 0;
                     }
+                    float new_p0 = -9999.0f;
                     // elevation profile case
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                            float new_p0 =
-                                dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
-                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                            new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
                         }
                     }
+                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
                     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
                     if (iFlag_pit == 1) {
                         pq_pit.push(vCell_active[lCellIndex_neighbor]);

@@ -138,18 +138,36 @@ int hexagon::update_location() {
 
 bool hexagon::operator>(const hexagon& other) const { return dElevation_mean > other.dElevation_mean; }
 
-void hexagon::update_elevation_profile(float new_profile0) {
-    this->dElevation_profile0 = new_profile0;
+void hexagon::update_elevation_profile(float new_profile0, float new_mean) {
+    // 1. Mean is the master governing variable
+    if (new_mean != -9999.0f) {
+        this->dElevation_mean = new_mean;
+    }
+
+    // 2. Profile0 is updated, but strictly guided and capped by mean
+    if (new_profile0 != -9999.0f) {
+        this->dElevation_profile0 = new_profile0;
+    }
+
+    // Channel bed can never exceed the mean elevation
+    if (this->dElevation_profile0 > this->dElevation_mean) {
+        this->dElevation_profile0 = this->dElevation_mean;
+    }
+
+    // 3. Harmonize the full profile percentiles
     if (!this->aElevation_profile.empty()) {
-        this->aElevation_profile[0] = new_profile0;
+        this->aElevation_profile[0] = this->dElevation_profile0;
+        // Monotonic non-decreasing pass: p[i] >= p[i-1]
         for (size_t i = 1; i < this->aElevation_profile.size(); ++i) {
             if (this->aElevation_profile[i] < this->aElevation_profile[i - 1]) {
                 this->aElevation_profile[i] = this->aElevation_profile[i - 1] + 0.0001f;
             }
         }
-    }
-    if (this->dElevation_mean < this->dElevation_profile0) {
-        this->dElevation_mean = this->dElevation_profile0;
+        // Upper bound check: highest peak (p100) must be >= mean
+        size_t nLast = this->aElevation_profile.size() - 1;
+        if (this->aElevation_profile[nLast] < this->dElevation_mean) {
+            this->aElevation_profile[nLast] = this->dElevation_mean + 0.0001f;
+        }
     }
 }
 

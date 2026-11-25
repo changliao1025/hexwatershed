@@ -81,23 +81,22 @@ int compset::compset_stream_burning_without_topology(long lCellID_center_in) {
         if (iFlag_stream_burned_neighbor == 1) {
             if (iFlag_stream_burning_treated_neighbor != 1) {
                 dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
+                float new_mean_neighbor = dElevation_mean_neighbor;
                 if (dElevation_mean_neighbor < dElevation_mean_center) {
-                    vCell_active[lCellIndex_neighbor].dElevation_mean =
-                        dElevation_mean_center + 0.1 + abs(dElevation_mean_center) * 0.001;
-                } else {
-                    if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
-                        vCell_active[lCellIndex_neighbor].dElevation_mean = dElevation_mean_center + dBreach_threshold;
-                    }
+                    new_mean_neighbor = dElevation_mean_center + 0.1 + abs(dElevation_mean_center) * 0.001;
+                } else if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
+                    new_mean_neighbor = dElevation_mean_center + dBreach_threshold;
                 }
 
+                float new_p0_neighbor = -9999.0f;
                 if (cParameter.iFlag_elevation_profile == 1) {
                     float dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                     float dElevation_profile0_center = vCell_active[lCellIndex_center].dElevation_profile0;
                     if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                        float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
-                        vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                        new_p0_neighbor = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
                     }
                 }
+                vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0_neighbor, new_mean_neighbor);
 
                 vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
             }
@@ -202,31 +201,37 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
             vCell_active[lCellIndex_neighbor].dElevation_downstream =
                 dElevation_mean_center;  // need update after modification
             dDifference_dummy = dElevation_mean_neighbor - dElevation_mean_center;
-            if (dDifference_dummy > 0)  // should not be equally to 0.0
-            {
+            float dSlope_step = (iStream_order_neighbor == iStream_order_center) ? 0.1f : 0.2f;
+            if (dDifference_dummy > 0) {
+                // Mean is already higher than downstream (no mean depression).
+                // If elevation profile is enabled, adjust profile0 if needed, capped by mean.
+                if (iFlag_elevation_profile == 1) {
+                    dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                    if (dElevation_profile0_neighbor < dElevation_profile0_center) {
+                        float new_p0 =
+                            dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001f + dSlope_step;
+                        vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                    }
+                }
             } else {
                 // this is a depression, but should we fill or breaching depends on parameter
                 if (abs(dDifference_dummy) < dBreach_threshold) {
-                    // if it is slight lower, we will increase  it
-                    if (iStream_order_neighbor == iStream_order_center) {
-                        vCell_active[lCellIndex_neighbor].dElevation_mean =
-                            dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.1;
-                    } else {
-                        vCell_active[lCellIndex_neighbor].dElevation_mean =
-                            dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 0.2;
+                    // 1. Filling acts on mean first:
+                    float new_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001f + dSlope_step;
+
+                    // 2. Then adjust profile0 guided by mean:
+                    float new_p0 = -9999.0f;
+                    if (iFlag_elevation_profile == 1) {
+                        dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                        if (dElevation_profile0_neighbor < dElevation_profile0_center) {
+                            new_p0 =
+                                dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001f + dSlope_step;
+                        }
                     }
+                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
                 } else {
                     // breaching needed//we will use breach algorithm
                     compset_breaching_stream_elevation(*iIterator_neighbor);
-                }
-            }
-
-            // for elevation enabled case
-            if (iFlag_elevation_profile == 1) {
-                dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
-                if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                    float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
-                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                 }
             }
 
@@ -263,27 +268,22 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
                     if (iFlag_stream_burning_treated_neighbor != 1) {
                         vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  // animation
                         dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-                        if (dElevation_mean_neighbor <= dElevation_mean_center)  // should not be equally to 0.0 as well
-                        {
-                            vCell_active[lCellIndex_neighbor].dElevation_mean =
-                                dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
-                        } else {
-                            if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
-                                vCell_active[lCellIndex_neighbor].dElevation_mean =
-                                    dElevation_mean_center + dBreach_threshold;
-                            }
+                        float new_mean = dElevation_mean_neighbor;
+                        if (dElevation_mean_neighbor <= dElevation_mean_center) {
+                            new_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
+                        } else if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
+                            new_mean = dElevation_mean_center + dBreach_threshold;
                         }
-                        vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
 
-                        // if elevation profile is turned on
+                        float new_p0 = -9999.0f;
                         if (iFlag_elevation_profile == 1) {
                             dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                             if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                                float new_p0 =
-                                    dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
-                                vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                                new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
                             }
                         }
+                        vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
+                        vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
                     }
                 } else {
                     // do nothing here
@@ -297,26 +297,22 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
                 if (iFlag_stream_burning_treated_neighbor != 1) {
                     vCell_priority_flood.push_back(vCell_active[lCellIndex_neighbor]);  // animation
                     dElevation_mean_neighbor = vCell_active[lCellIndex_neighbor].dElevation_mean;
-                    if (dElevation_mean_neighbor <= dElevation_mean_center)  // should not be equally to 0.0 as well
-                    {
-                        vCell_active[lCellIndex_neighbor].dElevation_mean =
-                            dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
-                    } else {
-                        if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
-                            vCell_active[lCellIndex_neighbor].dElevation_mean =
-                                dElevation_mean_center + dBreach_threshold;
-                        }
+                    float new_mean = dElevation_mean_neighbor;
+                    if (dElevation_mean_neighbor <= dElevation_mean_center) {
+                        new_mean = dElevation_mean_center + abs(dElevation_mean_center) * 0.001 + 1.0;
+                    } else if ((dElevation_mean_neighbor - dElevation_mean_center) > dBreach_threshold) {
+                        new_mean = dElevation_mean_center + dBreach_threshold;
                     }
-                    vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
 
-                    // if elevation profile is turned on
+                    float new_p0 = -9999.0f;
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                            float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
-                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                            new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
                         }
                     }
+                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0, new_mean);
+                    vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
                 }
             }
         }
@@ -352,8 +348,17 @@ int compset::compset_breaching_stream_elevation(long lCellID_active_in) {
             dDifference_dummy = dElevation_upstream - dElevation_downstream;
             if (dDifference_dummy <= 0.0)  // how about equals to 0.0?
             {
-                vCell_active[lCellIndex2].dElevation_mean = dElevation_upstream - 0.01;
-                vCell_active[lCellIndex_active].dElevation_mean = dElevation_downstream + 0.01;
+                float new_mean_down = dElevation_upstream - 0.01;
+                float new_mean_up = dElevation_downstream + 0.01;
+                float new_p0_down = -9999.0f;
+                if (cParameter.iFlag_elevation_profile == 1) {
+                    float p0_upstream = vCell_active[lCellIndex_active].dElevation_profile0;
+                    if (vCell_active[lCellIndex2].dElevation_profile0 >= p0_upstream) {
+                        new_p0_down = p0_upstream - 0.01f;
+                    }
+                }
+                vCell_active[lCellIndex2].update_elevation_profile(new_p0_down, new_mean_down);
+                vCell_active[lCellIndex_active].update_elevation_profile(-9999.0f, new_mean_up);
                 vCell_active[lCellIndex_active].dElevation_downstream = vCell_active[lCellIndex2].dElevation_mean;
                 // find out the next downstream elevation
                 lCellID_downstream2 = vCell_active[lCellIndex2].lCellID_downstream_burned;
