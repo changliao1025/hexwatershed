@@ -117,8 +117,9 @@ class hexagon {
     float dLongitude_center_radian;  // GCS, (unit:degree)
     float dLatitude_center_radian;   // GCS, (unit:degree)
 
-    float dElevation_mean;            // from DEM, (unit:m)
-    float dElevation_profile0;        // from DEM, (unit:m)
+    float dElevation_mean;      // from DEM, (unit:m)
+    float dElevation_profile0;  // from DEM, (unit:m)
+    std::vector<float> aElevation_profile;
     float dElevation_raw;             // from DEM, (unit:m)
     float dElevation_downstream;      // down stream elevation for breach algorithm
     double dArea;                     // the area of hexagon,  (unit:m2)
@@ -151,6 +152,7 @@ class hexagon {
     int calculate_average_edge_length();
     int calculate_effective_resolution();
     int update_location();
+    void update_elevation_profile(float new_profile0);
 
     bool operator>(const hexagon& other) const;
 };

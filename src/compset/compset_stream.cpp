@@ -90,6 +90,15 @@ int compset::compset_stream_burning_without_topology(long lCellID_center_in) {
                     }
                 }
 
+                if (cParameter.iFlag_elevation_profile == 1) {
+                    float dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
+                    float dElevation_profile0_center = vCell_active[lCellIndex_center].dElevation_profile0;
+                    if (dElevation_profile0_neighbor < dElevation_profile0_center) {
+                        float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                        vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
+                    }
+                }
+
                 vCell_active[lCellIndex_neighbor].iFlag_stream_burning_treated = 1;
             }
         }
@@ -216,8 +225,8 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
             if (iFlag_elevation_profile == 1) {
                 dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                 if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
-                        dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                    float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                 }
             }
 
@@ -270,8 +279,9 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
                         if (iFlag_elevation_profile == 1) {
                             dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                             if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                                vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                                float new_p0 =
                                     dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                                vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                             }
                         }
                     }
@@ -303,8 +313,8 @@ int compset::compset_stream_burning_with_topology(long lCellID_center_in) {
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor < dElevation_profile0_center) {
-                            vCell_active[lCellIndex_neighbor].dElevation_profile0 =
-                                dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                            float new_p0 = dElevation_profile0_center + abs(dElevation_profile0_center) * 0.001 + 1.0;
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                         }
                     }
                 }

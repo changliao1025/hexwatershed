@@ -47,6 +47,19 @@ bool cell::Deserialize(const rapidjson::Value& obj) {
     if (obj.HasMember(sKey.c_str())) {
         this->dElevation_profile0 = obj[sKey.c_str()].GetFloat();
     }
+    sKey = "aElevation_profile";
+    if (obj.HasMember(sKey.c_str()) && obj[sKey.c_str()].IsArray()) {
+        const rapidjson::Value& arr = obj[sKey.c_str()];
+        this->aElevation_profile.clear();
+        for (rapidjson::SizeType i = 0; i < arr.Size(); ++i) {
+            if (arr[i].IsNumber()) {
+                this->aElevation_profile.push_back(arr[i].GetFloat());
+            }
+        }
+        if (!this->aElevation_profile.empty()) {
+            this->dElevation_profile0 = this->aElevation_profile[0];
+        }
+    }
     sKey = "dLatitude_center_degree";
     if (obj.HasMember(sKey.c_str())) {
         this->dLatitude_center_degree = obj[sKey.c_str()].GetFloat();
@@ -175,6 +188,16 @@ bool cell::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) c
     writer->Double(dElevation_mean);
     writer->String("dElevation_profile");
     writer->Double(dElevation_profile0);
+    writer->String("dElevation_profile0");
+    writer->Double(dElevation_profile0);
+    if (!aElevation_profile.empty()) {
+        writer->String("aElevation_profile");
+        writer->StartArray();
+        for (float val : aElevation_profile) {
+            writer->Double(val);
+        }
+        writer->EndArray();
+    }
     writer->String("dSlope_between");
     writer->Double(dSlope_between);
     writer->String("dSlope_profile");

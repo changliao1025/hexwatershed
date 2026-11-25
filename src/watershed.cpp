@@ -1276,6 +1276,7 @@ int watershed::watershed_export_json() {
             pCell.dElevation_mean = pHexagon.dElevation_mean;
             pCell.dElevation_raw = pHexagon.dElevation_raw;
             pCell.dElevation_profile0 = pHexagon.dElevation_profile0;
+            pCell.aElevation_profile = pHexagon.aElevation_profile;
             pCell.dLength = pHexagon.dLength_stream_conceptual;
             pCell.dLength_flowline = pHexagon.dLength_stream_burned;
             pCell.dArea = pHexagon.dArea;
@@ -1316,6 +1317,7 @@ int watershed::watershed_export_stream_edge_json() {
             pCell.dElevation_mean = (*iIterator).dElevation_mean;
             pCell.dElevation_raw = (*iIterator).dElevation_raw;
             pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+            pCell.aElevation_profile = (*iIterator).aElevation_profile;
             pCell.dLength = (*iIterator).dLength_stream_conceptual;
             pCell.dLength_flowline = (*iIterator).dLength_stream_burned;
             pCell.dArea = (*iIterator).dArea;

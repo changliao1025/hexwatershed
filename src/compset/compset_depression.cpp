@@ -419,18 +419,34 @@ int compset::compset_priority_flood_depression_filling() {
                     dElevation_mean_center = vCell_active[lCellIndex_active].dElevation_mean;
                     vCell_priority_flood.push_back(vCell_active[lCellIndex_outlet]);  // for animation only
                     // new simplified approach
+                    float dElevation_profile0_lowest = vCell_boundary[0].dElevation_profile0;
+                    if (cParameter.iFlag_elevation_profile == 1) {
+                        for (size_t i = 1; i < vCell_boundary.size(); ++i) {
+                            if (vCell_boundary[i].dElevation_profile0 < dElevation_profile0_lowest) {
+                                dElevation_profile0_lowest = vCell_boundary[i].dElevation_profile0;
+                            }
+                        }
+                    }
 
                     if (iFlag_stream_burning_topology == 0) {
                         // rasterization based stream burning
                         // this will make sure the outlet is the lowest point in the beginning
                         vCell_active[lCellIndex_outlet].dElevation_mean =
                             dElevation_mean_center - 20 * dBreach_threshold;  // deep reduction
+                        if (cParameter.iFlag_elevation_profile == 1) {
+                            float new_p0 = dElevation_profile0_lowest - 20 * dBreach_threshold;
+                            vCell_active[lCellIndex_outlet].update_elevation_profile(new_p0);
+                        }
                         // set boundary as treated
                         vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
                         compset_stream_burning_without_topology(vCell_active[lCellIndex_outlet].lCellID);
                     } else {
                         // topology based stream burning
                         vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 10;
+                        if (cParameter.iFlag_elevation_profile == 1) {
+                            float new_p0 = dElevation_profile0_lowest - 10;
+                            vCell_active[lCellIndex_outlet].update_elevation_profile(new_p0);
+                        }
                         // burn stream first, set flag as well
                         vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
                         compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
@@ -656,6 +672,10 @@ int compset::compset_priority_flood_depression_filling() {
                     // this will make sure the outlet is the lowest point in the beginning
                     vCell_active[lCellIndex_outlet].dElevation_mean =
                         dElevation_mean_center - 20 * dBreach_threshold;  //    deep reduction
+                    if (cParameter.iFlag_elevation_profile == 1) {
+                        float new_p0 = vCell_active[lCellIndex_outlet].dElevation_profile0 - 20 * dBreach_threshold;
+                        vCell_active[lCellIndex_outlet].update_elevation_profile(new_p0);
+                    }
                     // set boundary as treated
                     vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
                     compset_stream_burning_without_topology(vCell_active[lCellIndex_outlet].lCellID);
@@ -667,6 +687,11 @@ int compset::compset_priority_flood_depression_filling() {
                     lCellID_outlet = aBasin[i].lCellID_outlet;
                     lCellIndex_outlet = mCellIdToIndex[lCellID_outlet];
                     dElevation_mean_center = vCell_active[lCellIndex_outlet].dElevation_mean;
+                    vCell_active[lCellIndex_outlet].dElevation_mean = dElevation_mean_center - 10;
+                    if (cParameter.iFlag_elevation_profile == 1) {
+                        float new_p0 = vCell_active[lCellIndex_outlet].dElevation_profile0 - 10;
+                        vCell_active[lCellIndex_outlet].update_elevation_profile(new_p0);
+                    }
                     // burn stream first, set flag as well
                     vCell_active[lCellIndex_outlet].iFlag_depression_filling_treated = 1;
                     compset_stream_burning_with_topology(vCell_active[lCellIndex_outlet].lCellID);
@@ -882,8 +907,9 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                             if (iFlag_elevation_profile == 1) {
                                 dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                                 if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                                    float new_p0 =
                                         dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                                 }
                             }
                             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
@@ -919,8 +945,9 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                             if (iFlag_elevation_profile == 1) {
                                 dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                                 if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                                    vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                                    float new_p0 =
                                         dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                                    vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                                 }
                             }
                             vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
@@ -994,8 +1021,9 @@ int compset::priority_flood_depression_filling(std::vector<hexagon>& vCell_bound
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                            vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                            float new_p0 =
                                 dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                         }
                     }
                     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
@@ -1102,8 +1130,9 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                            vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                            float new_p0 =
                                 dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                         }
                     }
                     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;
@@ -1173,8 +1202,9 @@ int compset::priority_flood_depression_filling_endorheic(std::vector<hexagon>& v
                     if (iFlag_elevation_profile == 1) {
                         dElevation_profile0_neighbor = vCell_active[lCellIndex_neighbor].dElevation_profile0;
                         if (dElevation_profile0_neighbor <= dElevation_profile0_center) {
-                            vCell_active[lCellIndex_neighbor].dElevation_profile0 =
+                            float new_p0 =
                                 dElevation_profile0_center + abs(dElevation_profile0_center) * 0.0001 + 0.0001;
+                            vCell_active[lCellIndex_neighbor].update_elevation_profile(new_p0);
                         }
                     }
                     vCell_active[lCellIndex_neighbor].iFlag_depression_filling_treated = 1;

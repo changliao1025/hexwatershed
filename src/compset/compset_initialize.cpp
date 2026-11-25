@@ -33,6 +33,7 @@ int compset::compset_initialize_model() {
         pHexagon.dElevation_mean = pCell.dElevation_mean;
         pHexagon.dElevation_raw = pCell.dElevation_raw;
         pHexagon.dElevation_profile0 = pCell.dElevation_profile0;
+        pHexagon.aElevation_profile = pCell.aElevation_profile;
         pHexagon.dLength_stream_burned = pCell.dLength_flowline;
         pHexagon.dArea = pCell.dArea;
         pHexagon.dAccumulation = pHexagon.dArea;

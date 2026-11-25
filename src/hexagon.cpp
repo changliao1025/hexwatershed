@@ -138,4 +138,19 @@ int hexagon::update_location() {
 
 bool hexagon::operator>(const hexagon& other) const { return dElevation_mean > other.dElevation_mean; }
 
+void hexagon::update_elevation_profile(float new_profile0) {
+    this->dElevation_profile0 = new_profile0;
+    if (!this->aElevation_profile.empty()) {
+        this->aElevation_profile[0] = new_profile0;
+        for (size_t i = 1; i < this->aElevation_profile.size(); ++i) {
+            if (this->aElevation_profile[i] < this->aElevation_profile[i - 1]) {
+                this->aElevation_profile[i] = this->aElevation_profile[i - 1] + 0.0001f;
+            }
+        }
+    }
+    if (this->dElevation_mean < this->dElevation_profile0) {
+        this->dElevation_mean = this->dElevation_profile0;
+    }
+}
+
 }  // namespace hexwatershed

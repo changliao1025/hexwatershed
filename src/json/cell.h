@@ -23,11 +23,12 @@ class cell : public JSONBase {
     std::vector<float> aNeighbor_distance; /*!<neighbor distance*/
     std::vector<vertex> vVertex;
 
-    float dElevation_mean;          /*!<average elevation*/
-    float dElevation_profile0;      /*!<elevation profile*/
-    float dElevation_raw;           /*!<original elevation*/
-    float dLatitude_center_degree;  /*!<latitude*/
-    float dLongitude_center_degree; /*!<longitude*/
+    float dElevation_mean;                 /*!<average elevation*/
+    float dElevation_profile0;             /*!<elevation profile*/
+    std::vector<float> aElevation_profile; /*!<elevation profile percentiles*/
+    float dElevation_raw;                  /*!<original elevation*/
+    float dLatitude_center_degree;         /*!<latitude*/
+    float dLongitude_center_degree;        /*!<longitude*/
 
     // float dLatitude_center_radian;
     // float dLongitude_center_radian;

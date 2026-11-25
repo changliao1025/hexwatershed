@@ -122,6 +122,7 @@ int compset::compset_export_domain_json(const std::string& sFilename_in) {
             pCell.dElevation_raw = (*iIterator).dElevation_raw;
             pCell.dElevation_mean = (*iIterator).dElevation_mean;
             pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+            pCell.aElevation_profile = (*iIterator).aElevation_profile;
             pCell.dArea = (*iIterator).dArea;
             pCell.dAccumulation = (*iIterator).dAccumulation;
             pCell.lCellID = (*iIterator).lCellID;
@@ -144,6 +145,7 @@ int compset::compset_export_domain_json(const std::string& sFilename_in) {
                 pCell.dElevation_mean = (*iIterator).dElevation_mean;
                 pCell.dElevation_raw = (*iIterator).dElevation_raw;
                 pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+                pCell.aElevation_profile = (*iIterator).aElevation_profile;
                 pCell.lCellID = (*iIterator).lCellID;
                 pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
                 pCell.dArea = (*iIterator).dArea;
@@ -166,6 +168,7 @@ int compset::compset_export_domain_json(const std::string& sFilename_in) {
                 pCell.dElevation_mean = (*iIterator).dElevation_mean;
                 pCell.dElevation_raw = (*iIterator).dElevation_raw;
                 pCell.dElevation_profile0 = (*iIterator).dElevation_profile0;
+                pCell.aElevation_profile = (*iIterator).aElevation_profile;
                 pCell.lCellID = (*iIterator).lCellID;
                 pCell.lCellID_downslope = (*iIterator).lCellID_downslope_dominant;
                 pCell.dArea = (*iIterator).dArea;
