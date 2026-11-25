@@ -43,10 +43,6 @@ bool cell::Deserialize(const rapidjson::Value& obj) {
         this->dElevation_mean = obj[sKey.c_str()].GetFloat();
         this->dElevation_raw = this->dElevation_mean;
     }
-    sKey = "dElevation_profile0";
-    if (obj.HasMember(sKey.c_str())) {
-        this->dElevation_profile0 = obj[sKey.c_str()].GetFloat();
-    }
     sKey = "aElevation_profile";
     if (obj.HasMember(sKey.c_str()) && obj[sKey.c_str()].IsArray()) {
         const rapidjson::Value& arr = obj[sKey.c_str()];
@@ -186,10 +182,6 @@ bool cell::Serialize(rapidjson::PrettyWriter<rapidjson::StringBuffer>* writer) c
     writer->Double(dElevation_raw);
     writer->String("dElevation");
     writer->Double(dElevation_mean);
-    writer->String("dElevation_profile");
-    writer->Double(dElevation_profile0);
-    writer->String("dElevation_profile0");
-    writer->Double(dElevation_profile0);
     if (!aElevation_profile.empty()) {
         writer->String("aElevation_profile");
         writer->StartArray();
